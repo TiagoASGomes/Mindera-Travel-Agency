@@ -8,4 +8,6 @@ public class Hotel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @OneToOne(mappedBy = "hotel")
+    private Invoice invoice;
 }
