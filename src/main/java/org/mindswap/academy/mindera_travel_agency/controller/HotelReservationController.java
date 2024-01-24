@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/hotel/reservations")
+@RequestMapping("/api/v1/reservations")
 public class HotelReservationController {
     @Autowired
     private HotelReservationService hotelReservationService;
@@ -51,7 +51,7 @@ public class HotelReservationController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<HotelReservationGetDto> updateHotelInfo(@PathVariable Long id, @Valid @RequestBody HotelReservationCreateDto hotelReservation) throws HotelReservationNotFoundException {
+    public ResponseEntity<HotelReservationGetDto> updateReservation(@PathVariable Long id, @Valid @RequestBody HotelReservationCreateDto hotelReservation) throws HotelReservationNotFoundException {
         return ResponseEntity.ok(hotelReservationService.updateReservation(id, hotelReservation));
     }
 

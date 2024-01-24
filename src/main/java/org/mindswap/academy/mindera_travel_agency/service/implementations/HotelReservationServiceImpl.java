@@ -102,7 +102,8 @@ public class HotelReservationServiceImpl implements HotelReservationService {
 
     @Override
     public void delete(Long id) throws HotelReservationNotFoundException {
-        findById(id);
+        HotelReservation hotelReservation = findById(id);
+        hotelReservation.getRooms().forEach(roomInfo -> roomInfoService.delete(roomInfo.getId()));
         hotelReservationRepository.deleteById(id);
     }
 
