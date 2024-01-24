@@ -1,6 +1,5 @@
 package org.mindswap.academy.mindera_travel_agency.service.implementations;
 
-import org.mindswap.academy.mindera_travel_agency.converter.RoomInfoConverter;
 import org.mindswap.academy.mindera_travel_agency.model.RoomInfo;
 import org.mindswap.academy.mindera_travel_agency.repository.RoomInfoRepository;
 import org.mindswap.academy.mindera_travel_agency.service.interfaces.RoomInfoService;
@@ -11,16 +10,14 @@ import org.springframework.stereotype.Service;
 public class RoomInfoServiceImpl implements RoomInfoService {
     @Autowired
     private RoomInfoRepository roomInfoRepository;
-    @Autowired
-    private RoomInfoConverter roomInfoConverter;
 
     @Override
     public void create(RoomInfo roomInfo) {
-
+        roomInfoRepository.save(roomInfo);
     }
 
     @Override
-    public void delete(Long aLong) {
-
+    public void delete(Long id) {
+        roomInfoRepository.deleteById(id);
     }
 }
