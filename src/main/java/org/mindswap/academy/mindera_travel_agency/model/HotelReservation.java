@@ -1,7 +1,7 @@
 package org.mindswap.academy.mindera_travel_agency.model;
 
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.HashSet;
@@ -9,14 +9,19 @@ import java.util.Set;
 
 @Entity
 @Table(name = "hotel_reservations")
-@Data
+@Getter
+@Setter
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class HotelReservation {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    private Long hotelId;
     private String hotelName;
     private String hotelAddress;
-    private String hotelPhoneNumber;
+    private int hotelPhoneNumber;
     private int pricePerNight;
     private int durationOfStay;
     private int totalPrice;
@@ -24,7 +29,7 @@ public class HotelReservation {
     private LocalDateTime checkOutDate;
     @OneToMany(mappedBy = "hotelReservation")
     private Set<RoomInfo> rooms;
-    @OneToOne(mappedBy = "hotelReservation",
+    @OneToOne(cascade = CascadeType.ALL,
             fetch = FetchType.EAGER)
     private Invoice invoice;
 
@@ -37,10 +42,10 @@ public class HotelReservation {
 
     }
 
-    public void removeRoom(Long aLong) {
+    public void removeRoom(Long roomInfoId) {
         if (rooms == null) {
             return;
         }
-        rooms.removeIf(roomInfo -> roomInfo.getExternalId().equals(aLong));
+        rooms.removeIf(roomInfo -> roomInfo.getExternalId().equals(roomInfoId));
     }
 }

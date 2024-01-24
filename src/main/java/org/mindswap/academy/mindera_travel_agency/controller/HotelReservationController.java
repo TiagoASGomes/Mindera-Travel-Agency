@@ -30,6 +30,16 @@ public class HotelReservationController {
         return ResponseEntity.ok(hotelReservationService.getById(id));
     }
 
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<List<HotelReservationGetDto>> getAllByUser(@PathVariable Long userId, @RequestParam(required = false) String sortBy) {
+        return ResponseEntity.ok(hotelReservationService.getAllByUser(sortBy, userId));
+    }
+
+    @GetMapping("/user/{userId}/name/{hotelName}")
+    public ResponseEntity<List<HotelReservationGetDto>> getAllByUserAndByName(@PathVariable Long userId, @PathVariable String hotelName, @RequestParam(required = false) String sortBy) {
+        return ResponseEntity.ok(hotelReservationService.getAllByUserAndByName(hotelName, sortBy, userId));
+    }
+
     @PostMapping("/")
     public ResponseEntity<HotelReservationGetDto> create(@Valid @RequestBody HotelReservationCreateDto hotelReservation) {
         return new ResponseEntity<>(hotelReservationService.create(hotelReservation), HttpStatus.CREATED);

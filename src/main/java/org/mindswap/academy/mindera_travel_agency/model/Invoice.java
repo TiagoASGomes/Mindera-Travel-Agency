@@ -15,7 +15,7 @@ public class Invoice {
     @ManyToOne(cascade = CascadeType.ALL,
             fetch = FetchType.EAGER)
     private User user;
-    @OneToOne
+    @OneToOne(mappedBy = "invoice")
     private HotelReservation hotelReservation;
     @OneToMany(mappedBy = "invoice")
     private Set<FlightTicket> flightTickets;

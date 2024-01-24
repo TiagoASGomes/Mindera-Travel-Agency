@@ -6,7 +6,6 @@ import org.mindswap.academy.mindera_travel_agency.dto.hotel.HotelReservationDura
 import org.mindswap.academy.mindera_travel_agency.dto.hotel.HotelReservationGetDto;
 import org.mindswap.academy.mindera_travel_agency.exception.hotel_reservation.HotelReservationNotFoundException;
 import org.mindswap.academy.mindera_travel_agency.model.HotelReservation;
-import org.mindswap.academy.mindera_travel_agency.util.enums.SortParameter;
 
 import java.util.List;
 
@@ -15,9 +14,9 @@ public interface HotelReservationService {
 
     HotelReservationGetDto getById(Long id) throws HotelReservationNotFoundException;
 
-    List<HotelReservationGetDto> getAllByUser(SortParameter sortBy, Long userId);
+    List<HotelReservationGetDto> getAllByUser(String sortBy, Long userId);
 
-    List<HotelReservationGetDto> getAllByUserAndByName(String hotelName, SortParameter sortBy, Long userId);
+    List<HotelReservationGetDto> getAllByUserAndByName(String hotelName, String sortBy, Long userId);
 
     HotelReservationGetDto create(HotelReservationCreateDto hotelReservation);
 
