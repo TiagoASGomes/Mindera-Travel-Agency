@@ -1,9 +1,9 @@
 package org.mindswap.academy.mindera_travel_agency.service.interfaces;
 
+import org.mindswap.academy.mindera_travel_agency.dto.external.ExternalRoomInfoDto;
 import org.mindswap.academy.mindera_travel_agency.dto.hotel.HotelReservationCreateDto;
 import org.mindswap.academy.mindera_travel_agency.dto.hotel.HotelReservationDurationDto;
 import org.mindswap.academy.mindera_travel_agency.dto.hotel.HotelReservationGetDto;
-import org.mindswap.academy.mindera_travel_agency.dto.hotel.HotelReservationRoomsDto;
 import org.mindswap.academy.mindera_travel_agency.exception.hotel_reservation.HotelReservationNotFoundException;
 import org.mindswap.academy.mindera_travel_agency.model.HotelReservation;
 import org.mindswap.academy.mindera_travel_agency.util.enums.SortParameter;
@@ -23,9 +23,11 @@ public interface HotelReservationService {
 
     HotelReservationGetDto updateDuration(Long id, HotelReservationDurationDto hotelReservation) throws HotelReservationNotFoundException;
 
-    HotelReservationGetDto updateRooms(Long id, HotelReservationRoomsDto hotelReservation) throws HotelReservationNotFoundException;
+    HotelReservationGetDto addRooms(Long id, ExternalRoomInfoDto room) throws HotelReservationNotFoundException;
 
-    HotelReservationGetDto updateHotel(Long id, HotelReservationCreateDto hotelReservation) throws HotelReservationNotFoundException;
+    HotelReservationGetDto removeRooms(Long id, ExternalRoomInfoDto room) throws HotelReservationNotFoundException;
+
+    HotelReservationGetDto updateReservation(Long id, HotelReservationCreateDto hotelReservation) throws HotelReservationNotFoundException;
 
     void delete(Long id) throws HotelReservationNotFoundException;
 

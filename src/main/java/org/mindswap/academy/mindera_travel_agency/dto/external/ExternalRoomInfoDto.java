@@ -1,4 +1,6 @@
 package org.mindswap.academy.mindera_travel_agency.dto.external;
 
-public record RoomInfoDto() {
+public record ExternalRoomInfoDto(
+        Long externalId
+) {
 }

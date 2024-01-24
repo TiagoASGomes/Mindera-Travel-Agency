@@ -7,14 +7,17 @@ import lombok.Data;
 @Table(name = "room_info")
 @Data
 public class RoomInfo {
-    // TODO: verificar propriedades com o external API
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String type;
+    private String roomType;
+    private String roomNumber;
+    private int numberOfBeds;
     private int pricePerNight;
-    private int capacity;
-    @ManyToOne(cascade = CascadeType.ALL,
-            fetch = FetchType.EAGER)
-    private HotelInfo hotelInfo;
+    @Column(unique = true)
+    private Long externalId;
+    @ManyToOne(fetch = FetchType.EAGER,
+            cascade = CascadeType.ALL)
+    private HotelReservation hotelReservation;
 }

@@ -1,10 +1,10 @@
 package org.mindswap.academy.mindera_travel_agency.controller;
 
 import jakarta.validation.Valid;
+import org.mindswap.academy.mindera_travel_agency.dto.external.ExternalRoomInfoDto;
 import org.mindswap.academy.mindera_travel_agency.dto.hotel.HotelReservationCreateDto;
 import org.mindswap.academy.mindera_travel_agency.dto.hotel.HotelReservationDurationDto;
 import org.mindswap.academy.mindera_travel_agency.dto.hotel.HotelReservationGetDto;
-import org.mindswap.academy.mindera_travel_agency.dto.hotel.HotelReservationRoomsDto;
 import org.mindswap.academy.mindera_travel_agency.exception.hotel_reservation.HotelReservationNotFoundException;
 import org.mindswap.academy.mindera_travel_agency.service.interfaces.HotelReservationService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,14 +40,19 @@ public class HotelReservationController {
         return ResponseEntity.ok(hotelReservationService.updateDuration(id, hotelReservation));
     }
 
-    @PatchMapping("/{id}/rooms")
-    public ResponseEntity<HotelReservationGetDto> updateRooms(@PathVariable Long id, @Valid @RequestBody HotelReservationRoomsDto hotelReservation) throws HotelReservationNotFoundException {
-        return ResponseEntity.ok(hotelReservationService.updateRooms(id, hotelReservation));
+    @PatchMapping("/{id}/rooms/add")
+    public ResponseEntity<HotelReservationGetDto> addRoom(@PathVariable Long id, @Valid @RequestBody ExternalRoomInfoDto room) throws HotelReservationNotFoundException {
+        return ResponseEntity.ok(hotelReservationService.addRooms(id, room));
+    }
+
+    @PatchMapping("/{id}/rooms/remove")
+    public ResponseEntity<HotelReservationGetDto> removeRoom(@PathVariable Long id, @Valid @RequestBody ExternalRoomInfoDto room) throws HotelReservationNotFoundException {
+        return ResponseEntity.ok(hotelReservationService.removeRooms(id, room));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<HotelReservationGetDto> updateHotel(@PathVariable Long id, @Valid @RequestBody HotelReservationCreateDto hotelReservation) throws HotelReservationNotFoundException {
-        return ResponseEntity.ok(hotelReservationService.updateHotel(id, hotelReservation));
+    public ResponseEntity<HotelReservationGetDto> updateHotelInfo(@PathVariable Long id, @Valid @RequestBody HotelReservationCreateDto hotelReservation) throws HotelReservationNotFoundException {
+        return ResponseEntity.ok(hotelReservationService.updateReservation(id, hotelReservation));
     }
 
     @DeleteMapping("/{id}")
