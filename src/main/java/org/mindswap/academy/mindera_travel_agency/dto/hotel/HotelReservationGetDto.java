@@ -1,4 +1,4 @@
 package org.mindswap.academy.mindera_travel_agency.dto.hotel;
 
-public record HotelCreateDto() {
+public record HotelReservationGetDto() {
 }
