@@ -5,6 +5,7 @@ import org.mindswap.academy.mindera_travel_agency.dto.invoice.InvoiceGetDto;
 import org.mindswap.academy.mindera_travel_agency.dto.invoice.InvoiceUpdateDto;
 import org.mindswap.academy.mindera_travel_agency.exception.invoice.InvoiceNotFoundException;
 import org.mindswap.academy.mindera_travel_agency.exception.invoice.PaymentCompletedException;
+import org.mindswap.academy.mindera_travel_agency.exception.payment_status.PaymentStatusNotFoundException;
 import org.mindswap.academy.mindera_travel_agency.model.Invoice;
 
 import java.util.List;
@@ -22,7 +23,7 @@ public interface InvoiceService {
 
     void delete(Long id) throws InvoiceNotFoundException, PaymentCompletedException;
 
-    InvoiceGetDto update(Long id, InvoiceUpdateDto invoice) throws InvoiceNotFoundException;
+    InvoiceGetDto update(Long id, InvoiceUpdateDto invoice) throws InvoiceNotFoundException, PaymentStatusNotFoundException;
 
     void updatePrice(Long id, int price) throws InvoiceNotFoundException;
 }

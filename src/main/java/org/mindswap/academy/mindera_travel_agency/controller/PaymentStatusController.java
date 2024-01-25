@@ -3,6 +3,7 @@ package org.mindswap.academy.mindera_travel_agency.controller;
 import jakarta.validation.Valid;
 import org.mindswap.academy.mindera_travel_agency.dto.payment_status.PaymentStatusCreateDto;
 import org.mindswap.academy.mindera_travel_agency.dto.payment_status.PaymentStatusGetDto;
+import org.mindswap.academy.mindera_travel_agency.exception.payment_status.PaymentStatusNotFoundException;
 import org.mindswap.academy.mindera_travel_agency.service.interfaces.PaymentStatusService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -24,12 +25,12 @@ public class PaymentStatusController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<PaymentStatusGetDto> getById(@PathVariable Long id) {
+    public ResponseEntity<PaymentStatusGetDto> getById(@PathVariable Long id) throws PaymentStatusNotFoundException {
         return ResponseEntity.ok(paymentStatusService.getById(id));
     }
 
     @GetMapping("/name/{name}")
-    public ResponseEntity<PaymentStatusGetDto> getByName(@PathVariable String name) {
+    public ResponseEntity<PaymentStatusGetDto> getByName(@PathVariable String name) throws PaymentStatusNotFoundException {
         return ResponseEntity.ok(paymentStatusService.getByName(name));
     }
 
@@ -39,12 +40,12 @@ public class PaymentStatusController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<PaymentStatusGetDto> update(@PathVariable Long id, @Valid @RequestBody PaymentStatusCreateDto paymentStatus) {
+    public ResponseEntity<PaymentStatusGetDto> update(@PathVariable Long id, @Valid @RequestBody PaymentStatusCreateDto paymentStatus) throws PaymentStatusNotFoundException {
         return ResponseEntity.ok(paymentStatusService.update(id, paymentStatus));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
+    public ResponseEntity<Void> delete(@PathVariable Long id) throws PaymentStatusNotFoundException {
         paymentStatusService.delete(id);
         return ResponseEntity.noContent().build();
     }

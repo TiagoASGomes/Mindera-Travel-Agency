@@ -37,6 +37,8 @@ public class HotelReservationServiceImpl implements HotelReservationService {
     @Autowired
     private InvoiceService invoiceService;
 
+    //TODO bloquear alteracoes apos pagamento completo ou pendente
+
     @Override
     public List<HotelReservationGetDto> getAll() {
         return hotelReservationConverter.fromEntityListToGetDtoList(hotelReservationRepository.findAll());

@@ -6,6 +6,7 @@ import org.mindswap.academy.mindera_travel_agency.dto.invoice.InvoiceGetDto;
 import org.mindswap.academy.mindera_travel_agency.dto.invoice.InvoiceUpdateDto;
 import org.mindswap.academy.mindera_travel_agency.exception.invoice.InvoiceNotFoundException;
 import org.mindswap.academy.mindera_travel_agency.exception.invoice.PaymentCompletedException;
+import org.mindswap.academy.mindera_travel_agency.exception.payment_status.PaymentStatusNotFoundException;
 import org.mindswap.academy.mindera_travel_agency.service.interfaces.InvoiceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -42,7 +43,7 @@ public class InvoiceController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<InvoiceGetDto> updatePayment(@PathVariable Long id, @Valid @RequestBody InvoiceUpdateDto invoice) throws InvoiceNotFoundException {
+    public ResponseEntity<InvoiceGetDto> updatePayment(@PathVariable Long id, @Valid @RequestBody InvoiceUpdateDto invoice) throws InvoiceNotFoundException, PaymentStatusNotFoundException {
         return ResponseEntity.ok(invoiceService.update(id, invoice));
     }
 

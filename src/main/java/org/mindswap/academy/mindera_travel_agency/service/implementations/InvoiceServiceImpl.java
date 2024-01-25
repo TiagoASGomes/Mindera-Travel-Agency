@@ -6,6 +6,7 @@ import org.mindswap.academy.mindera_travel_agency.dto.invoice.InvoiceGetDto;
 import org.mindswap.academy.mindera_travel_agency.dto.invoice.InvoiceUpdateDto;
 import org.mindswap.academy.mindera_travel_agency.exception.invoice.InvoiceNotFoundException;
 import org.mindswap.academy.mindera_travel_agency.exception.invoice.PaymentCompletedException;
+import org.mindswap.academy.mindera_travel_agency.exception.payment_status.PaymentStatusNotFoundException;
 import org.mindswap.academy.mindera_travel_agency.model.Invoice;
 import org.mindswap.academy.mindera_travel_agency.repository.InvoiceRepository;
 import org.mindswap.academy.mindera_travel_agency.service.interfaces.InvoiceService;
@@ -15,7 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-import static org.mindswap.academy.mindera_travel_agency.util.Messages.CANNOT_DELETE_PAID_INVOICE;
+import static org.mindswap.academy.mindera_travel_agency.util.Messages.CANNOT_DELETE_INVOICE;
 import static org.mindswap.academy.mindera_travel_agency.util.Messages.ID_NOT_FOUND;
 
 @Service
@@ -55,13 +56,13 @@ public class InvoiceServiceImpl implements InvoiceService {
     public void delete(Long id) throws InvoiceNotFoundException, PaymentCompletedException {
         Invoice invoice = findById(id);
         if (invoice.getPaymentStatus().getStatusName().equals("PAID") || invoice.getPaymentStatus().getStatusName().equals("PENDING")) {
-            throw new PaymentCompletedException(CANNOT_DELETE_PAID_INVOICE);
+            throw new PaymentCompletedException(CANNOT_DELETE_INVOICE);
         }
         invoiceRepository.deleteById(id);
     }
 
     @Override
-    public InvoiceGetDto update(Long id, InvoiceUpdateDto invoiceDto) throws InvoiceNotFoundException {
+    public InvoiceGetDto update(Long id, InvoiceUpdateDto invoiceDto) throws InvoiceNotFoundException, PaymentStatusNotFoundException {
         Invoice invoice = findById(id);
         if (invoiceDto.paymentDate() != null) {
             invoice.setPaymentDate(invoiceDto.paymentDate());
