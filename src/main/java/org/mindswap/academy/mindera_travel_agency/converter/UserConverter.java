@@ -1,9 +1,11 @@
 package org.mindswap.academy.mindera_travel_agency.converter;
 
+import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
 import org.mindswap.academy.mindera_travel_agency.dto.user.UserCreateDto;
 import org.mindswap.academy.mindera_travel_agency.dto.user.UserGetDto;
 import org.mindswap.academy.mindera_travel_agency.model.User;
-
 import java.util.List;
 
 public class UserConverter {
@@ -16,6 +18,7 @@ public class UserConverter {
                 .phoneNumber(user.phoneNumber())
                 .build();
     }
+
 
     public static UserGetDto fromUserModelToDto(User user) {
         return new UserGetDto(

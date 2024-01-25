@@ -20,6 +20,7 @@ public class UserServiceImpl implements UserService {
         this.userRepository = userRepository;
     }
 
+
     @Override
     public void add(UserCreateDto user) {
         if (userRepository.findByEmail(user.email()).isPresent()) {
@@ -53,9 +54,10 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User findById(long id) {
+    public User getById(long id) {
         return userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
     }
+
 
     @Override
     public void delete(long id, UserCreateDto user) {

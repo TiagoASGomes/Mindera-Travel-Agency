@@ -6,7 +6,7 @@ public record UserGetDto(
         @Schema(example = "email@example.com")
         String email,
         @Schema(example = "Joe")
-        boolean userName
+        String userName
 ) {
 
 }

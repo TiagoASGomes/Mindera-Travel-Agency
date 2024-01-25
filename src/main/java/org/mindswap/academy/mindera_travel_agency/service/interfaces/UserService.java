@@ -8,6 +8,7 @@ import org.mindswap.academy.mindera_travel_agency.model.User;
 import java.util.List;
 
 public interface UserService {
+
     void add(UserCreateDto user);
 
     List<UserGetDto> getAll();
@@ -16,7 +17,7 @@ public interface UserService {
 
     void put(long id, @Valid UserCreateDto user);
 
-    User findById(long id);
+    User getById(long id);
 
     void delete(long id, @Valid UserCreateDto user);
 }
