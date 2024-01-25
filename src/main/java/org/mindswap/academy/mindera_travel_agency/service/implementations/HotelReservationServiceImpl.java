@@ -7,6 +7,7 @@ import org.mindswap.academy.mindera_travel_agency.dto.hotel.HotelReservationCrea
 import org.mindswap.academy.mindera_travel_agency.dto.hotel.HotelReservationDurationDto;
 import org.mindswap.academy.mindera_travel_agency.dto.hotel.HotelReservationGetDto;
 import org.mindswap.academy.mindera_travel_agency.exception.hotel_reservation.HotelReservationNotFoundException;
+import org.mindswap.academy.mindera_travel_agency.exception.invoice.InvoiceNotFoundException;
 import org.mindswap.academy.mindera_travel_agency.model.HotelReservation;
 import org.mindswap.academy.mindera_travel_agency.model.RoomInfo;
 import org.mindswap.academy.mindera_travel_agency.repository.HotelReservationRepository;
@@ -61,7 +62,7 @@ public class HotelReservationServiceImpl implements HotelReservationService {
     }
 
     @Override
-    public HotelReservationGetDto create(HotelReservationCreateDto dtoReservation) {
+    public HotelReservationGetDto create(HotelReservationCreateDto dtoReservation) throws InvoiceNotFoundException {
         HotelReservation dbReservation = hotelReservationConverter.fromCreateDtoToEntity(dtoReservation);
         setReservationProperties(dbReservation, dtoReservation);
         return hotelReservationConverter.fromEntityToGetDto(hotelReservationRepository.save(dbReservation));
@@ -94,7 +95,7 @@ public class HotelReservationServiceImpl implements HotelReservationService {
     }
 
     @Override
-    public HotelReservationGetDto updateReservation(Long id, HotelReservationCreateDto hotelReservation) throws HotelReservationNotFoundException {
+    public HotelReservationGetDto updateReservation(Long id, HotelReservationCreateDto hotelReservation) throws HotelReservationNotFoundException, InvoiceNotFoundException {
         findById(id);
         HotelReservation dbReservation = hotelReservationConverter.fromCreateDtoToEntity(hotelReservation);
         dbReservation.setId(id);
@@ -119,7 +120,7 @@ public class HotelReservationServiceImpl implements HotelReservationService {
         return hotelReservations;
     }
 
-    private void setReservationProperties(HotelReservation dbReservation, HotelReservationCreateDto dtoReservation) {
+    private void setReservationProperties(HotelReservation dbReservation, HotelReservationCreateDto dtoReservation) throws InvoiceNotFoundException {
         dbReservation.setPricePerNight(calculatePricePerNight(dtoReservation.hotelInfo().roomInfo()));
         dbReservation.setDurationOfStay(dtoReservation.checkOutDate().getDayOfMonth() - dtoReservation.checkInDate().getDayOfMonth());
         dbReservation.setTotalPrice(dbReservation.getPricePerNight() * dbReservation.getDurationOfStay());

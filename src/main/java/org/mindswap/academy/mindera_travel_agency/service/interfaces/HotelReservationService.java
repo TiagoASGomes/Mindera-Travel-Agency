@@ -5,6 +5,7 @@ import org.mindswap.academy.mindera_travel_agency.dto.hotel.HotelReservationCrea
 import org.mindswap.academy.mindera_travel_agency.dto.hotel.HotelReservationDurationDto;
 import org.mindswap.academy.mindera_travel_agency.dto.hotel.HotelReservationGetDto;
 import org.mindswap.academy.mindera_travel_agency.exception.hotel_reservation.HotelReservationNotFoundException;
+import org.mindswap.academy.mindera_travel_agency.exception.invoice.InvoiceNotFoundException;
 import org.mindswap.academy.mindera_travel_agency.model.HotelReservation;
 
 import java.util.List;
@@ -18,7 +19,7 @@ public interface HotelReservationService {
 
     List<HotelReservationGetDto> getAllByUserAndByName(String hotelName, String sortBy, Long userId);
 
-    HotelReservationGetDto create(HotelReservationCreateDto hotelReservation);
+    HotelReservationGetDto create(HotelReservationCreateDto hotelReservation) throws InvoiceNotFoundException;
 
     HotelReservationGetDto updateDuration(Long id, HotelReservationDurationDto hotelReservation) throws HotelReservationNotFoundException;
 
@@ -26,7 +27,7 @@ public interface HotelReservationService {
 
     HotelReservationGetDto removeRooms(Long id, ExternalRoomInfoDto room) throws HotelReservationNotFoundException;
 
-    HotelReservationGetDto updateReservation(Long id, HotelReservationCreateDto hotelReservation) throws HotelReservationNotFoundException;
+    HotelReservationGetDto updateReservation(Long id, HotelReservationCreateDto hotelReservation) throws HotelReservationNotFoundException, InvoiceNotFoundException;
 
     void delete(Long id) throws HotelReservationNotFoundException;
 
