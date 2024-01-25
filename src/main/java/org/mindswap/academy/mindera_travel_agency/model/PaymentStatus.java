@@ -9,6 +9,7 @@ import java.util.Set;
 @Table(name = "payment_status")
 @Data
 public class PaymentStatus {
+    //TODO add unique constraint and check in service
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
