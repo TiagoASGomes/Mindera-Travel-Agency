@@ -9,5 +9,6 @@ public class Messages {
     public static final String INVALID_PAYMENT_STATUS = "Invalid payment status";
     public static final String CANNOT_DELETE_INVOICE = "Cannot delete paid or pending invoice";
     public static final String CANNOT_ALTER_HOTEL_RESERVATION = "Cannot alter paid or pending hotel reservation";
+    public static final String DUPLICATE_FLIGHT_TICKET_NUMBER = "Ticket number already exists";
 
 }

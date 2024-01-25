@@ -15,6 +15,7 @@ public class FlightTicket {
     private String fName;
     private String email;
     private String phone;
+    @Column(unique = true)
     private Long ticketNumber;
     private String seatNumber;
     private int price;
