@@ -19,7 +19,7 @@ public class Invoice {
             fetch = FetchType.EAGER)
     private PaymentStatus paymentStatus;
     @ManyToOne(cascade = CascadeType.ALL,
-            fetch = FetchType.EAGER)
+            fetch = FetchType.LAZY)
     private User user;
     @OneToOne(mappedBy = "invoice")
     private HotelReservation hotelReservation;

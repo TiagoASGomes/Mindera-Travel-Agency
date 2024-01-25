@@ -1,13 +1,11 @@
 package org.mindswap.academy.mindera_travel_agency.model;
 
 import jakarta.persistence.*;
-import lombok.Data;
 
 import java.util.Set;
 
 @Entity
 @Table(name = "users")
-@Data
 public class User {
 
     @Id

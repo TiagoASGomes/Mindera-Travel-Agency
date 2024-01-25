@@ -1,12 +1,15 @@
 package org.mindswap.academy.mindera_travel_agency.model;
 
 import jakarta.persistence.*;
-import lombok.Data;
-import org.mindswap.academy.mindera_travel_agency.util.enums.FareClass;
+import lombok.*;
 
 @Entity
 @Table(name = "flights_tickets")
-@Data
+@Getter
+@Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class FlightTicket {
 
     @Id
@@ -19,10 +22,12 @@ public class FlightTicket {
     private Long ticketNumber;
     private String seatNumber;
     private int price;
-    private FareClass fareClass;
     private int maxLuggageWeight;
     private boolean carryOnLuggage;
     @ManyToOne(cascade = CascadeType.ALL,
             fetch = FetchType.LAZY)
     private Invoice invoice;
+    @ManyToOne(cascade = CascadeType.ALL,
+            fetch = FetchType.EAGER)
+    private FareClass fareClass;
 }

@@ -3,6 +3,7 @@ package org.mindswap.academy.mindera_travel_agency.controller;
 import jakarta.validation.Valid;
 import org.mindswap.academy.mindera_travel_agency.dto.fare_class.FareClassCreateDto;
 import org.mindswap.academy.mindera_travel_agency.dto.fare_class.FareClassGetDto;
+import org.mindswap.academy.mindera_travel_agency.exception.fare_class.FareClassNotFoundException;
 import org.mindswap.academy.mindera_travel_agency.service.interfaces.FareClassService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -24,12 +25,12 @@ public class FareClassController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<FareClassGetDto> getById(@PathVariable Long id) {
+    public ResponseEntity<FareClassGetDto> getById(@PathVariable Long id) throws FareClassNotFoundException {
         return ResponseEntity.ok(fareClassService.getById(id));
     }
 
     @GetMapping("/name/{name}")
-    public ResponseEntity<FareClassGetDto> getByName(@PathVariable String name) {
+    public ResponseEntity<FareClassGetDto> getByName(@PathVariable String name) throws FareClassNotFoundException {
         return ResponseEntity.ok(fareClassService.getByName(name));
     }
 

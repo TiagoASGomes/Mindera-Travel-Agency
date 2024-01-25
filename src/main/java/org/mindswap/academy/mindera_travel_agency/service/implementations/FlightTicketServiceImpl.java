@@ -27,6 +27,7 @@ public class FlightTicketServiceImpl implements FlightTicketService {
     private FlightTicketConverter flightTicketConverter;
 
     //TODO verificar propriedades que so sao colocadas na compra do bilhete
+    //TODO ir buscar invoice e fare class ao criar
 
     @Override
     public List<FlightTicketGetDto> getAll() {
@@ -66,7 +67,6 @@ public class FlightTicketServiceImpl implements FlightTicketService {
     @Override
     public FlightTicketGetDto updatePartial(Long id, FlightTicketUpdateDto flightTicket) throws FlightTicketNotFoundException, FlightTicketDuplicateException {
         FlightTicket flightTicketToUpdate = findById(id);
-        checkDuplicateTicketNumber(flightTicket.ticketNumber(), id);
         //TODO add properties
         return flightTicketConverter.fromEntityToGetDto(flightTicketRepository.save(flightTicketToUpdate));
     }
