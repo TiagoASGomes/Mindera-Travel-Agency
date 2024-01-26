@@ -4,6 +4,7 @@ public class Message {
     public static final String ID_NOT_FOUND = "No entity found with this id";
     public static final String INVALID_ID = "Invalid id";
     public static final String EMAIL_NOT_FOUND = "No entity found with this email";
+    public static final String EMAIL_ALREADY_EXISTS = "Email already exists";
     public static final String INVALID_EMAIL = "Invalid email";
     public static final String INVALID_PASSWORD = "Invalid Password";
     public static final String INVALID_USER_NAME = "Invalid user name";

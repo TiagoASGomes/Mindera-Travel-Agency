@@ -3,6 +3,7 @@ package org.mindswap.academy.mindera_travel_agency.controller;
 import jakarta.validation.Valid;
 import org.mindswap.academy.mindera_travel_agency.dto.user.UserCreateDto;
 import org.mindswap.academy.mindera_travel_agency.dto.user.UserGetDto;
+import org.mindswap.academy.mindera_travel_agency.exception.User.EmailNotFoundException;
 import org.mindswap.academy.mindera_travel_agency.exception.User.UserNotFoundException;
 import org.mindswap.academy.mindera_travel_agency.service.interfaces.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,13 +33,13 @@ public class UserController {
     }
 
     @PostMapping("/")
-    public ResponseEntity<UserGetDto> create(@Valid @RequestBody UserCreateDto user) {
+    public ResponseEntity<UserGetDto> create(@Valid @RequestBody UserCreateDto user) throws UserNotFoundException, EmailNotFoundException {
         userService.add(user);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<UserGetDto> update(@PathVariable long id, @Valid @RequestBody UserCreateDto user)  throws UserNotFoundException {
+    public ResponseEntity<UserGetDto> update(@PathVariable long id, @Valid @RequestBody UserCreateDto user) throws UserNotFoundException, EmailNotFoundException {
         userService.update(id, user);
         return new ResponseEntity<>(HttpStatus.OK);
     }
