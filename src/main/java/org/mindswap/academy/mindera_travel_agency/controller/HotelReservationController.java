@@ -19,8 +19,13 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/reservations")
 public class HotelReservationController {
+
+    private final HotelReservationService hotelReservationService;
+
     @Autowired
-    private HotelReservationService hotelReservationService;
+    public HotelReservationController(HotelReservationService hotelReservationService) {
+        this.hotelReservationService = hotelReservationService;
+    }
 
     @GetMapping("/")
     public ResponseEntity<List<HotelReservationGetDto>> getAll() {
@@ -70,6 +75,6 @@ public class HotelReservationController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) throws HotelReservationNotFoundException, PaymentCompletedException {
         hotelReservationService.delete(id);
-        return ResponseEntity.noContent().build();
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }

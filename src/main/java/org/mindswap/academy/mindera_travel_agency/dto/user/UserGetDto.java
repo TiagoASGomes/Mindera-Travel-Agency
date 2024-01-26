@@ -14,7 +14,7 @@ public record UserGetDto(
         @Schema(example = "01/01/1900")
         LocalDate dateOfBirth,
         @Schema(example = "351 923456789")
-        int phoneNumber,
+        String phoneNumber,
         @Schema(example = "1")
         Long id
 

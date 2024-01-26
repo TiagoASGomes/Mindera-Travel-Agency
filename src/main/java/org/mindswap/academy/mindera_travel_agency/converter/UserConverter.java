@@ -3,11 +3,13 @@ package org.mindswap.academy.mindera_travel_agency.converter;
 import org.mindswap.academy.mindera_travel_agency.dto.user.UserCreateDto;
 import org.mindswap.academy.mindera_travel_agency.dto.user.UserGetDto;
 import org.mindswap.academy.mindera_travel_agency.model.User;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 
+@Component
 public class UserConverter {
-    public static User fromUserCreateDtoToModel(UserCreateDto user) {
+    public User fromUserCreateDtoToModel(UserCreateDto user) {
         return User.builder()
                 .email(user.email())
                 .password(user.password())
@@ -18,14 +20,20 @@ public class UserConverter {
     }
 
 
-    public static UserGetDto fromUserModelToDto(User user) {
+    public UserGetDto fromUserModelToGetDto(User user) {
         return new UserGetDto(
+                user.getEmail(),
                 user.getUserName(),
-                user.getEmail()
+                user.getPassword(),
+                user.getDateOfBirth(),
+                user.getPhoneNumber(),
+                user.getId()
         );
     }
 
-    public static List<UserGetDto> fromUserModelToDto(List<User> users) {
-        return users.stream().map(UserConverter::fromUserModelToDto).toList();
+    public List<UserGetDto> fromUserModelListToGetDto(List<User> users) {
+        return users.stream()
+                .map(this::fromUserModelToGetDto)
+                .toList();
     }
 }

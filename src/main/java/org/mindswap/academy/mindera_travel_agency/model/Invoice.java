@@ -2,6 +2,7 @@ package org.mindswap.academy.mindera_travel_agency.model;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.Set;
@@ -9,6 +10,7 @@ import java.util.Set;
 @Entity
 @Table(name = "invoices")
 @Data
+@NoArgsConstructor
 public class Invoice {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,4 +27,8 @@ public class Invoice {
     private HotelReservation hotelReservation;
     @OneToMany(mappedBy = "invoice")
     private Set<FlightTicket> flightTickets;
+
+    public Invoice(User user) {
+        this.user = user;
+    }
 }

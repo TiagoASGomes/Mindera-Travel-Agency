@@ -27,32 +27,30 @@ public class UserController {
     public ResponseEntity<List<UserGetDto>> getAll() {
         return ResponseEntity.ok(userService.getAll());
     }
+
     @GetMapping("/{id}")
-    public ResponseEntity getById(@PathVariable long id) throws UserNotFoundException {
+    public ResponseEntity<UserGetDto> getById(@PathVariable long id) throws UserNotFoundException {
         return ResponseEntity.ok(userService.getById(id));
     }
 
     @PostMapping("/")
     public ResponseEntity<UserGetDto> create(@Valid @RequestBody UserCreateDto user) throws UserNotFoundException, EmailNotFoundException {
-        userService.add(user);
-        return new ResponseEntity<>(HttpStatus.CREATED);
+        return new ResponseEntity<>(userService.add(user), HttpStatus.CREATED);
     }
 
     @PatchMapping("/{id}")
     public ResponseEntity<UserGetDto> update(@PathVariable long id, @Valid @RequestBody UserCreateDto user) throws UserNotFoundException, EmailNotFoundException {
-        userService.update(id, user);
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>(userService.update(id, user), HttpStatus.OK);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<UserGetDto> put(@PathVariable long id, @Valid @RequestBody UserCreateDto user)  throws UserNotFoundException{
-        userService.put(id, user);
-        return new ResponseEntity<>(HttpStatus.OK);
+    public ResponseEntity<UserGetDto> put(@PathVariable long id, @Valid @RequestBody UserCreateDto user) throws UserNotFoundException {
+        return new ResponseEntity<>(userService.put(id, user), HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<UserGetDto> delete(@PathVariable long id, @Valid @RequestBody UserCreateDto user ) throws UserNotFoundException {
+    public ResponseEntity<Void> delete(@PathVariable long id, @Valid @RequestBody UserCreateDto user) throws UserNotFoundException {
         userService.delete(id, user);
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }

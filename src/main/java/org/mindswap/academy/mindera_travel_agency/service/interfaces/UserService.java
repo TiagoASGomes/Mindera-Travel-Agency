@@ -11,15 +11,17 @@ import java.util.List;
 
 public interface UserService {
 
-    void add(UserCreateDto user) throws EmailNotFoundException;
+    UserGetDto add(UserCreateDto user) throws EmailNotFoundException;
 
     List<UserGetDto> getAll();
 
-    void update(long id, @Valid UserCreateDto user) throws UserNotFoundException, EmailNotFoundException;
+    UserGetDto update(long id, @Valid UserCreateDto user) throws UserNotFoundException, EmailNotFoundException;
 
-    void put(long id, @Valid UserCreateDto user) throws UserNotFoundException;
+    UserGetDto put(long id, @Valid UserCreateDto user) throws UserNotFoundException;
 
-    User getById(long id) throws UserNotFoundException;
+    User findById(long id) throws UserNotFoundException;
 
     void delete(long id, @Valid UserCreateDto user) throws UserNotFoundException;
+
+    UserGetDto getById(long id) throws UserNotFoundException;
 }

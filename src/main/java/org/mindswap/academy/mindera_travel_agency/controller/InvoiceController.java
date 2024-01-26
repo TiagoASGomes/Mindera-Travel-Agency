@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import org.mindswap.academy.mindera_travel_agency.dto.invoice.InvoiceCreateDto;
 import org.mindswap.academy.mindera_travel_agency.dto.invoice.InvoiceGetDto;
 import org.mindswap.academy.mindera_travel_agency.dto.invoice.InvoiceUpdateDto;
+import org.mindswap.academy.mindera_travel_agency.exception.User.UserNotFoundException;
 import org.mindswap.academy.mindera_travel_agency.exception.invoice.InvoiceNotFoundException;
 import org.mindswap.academy.mindera_travel_agency.exception.invoice.PaymentCompletedException;
 import org.mindswap.academy.mindera_travel_agency.exception.payment_status.PaymentStatusNotFoundException;
@@ -19,8 +20,13 @@ import java.util.List;
 @RequestMapping("/api/v1/invoices")
 public class InvoiceController {
 
+
+    private final InvoiceService invoiceService;
+
     @Autowired
-    private InvoiceService invoiceService;
+    public InvoiceController(InvoiceService invoiceService) {
+        this.invoiceService = invoiceService;
+    }
 
     @GetMapping("/")
     public ResponseEntity<List<InvoiceGetDto>> getAll() {
@@ -38,7 +44,7 @@ public class InvoiceController {
     }
 
     @PostMapping("/")
-    public ResponseEntity<InvoiceGetDto> create(@Valid @RequestBody InvoiceCreateDto invoice) {
+    public ResponseEntity<InvoiceGetDto> create(@Valid @RequestBody InvoiceCreateDto invoice) throws UserNotFoundException {
         return new ResponseEntity<>(invoiceService.create(invoice), HttpStatus.CREATED);
     }
 
