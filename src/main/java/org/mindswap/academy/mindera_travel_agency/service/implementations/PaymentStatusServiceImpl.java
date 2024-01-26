@@ -26,7 +26,7 @@ public class PaymentStatusServiceImpl implements PaymentStatusService {
 
     @Override
     public PaymentStatus findByName(String name) throws PaymentStatusNotFoundException {
-        return paymentStatusRepository.findByName(name).orElseThrow(() -> new PaymentStatusNotFoundException(NAME_NOT_FOUND + name));
+        return paymentStatusRepository.findByStatusName(name).orElseThrow(() -> new PaymentStatusNotFoundException(NAME_NOT_FOUND + name));
     }
 
     @Override

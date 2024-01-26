@@ -52,13 +52,13 @@ public class HotelReservationServiceImpl implements HotelReservationService {
 
     @Override
     public List<HotelReservationGetDto> getAllByUser(String sortBy, Long userId) {
-        List<HotelReservation> hotelReservations = hotelReservationRepository.findAllByUserId(userId);
+        List<HotelReservation> hotelReservations = hotelReservationRepository.findAllByUser(userId);
         return hotelReservationConverter.fromEntityListToGetDtoList(sort(hotelReservations, sortBy));
     }
 
     @Override
     public List<HotelReservationGetDto> getAllByUserAndByName(String hotelName, String sortBy, Long userId) {
-        List<HotelReservation> hotelReservations = hotelReservationRepository.findAllByUserId(userId).stream()
+        List<HotelReservation> hotelReservations = hotelReservationRepository.findAllByUser(userId).stream()
                 .filter(hotelReservation -> hotelReservation.getHotelName().contains(hotelName))
                 .toList();
         return hotelReservationConverter.fromEntityListToGetDtoList(sort(hotelReservations, sortBy));

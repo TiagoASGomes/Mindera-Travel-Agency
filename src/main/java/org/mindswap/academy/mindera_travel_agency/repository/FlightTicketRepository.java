@@ -10,13 +10,14 @@ import java.util.Optional;
 
 @Repository
 public interface FlightTicketRepository extends JpaRepository<FlightTicket, Long> {
-    Optional<FlightTicket> findByTicketNumber(Long ticketNumber);
-
-    @Query("SELECT ft FROM flights_tickets ft\n" +
+    @Query(value = "SELECT ft FROM flights_tickets ft\n" +
             "inner join invoices i ON i.id = ft.invoice_id \n" +
             "inner join users u ON u.id = i.user_id \n" +
-            "where u.id = ?1")
-    List<FlightTicket> findAllByUserId(Long userId);
+            "where u.id = ?1", nativeQuery = true)
+    List<FlightTicket> findAllByUser(Long id);
 
+    Optional<FlightTicket> findByTicketNumber(Long ticketNumber);
+
+    @Query(name = "SELECT ft FROM flights_tickets ft where ft.invoice_id = ?1", nativeQuery = true)
     List<FlightTicket> findAllByInvoiceId(Long invoiceId);
 }

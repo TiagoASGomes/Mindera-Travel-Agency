@@ -13,6 +13,7 @@ public class PaymentStatus {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Column(unique = true)
     private String statusName;
     @OneToMany(mappedBy = "paymentStatus")
     private Set<Invoice> invoices;

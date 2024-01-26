@@ -36,7 +36,7 @@ public class FlightTicketServiceImpl implements FlightTicketService {
 
     @Override
     public List<FlightTicketGetDto> getAllByUser(String sortBy, Long userId) {
-        return flightTicketConverter.fromEntityListToGetDtoList(flightTicketRepository.findAllByUserId(userId));
+        return flightTicketConverter.fromEntityListToGetDtoList(flightTicketRepository.findAllByUser(userId));
     }
 
     @Override

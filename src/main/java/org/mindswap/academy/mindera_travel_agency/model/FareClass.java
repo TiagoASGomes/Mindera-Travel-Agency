@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Set;
+
 @Entity
 @Table(name = "fare_classes")
 @Data
@@ -15,7 +17,7 @@ public class FareClass {
     @Column(unique = true)
     private String className;
     @OneToMany(mappedBy = "fareClass")
-    private FlightTicket flightTicket;
+    private Set<FlightTicket> flightTicket;
 
     public FareClass(String className) {
         this.className = className;
