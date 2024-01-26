@@ -2,7 +2,6 @@ package org.mindswap.academy.mindera_travel_agency.model;
 
 import jakarta.persistence.*;
 import lombok.Data;
-import org.mindswap.academy.mindera_travel_agency.util.enums.PayementStatus;
 
 import java.time.LocalDateTime;
 import java.util.Set;
@@ -15,11 +14,12 @@ public class Invoice {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private int totalPrice;
-    private String paymentMethod;
-    private PayementStatus paymentStatus;
     private LocalDateTime paymentDate;
     @ManyToOne(cascade = CascadeType.ALL,
             fetch = FetchType.EAGER)
+    private PaymentStatus paymentStatus;
+    @ManyToOne(cascade = CascadeType.ALL,
+            fetch = FetchType.LAZY)
     private User user;
     @OneToOne(mappedBy = "invoice")
     private HotelReservation hotelReservation;
