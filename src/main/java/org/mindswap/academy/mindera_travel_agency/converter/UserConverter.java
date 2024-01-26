@@ -20,13 +20,9 @@ public class UserConverter {
 
     public static UserGetDto fromUserModelToDto(User user) {
         return new UserGetDto(
-                user.getuserName(),
-                user.getEmail(),
-                user.getPassword(),
-                user.getId(),
-                user.getPhoneNumber(),
-                user.getDateOfBirth();
-
+                user.getUserName(),
+                user.getEmail()
+        );
     }
 
     public static List<UserGetDto> fromUserModelToDto(List<User> users) {
