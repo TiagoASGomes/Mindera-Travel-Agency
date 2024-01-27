@@ -15,13 +15,13 @@ public record UserCreateDto(
         @Pattern(regexp = "^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d@$!%*?&]{8,}$", message = INVALID_PASSWORD)
         @Schema(example = "zxlmn!!23K")
         String password,
-        @Pattern(regexp = "^[A-Za-z]+$", message = INVALID_USER_NAME)
-        @Schema(example = "Name")
+        @Pattern(regexp = "^[A-Za-z_0-9]+$", message = INVALID_USER_NAME)
+        @Schema(example = "User_test")
         String userName,
         @Past(message = INVALID_DATE_OF_BIRTH)
         @Schema(example = "2000/01/01")
         LocalDate dateOfBirth,
-        @Pattern(regexp = "^\\+351\\s?9[1236]\\d{7}$", message = INVALID_PHONE_NUMBER) //falta para numeros fixos
+        @Pattern(regexp = "^((\\+351|00351|351)?) ?(9(3|6|2|1))\\d{7}$", message = INVALID_PHONE_NUMBER)
         @Schema(example = "351 923456789")
         String phoneNumber
 ) {

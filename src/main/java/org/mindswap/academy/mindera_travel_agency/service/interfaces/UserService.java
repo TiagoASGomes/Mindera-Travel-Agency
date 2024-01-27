@@ -1,6 +1,5 @@
 package org.mindswap.academy.mindera_travel_agency.service.interfaces;
 
-import jakarta.validation.Valid;
 import org.mindswap.academy.mindera_travel_agency.dto.user.UserCreateDto;
 import org.mindswap.academy.mindera_travel_agency.dto.user.UserGetDto;
 import org.mindswap.academy.mindera_travel_agency.exception.User.EmailNotFoundException;
@@ -15,13 +14,13 @@ public interface UserService {
 
     List<UserGetDto> getAll();
 
-    UserGetDto update(long id, @Valid UserCreateDto user) throws UserNotFoundException, EmailNotFoundException;
+    UserGetDto update(long id, UserCreateDto user) throws UserNotFoundException, EmailNotFoundException;
 
-    UserGetDto put(long id, @Valid UserCreateDto user) throws UserNotFoundException;
+    UserGetDto put(long id, UserCreateDto user) throws UserNotFoundException;
 
     User findById(long id) throws UserNotFoundException;
 
-    void delete(long id, @Valid UserCreateDto user) throws UserNotFoundException;
+    void delete(long id) throws UserNotFoundException;
 
     UserGetDto getById(long id) throws UserNotFoundException;
 }

@@ -22,12 +22,12 @@ public class UserConverter {
 
     public UserGetDto fromUserModelToGetDto(User user) {
         return new UserGetDto(
-                user.getEmail(),
+                user.getId(),
                 user.getUserName(),
+                user.getEmail(),
                 user.getPassword(),
                 user.getDateOfBirth(),
-                user.getPhoneNumber(),
-                user.getId()
+                user.getPhoneNumber()
         );
     }
 
