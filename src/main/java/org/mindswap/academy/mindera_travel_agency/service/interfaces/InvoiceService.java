@@ -20,7 +20,7 @@ public interface InvoiceService {
 
     List<InvoiceGetDto> getByUserId(Long id);
 
-    InvoiceGetDto create(InvoiceCreateDto invoice) throws UserNotFoundException;
+    InvoiceGetDto create(InvoiceCreateDto invoice) throws UserNotFoundException, PaymentStatusNotFoundException;
 
     void delete(Long id) throws InvoiceNotFoundException, PaymentCompletedException;
 

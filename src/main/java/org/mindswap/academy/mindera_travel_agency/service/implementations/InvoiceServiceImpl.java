@@ -53,8 +53,9 @@ public class InvoiceServiceImpl implements InvoiceService {
     }
 
     @Override
-    public InvoiceGetDto create(InvoiceCreateDto invoiceDto) throws UserNotFoundException {
+    public InvoiceGetDto create(InvoiceCreateDto invoiceDto) throws UserNotFoundException, PaymentStatusNotFoundException {
         Invoice invoice = invoiceConverter.fromCreateDtoToEntity(userService.findById(invoiceDto.userId()));
+        invoice.setPaymentStatus(paymentStatusService.findByName("NOT REQUESTED"));
         return invoiceConverter.fromEntityToGetDto(invoiceRepository.save(invoice));
     }
 

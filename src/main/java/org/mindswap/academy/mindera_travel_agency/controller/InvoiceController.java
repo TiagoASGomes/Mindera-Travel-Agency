@@ -44,7 +44,7 @@ public class InvoiceController {
     }
 
     @PostMapping("/")
-    public ResponseEntity<InvoiceGetDto> create(@Valid @RequestBody InvoiceCreateDto invoice) throws UserNotFoundException {
+    public ResponseEntity<InvoiceGetDto> create(@Valid @RequestBody InvoiceCreateDto invoice) throws UserNotFoundException, PaymentStatusNotFoundException {
         return new ResponseEntity<>(invoiceService.create(invoice), HttpStatus.CREATED);
     }
 
