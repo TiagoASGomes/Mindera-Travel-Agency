@@ -39,11 +39,6 @@ public class FlightTicketController {
         return ResponseEntity.ok(flightTicketService.getById(id));
     }
 
-    @GetMapping("/user/{userId}")
-    public ResponseEntity<List<FlightTicketGetDto>> getAllByUser(@PathVariable Long userId, @RequestParam(required = false) String sortBy) {
-        return ResponseEntity.ok(flightTicketService.getAllByUser(sortBy, userId));
-    }
-
     @GetMapping("/invoice/{invoiceId}")
     public ResponseEntity<List<FlightTicketGetDto>> getAllByInvoice(@PathVariable Long invoiceId, @RequestParam(required = false) String sortBy) {
         return ResponseEntity.ok(flightTicketService.getAllByInvoice(sortBy, invoiceId));
@@ -60,11 +55,11 @@ public class FlightTicketController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<FlightTicketGetDto> updatePartial(@PathVariable Long id, @Valid @RequestBody FlightTicketUpdateDto flightTicket) throws FlightTicketNotFoundException, FlightTicketDuplicateException, FareClassNotFoundException, PaymentCompletedException {
+    public ResponseEntity<FlightTicketGetDto> updatePartial(@PathVariable Long id, @Valid @RequestBody FlightTicketUpdateDto flightTicket) throws FlightTicketNotFoundException, FlightTicketDuplicateException, FareClassNotFoundException, PaymentCompletedException, InvoiceNotFoundException {
         return ResponseEntity.ok(flightTicketService.updatePartial(id, flightTicket));
     }
 
-    @PatchMapping("/ticket/{id}")
+    @PatchMapping("/{id}/ticket")
     public ResponseEntity<FlightTicketGetDto> updateTicketNumber(@PathVariable Long id, @Valid @RequestBody FlightTicketInfoUpdateDto flightTicket) throws FlightTicketDuplicateException, FlightTicketNotFoundException, PaymentCompletedException {
         return ResponseEntity.ok(flightTicketService.updateFlightInfo(id, flightTicket));
     }

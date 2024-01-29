@@ -37,33 +37,23 @@ public class HotelReservationController {
         return ResponseEntity.ok(hotelReservationService.getById(id));
     }
 
-    @GetMapping("/user/{userId}")
-    public ResponseEntity<List<HotelReservationGetDto>> getAllByUser(@PathVariable Long userId, @RequestParam(required = false) String sortBy) {
-        return ResponseEntity.ok(hotelReservationService.getAllByUser(sortBy, userId));
-    }
-
-    @GetMapping("/user/{userId}/name/{hotelName}")
-    public ResponseEntity<List<HotelReservationGetDto>> getAllByUserAndByName(@PathVariable Long userId, @PathVariable String hotelName, @RequestParam(required = false) String sortBy) {
-        return ResponseEntity.ok(hotelReservationService.getAllByUserAndByName(hotelName, sortBy, userId));
-    }
-
     @PostMapping("/")
     public ResponseEntity<HotelReservationGetDto> create(@Valid @RequestBody HotelReservationCreateDto hotelReservation) throws InvoiceNotFoundException {
         return new ResponseEntity<>(hotelReservationService.create(hotelReservation), HttpStatus.CREATED);
     }
 
     @PatchMapping("/{id}/duration")
-    public ResponseEntity<HotelReservationGetDto> updateDuration(@PathVariable Long id, @Valid @RequestBody HotelReservationDurationDto hotelReservation) throws HotelReservationNotFoundException, PaymentCompletedException {
+    public ResponseEntity<HotelReservationGetDto> updateDuration(@PathVariable Long id, @Valid @RequestBody HotelReservationDurationDto hotelReservation) throws HotelReservationNotFoundException, PaymentCompletedException, InvoiceNotFoundException {
         return ResponseEntity.ok(hotelReservationService.updateDuration(id, hotelReservation));
     }
 
     @PatchMapping("/{id}/rooms/add")
-    public ResponseEntity<HotelReservationGetDto> addRoom(@PathVariable Long id, @Valid @RequestBody ExternalRoomInfoDto room) throws HotelReservationNotFoundException, PaymentCompletedException {
+    public ResponseEntity<HotelReservationGetDto> addRoom(@PathVariable Long id, @Valid @RequestBody ExternalRoomInfoDto room) throws HotelReservationNotFoundException, PaymentCompletedException, InvoiceNotFoundException {
         return ResponseEntity.ok(hotelReservationService.addRooms(id, room));
     }
 
     @PatchMapping("/{id}/rooms/remove")
-    public ResponseEntity<HotelReservationGetDto> removeRoom(@PathVariable Long id, @Valid @RequestBody ExternalRoomInfoDto room) throws HotelReservationNotFoundException, PaymentCompletedException {
+    public ResponseEntity<HotelReservationGetDto> removeRoom(@PathVariable Long id, @Valid @RequestBody ExternalRoomInfoDto room) throws HotelReservationNotFoundException, PaymentCompletedException, InvoiceNotFoundException {
         return ResponseEntity.ok(hotelReservationService.removeRooms(id, room));
     }
 

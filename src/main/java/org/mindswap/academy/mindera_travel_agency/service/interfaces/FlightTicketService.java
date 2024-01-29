@@ -21,11 +21,9 @@ public interface FlightTicketService {
 
     FlightTicketGetDto updateTotal(Long id, FlightTicketCreateDto flightTicket) throws FlightTicketDuplicateException, FareClassNotFoundException, InvoiceNotFoundException, FlightTicketNotFoundException, PaymentCompletedException;
 
-    FlightTicketGetDto updatePartial(Long id, FlightTicketUpdateDto flightTicket) throws FlightTicketNotFoundException, FlightTicketDuplicateException, FareClassNotFoundException, PaymentCompletedException;
+    FlightTicketGetDto updatePartial(Long id, FlightTicketUpdateDto flightTicket) throws FlightTicketNotFoundException, FlightTicketDuplicateException, FareClassNotFoundException, PaymentCompletedException, InvoiceNotFoundException;
 
     void delete(Long id) throws FlightTicketNotFoundException;
-
-    List<FlightTicketGetDto> getAllByUser(String sortBy, Long userId);
 
     List<FlightTicketGetDto> getAllByInvoice(String sortBy, Long invoiceId);
 

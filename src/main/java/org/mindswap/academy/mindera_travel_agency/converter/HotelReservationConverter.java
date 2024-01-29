@@ -19,10 +19,9 @@ public class HotelReservationConverter {
 
     @Autowired
     private RoomInfoConverter roomInfoConverter;
-    @Autowired
-    private RoomInfoService roomInfoService;
 
     public HotelReservationGetDto fromEntityToGetDto(HotelReservation hotelReservation) {
+        if(hotelReservation == null) return null;
         return new HotelReservationGetDto(
                 hotelReservation.getId(),
                 hotelReservation.getHotelName(),
@@ -44,32 +43,17 @@ public class HotelReservationConverter {
     }
 
     public HotelReservation fromCreateDtoToEntity(HotelReservationCreateDto dtoReservation, Invoice invoice) {
-        HotelReservation hotel = HotelReservation.builder()
+        return HotelReservation.builder()
                 .checkInDate(dtoReservation.checkInDate())
                 .checkOutDate(dtoReservation.checkOutDate())
                 .hotelName(dtoReservation.hotelInfo().name())
                 .hotelAddress(dtoReservation.hotelInfo().address())
                 .hotelPhoneNumber(dtoReservation.hotelInfo().phoneNumber())
-                .hotelId(dtoReservation.hotelInfo().id())
-                .pricePerNight(calculatePricePerNight(dtoReservation.hotelInfo().roomInfo()))
+                .hotelId(dtoReservation.hotelInfo().externalId())
                 .durationOfStay(dtoReservation.checkOutDate().getDayOfMonth() - dtoReservation.checkInDate().getDayOfMonth())
-                .rooms(saveRooms(dtoReservation.hotelInfo().roomInfo()))
                 .invoice(invoice)
                 .build();
-        hotel.setTotalPrice(hotel.getPricePerNight() * hotel.getDurationOfStay());
-        return hotel;
     }
 
-    private int calculatePricePerNight(Set<ExternalRoomInfoDto> externalRoomInfoDtos) {
-        return externalRoomInfoDtos.stream()
-                .mapToInt(ExternalRoomInfoDto::pricePerNight)
-                .sum();
 
-    }
-
-    private Set<RoomInfo> saveRooms(Set<ExternalRoomInfoDto> externalRoomInfoDtos) {
-        Set<RoomInfo> rooms = roomInfoConverter.fromExternalDtoListToEntityList(externalRoomInfoDtos);
-        rooms.forEach(roomInfoService::create);
-        return rooms;
-    }
 }

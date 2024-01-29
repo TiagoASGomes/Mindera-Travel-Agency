@@ -16,17 +16,13 @@ public interface HotelReservationService {
 
     HotelReservationGetDto getById(Long id) throws HotelReservationNotFoundException;
 
-    List<HotelReservationGetDto> getAllByUser(String sortBy, Long userId);
-
-    List<HotelReservationGetDto> getAllByUserAndByName(String hotelName, String sortBy, Long userId);
-
     HotelReservationGetDto create(HotelReservationCreateDto hotelReservation) throws InvoiceNotFoundException;
 
-    HotelReservationGetDto updateDuration(Long id, HotelReservationDurationDto hotelReservation) throws HotelReservationNotFoundException, PaymentCompletedException;
+    HotelReservationGetDto updateDuration(Long id, HotelReservationDurationDto hotelReservation) throws HotelReservationNotFoundException, PaymentCompletedException, InvoiceNotFoundException;
 
-    HotelReservationGetDto addRooms(Long id, ExternalRoomInfoDto room) throws HotelReservationNotFoundException, PaymentCompletedException;
+    HotelReservationGetDto addRooms(Long id, ExternalRoomInfoDto room) throws HotelReservationNotFoundException, PaymentCompletedException, InvoiceNotFoundException;
 
-    HotelReservationGetDto removeRooms(Long id, ExternalRoomInfoDto room) throws HotelReservationNotFoundException, PaymentCompletedException;
+    HotelReservationGetDto removeRooms(Long id, ExternalRoomInfoDto room) throws HotelReservationNotFoundException, PaymentCompletedException, InvoiceNotFoundException;
 
     HotelReservationGetDto updateReservation(Long id, HotelReservationCreateDto hotelReservation) throws HotelReservationNotFoundException, InvoiceNotFoundException, PaymentCompletedException;
 

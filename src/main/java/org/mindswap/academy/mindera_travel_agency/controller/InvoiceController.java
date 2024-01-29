@@ -38,11 +38,6 @@ public class InvoiceController {
         return ResponseEntity.ok(invoiceService.getById(id));
     }
 
-    @GetMapping("/user/{id}")
-    public ResponseEntity<List<InvoiceGetDto>> getByUserId(@PathVariable Long id) {
-        return ResponseEntity.ok(invoiceService.getByUserId(id));
-    }
-
     @PostMapping("/")
     public ResponseEntity<InvoiceGetDto> create(@Valid @RequestBody InvoiceCreateDto invoice) throws UserNotFoundException, PaymentStatusNotFoundException {
         return new ResponseEntity<>(invoiceService.create(invoice), HttpStatus.CREATED);
