@@ -26,7 +26,7 @@ public class User {
     private String userName;
 
     private LocalDate dateOfBirth;
-    private int phoneNumber;
+    private String phoneNumber;
 
     @OneToMany(mappedBy = "user")
     private Set<Invoice> invoices;

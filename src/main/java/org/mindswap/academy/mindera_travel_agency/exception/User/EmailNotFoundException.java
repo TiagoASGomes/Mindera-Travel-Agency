@@ -1,8 +1,8 @@
 package org.mindswap.academy.mindera_travel_agency.exception.User;
 
-import org.mindswap.academy.mindera_travel_agency.exception.UserException;
+import org.mindswap.academy.mindera_travel_agency.exception.TravelAgencyException;
 
-public class EmailNotFoundException extends UserException {
+public class EmailNotFoundException extends TravelAgencyException {
     public EmailNotFoundException(String message) {
         super(message);
     }

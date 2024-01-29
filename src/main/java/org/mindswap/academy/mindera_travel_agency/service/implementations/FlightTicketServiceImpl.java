@@ -3,31 +3,47 @@ package org.mindswap.academy.mindera_travel_agency.service.implementations;
 import org.mindswap.academy.mindera_travel_agency.converter.FlightTicketConverter;
 import org.mindswap.academy.mindera_travel_agency.dto.flight_ticket.FlightTicketCreateDto;
 import org.mindswap.academy.mindera_travel_agency.dto.flight_ticket.FlightTicketGetDto;
+import org.mindswap.academy.mindera_travel_agency.dto.flight_ticket.FlightTicketInfoUpdateDto;
 import org.mindswap.academy.mindera_travel_agency.dto.flight_ticket.FlightTicketUpdateDto;
+import org.mindswap.academy.mindera_travel_agency.exception.fare_class.FareClassNotFoundException;
 import org.mindswap.academy.mindera_travel_agency.exception.flight_tickets.FlightTicketDuplicateException;
 import org.mindswap.academy.mindera_travel_agency.exception.flight_tickets.FlightTicketNotFoundException;
+import org.mindswap.academy.mindera_travel_agency.exception.invoice.InvoiceNotFoundException;
+import org.mindswap.academy.mindera_travel_agency.exception.invoice.PaymentCompletedException;
+import org.mindswap.academy.mindera_travel_agency.model.FareClass;
 import org.mindswap.academy.mindera_travel_agency.model.FlightTicket;
+import org.mindswap.academy.mindera_travel_agency.model.Invoice;
 import org.mindswap.academy.mindera_travel_agency.repository.FlightTicketRepository;
+import org.mindswap.academy.mindera_travel_agency.service.interfaces.FareClassService;
 import org.mindswap.academy.mindera_travel_agency.service.interfaces.FlightTicketService;
+import org.mindswap.academy.mindera_travel_agency.service.interfaces.InvoiceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
-import static org.mindswap.academy.mindera_travel_agency.util.Messages.DUPLICATE_FLIGHT_TICKET_NUMBER;
-import static org.mindswap.academy.mindera_travel_agency.util.Messages.ID_NOT_FOUND;
+import static org.mindswap.academy.mindera_travel_agency.util.Messages.*;
 
 @Service
 public class FlightTicketServiceImpl implements FlightTicketService {
 
-    @Autowired
-    private FlightTicketRepository flightTicketRepository;
-    @Autowired
-    private FlightTicketConverter flightTicketConverter;
-
-    //TODO verificar propriedades que so sao colocadas na compra do bilhete
     //TODO ir buscar invoice e fare class ao criar
+    //TODO imperdir criar bilhete se invoice estiver paga ou pendente
+
+    private final FlightTicketConverter flightTicketConverter;
+    private final FlightTicketRepository flightTicketRepository;
+    private final FareClassService fareClassService;
+    private final InvoiceService invoiceService;
+
+    @Autowired
+    public FlightTicketServiceImpl(FlightTicketConverter flightTicketConverter, FlightTicketRepository flightTicketRepository, FareClassService fareClassService, InvoiceService invoiceService) {
+        this.flightTicketConverter = flightTicketConverter;
+        this.flightTicketRepository = flightTicketRepository;
+        this.fareClassService = fareClassService;
+        this.invoiceService = invoiceService;
+    }
+
 
     @Override
     public List<FlightTicketGetDto> getAll() {
@@ -50,24 +66,47 @@ public class FlightTicketServiceImpl implements FlightTicketService {
     }
 
     @Override
-    public FlightTicketGetDto create(FlightTicketCreateDto flightTicket) throws FlightTicketDuplicateException {
-        FlightTicket flightTicketToSave = flightTicketConverter.fromCreateDtoToEntity(flightTicket);
-        checkDuplicateTicketNumber(flightTicketToSave.getTicketNumber(), 0L);
+    public FlightTicketGetDto create(FlightTicketCreateDto flightTicket) throws FlightTicketDuplicateException, FareClassNotFoundException, InvoiceNotFoundException {
+        checkDuplicateTicketNumber(flightTicket.ticketNumber(), 0L);
+        FareClass fareClass = fareClassService.findByName(flightTicket.fareClass());
+        Invoice invoice = invoiceService.findById(flightTicket.invoiceId());
+        FlightTicket flightTicketToSave = flightTicketConverter.fromCreateDtoToEntity(flightTicket, fareClass, invoice);
         return flightTicketConverter.fromEntityToGetDto(flightTicketRepository.save(flightTicketToSave));
     }
 
     @Override
-    public FlightTicketGetDto update(Long id, FlightTicketCreateDto flightTicket) throws FlightTicketDuplicateException {
-        FlightTicket flightTicketToUpdate = flightTicketConverter.fromCreateDtoToEntity(flightTicket);
-        checkDuplicateTicketNumber(flightTicketToUpdate.getTicketNumber(), id);
+    public FlightTicketGetDto updateTotal(Long id, FlightTicketCreateDto flightTicket) throws FlightTicketDuplicateException, FareClassNotFoundException, InvoiceNotFoundException, FlightTicketNotFoundException, PaymentCompletedException {
+        findById(id);
+        Invoice invoice = invoiceService.findById(flightTicket.invoiceId());
+        verifyIfInvoicePaid(invoice);
+        checkDuplicateTicketNumber(flightTicket.ticketNumber(), id);
+        FareClass fareClass = fareClassService.findByName(flightTicket.fareClass());
+        FlightTicket flightTicketToUpdate = flightTicketConverter.fromCreateDtoToEntity(flightTicket, fareClass, invoice);
         flightTicketToUpdate.setId(id);
         return flightTicketConverter.fromEntityToGetDto(flightTicketRepository.save(flightTicketToUpdate));
     }
 
     @Override
-    public FlightTicketGetDto updatePartial(Long id, FlightTicketUpdateDto flightTicket) throws FlightTicketNotFoundException, FlightTicketDuplicateException {
+    public FlightTicketGetDto updatePartial(Long id, FlightTicketUpdateDto flightTicket) throws FlightTicketNotFoundException, FareClassNotFoundException, PaymentCompletedException {
+        FlightTicket fTUpdated = findById(id);
+        verifyIfInvoicePaid(fTUpdated.getInvoice());
+        fTUpdated.setFName(flightTicket.fName());
+        fTUpdated.setEmail(flightTicket.email());
+        fTUpdated.setPhone(flightTicket.phone());
+        fTUpdated.setPrice(flightTicket.price());
+        fTUpdated.setFareClass(fareClassService.findByName(flightTicket.fareClass()));
+        fTUpdated.setMaxLuggageWeight(flightTicket.maxLuggageWeight());
+        fTUpdated.setCarryOnLuggage(flightTicket.carryOnLuggage());
+        return flightTicketConverter.fromEntityToGetDto(flightTicketRepository.save(fTUpdated));
+    }
+
+    @Override
+    public FlightTicketGetDto updateFlightInfo(Long id, FlightTicketInfoUpdateDto flightTicket) throws FlightTicketDuplicateException, FlightTicketNotFoundException, PaymentCompletedException {
+        checkDuplicateTicketNumber(flightTicket.ticketNumber(), id);
         FlightTicket flightTicketToUpdate = findById(id);
-        //TODO add properties
+        verifyIfInvoicePaid(flightTicketToUpdate.getInvoice());
+        flightTicketToUpdate.setTicketNumber(flightTicket.ticketNumber());
+        flightTicketToUpdate.setSeatNumber(flightTicket.seatNumber());
         return flightTicketConverter.fromEntityToGetDto(flightTicketRepository.save(flightTicketToUpdate));
     }
 
@@ -86,6 +125,13 @@ public class FlightTicketServiceImpl implements FlightTicketService {
         Optional<FlightTicket> flightTicket = flightTicketRepository.findByTicketNumber(ticketNumber);
         if (flightTicket.isPresent() && !flightTicket.get().getId().equals(id)) {
             throw new FlightTicketDuplicateException(DUPLICATE_FLIGHT_TICKET_NUMBER);
+        }
+    }
+
+    private void verifyIfInvoicePaid(Invoice invoice) throws PaymentCompletedException {
+        String status = invoice.getPaymentStatus().getStatusName();
+        if (status.equals("PENDING") || status.equals("COMPLETED")) {
+            throw new PaymentCompletedException(CANNOT_ALTER_PLANE_TICKET);
         }
     }
 }

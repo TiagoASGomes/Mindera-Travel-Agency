@@ -16,8 +16,13 @@ import java.util.List;
 @RequestMapping("/api/v1/payment_status")
 public class PaymentStatusController {
 
+
+    private final PaymentStatusService paymentStatusService;
+
     @Autowired
-    private PaymentStatusService paymentStatusService;
+    public PaymentStatusController(PaymentStatusService paymentStatusService) {
+        this.paymentStatusService = paymentStatusService;
+    }
 
     @GetMapping("/")
     public ResponseEntity<List<PaymentStatusGetDto>> getAll() {

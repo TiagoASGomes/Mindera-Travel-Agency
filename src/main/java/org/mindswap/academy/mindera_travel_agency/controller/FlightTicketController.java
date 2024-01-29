@@ -3,9 +3,13 @@ package org.mindswap.academy.mindera_travel_agency.controller;
 import jakarta.validation.Valid;
 import org.mindswap.academy.mindera_travel_agency.dto.flight_ticket.FlightTicketCreateDto;
 import org.mindswap.academy.mindera_travel_agency.dto.flight_ticket.FlightTicketGetDto;
+import org.mindswap.academy.mindera_travel_agency.dto.flight_ticket.FlightTicketInfoUpdateDto;
 import org.mindswap.academy.mindera_travel_agency.dto.flight_ticket.FlightTicketUpdateDto;
+import org.mindswap.academy.mindera_travel_agency.exception.fare_class.FareClassNotFoundException;
 import org.mindswap.academy.mindera_travel_agency.exception.flight_tickets.FlightTicketDuplicateException;
 import org.mindswap.academy.mindera_travel_agency.exception.flight_tickets.FlightTicketNotFoundException;
+import org.mindswap.academy.mindera_travel_agency.exception.invoice.InvoiceNotFoundException;
+import org.mindswap.academy.mindera_travel_agency.exception.invoice.PaymentCompletedException;
 import org.mindswap.academy.mindera_travel_agency.service.interfaces.FlightTicketService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -17,8 +21,13 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/flights")
 public class FlightTicketController {
+
+    private final FlightTicketService flightTicketService;
+
     @Autowired
-    private FlightTicketService flightTicketService;
+    public FlightTicketController(FlightTicketService flightTicketService) {
+        this.flightTicketService = flightTicketService;
+    }
 
     @GetMapping("/")
     public ResponseEntity<List<FlightTicketGetDto>> getAll() {
@@ -41,18 +50,23 @@ public class FlightTicketController {
     }
 
     @PostMapping("/")
-    public ResponseEntity<FlightTicketGetDto> create(@Valid @RequestBody FlightTicketCreateDto flightTicket) throws FlightTicketDuplicateException {
+    public ResponseEntity<FlightTicketGetDto> create(@Valid @RequestBody FlightTicketCreateDto flightTicket) throws FlightTicketDuplicateException, FareClassNotFoundException, InvoiceNotFoundException {
         return new ResponseEntity<>(flightTicketService.create(flightTicket), HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<FlightTicketGetDto> update(@PathVariable Long id, @Valid @RequestBody FlightTicketCreateDto flightTicket) throws FlightTicketNotFoundException, FlightTicketDuplicateException {
-        return ResponseEntity.ok(flightTicketService.update(id, flightTicket));
+    public ResponseEntity<FlightTicketGetDto> updateTotal(@PathVariable Long id, @Valid @RequestBody FlightTicketCreateDto flightTicket) throws FlightTicketNotFoundException, FlightTicketDuplicateException, FareClassNotFoundException, InvoiceNotFoundException, PaymentCompletedException {
+        return ResponseEntity.ok(flightTicketService.updateTotal(id, flightTicket));
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<FlightTicketGetDto> updatePartial(@PathVariable Long id, @Valid @RequestBody FlightTicketUpdateDto flightTicket) throws FlightTicketNotFoundException, FlightTicketDuplicateException {
+    public ResponseEntity<FlightTicketGetDto> updatePartial(@PathVariable Long id, @Valid @RequestBody FlightTicketUpdateDto flightTicket) throws FlightTicketNotFoundException, FlightTicketDuplicateException, FareClassNotFoundException, PaymentCompletedException {
         return ResponseEntity.ok(flightTicketService.updatePartial(id, flightTicket));
+    }
+
+    @PatchMapping("/ticket/{id}")
+    public ResponseEntity<FlightTicketGetDto> updateTicketNumber(@PathVariable Long id, @Valid @RequestBody FlightTicketInfoUpdateDto flightTicket) throws FlightTicketDuplicateException, FlightTicketNotFoundException, PaymentCompletedException {
+        return ResponseEntity.ok(flightTicketService.updateFlightInfo(id, flightTicket));
     }
 
     @DeleteMapping("/{id}")
