@@ -51,11 +51,6 @@ public class FlightTicketServiceImpl implements FlightTicketService {
     }
 
     @Override
-    public List<FlightTicketGetDto> getAllByUser(String sortBy, Long userId) {
-        return flightTicketConverter.fromEntityListToGetDtoList(flightTicketRepository.findAllByUser(userId));
-    }
-
-    @Override
     public List<FlightTicketGetDto> getAllByInvoice(String sortBy, Long invoiceId) {
         return flightTicketConverter.fromEntityListToGetDtoList(flightTicketRepository.findAllByInvoiceId(invoiceId));
     }
@@ -71,7 +66,9 @@ public class FlightTicketServiceImpl implements FlightTicketService {
         FareClass fareClass = fareClassService.findByName(flightTicket.fareClass());
         Invoice invoice = invoiceService.findById(flightTicket.invoiceId());
         FlightTicket flightTicketToSave = flightTicketConverter.fromCreateDtoToEntity(flightTicket, fareClass, invoice);
-        return flightTicketConverter.fromEntityToGetDto(flightTicketRepository.save(flightTicketToSave));
+        FlightTicketGetDto flightTicketGetDto = flightTicketConverter.fromEntityToGetDto(flightTicketRepository.save(flightTicketToSave));
+        invoiceService.updatePrice(invoice.getId());
+        return flightTicketGetDto;
     }
 
     @Override
@@ -87,13 +84,14 @@ public class FlightTicketServiceImpl implements FlightTicketService {
     }
 
     @Override
-    public FlightTicketGetDto updatePartial(Long id, FlightTicketUpdateDto flightTicket) throws FlightTicketNotFoundException, FareClassNotFoundException, PaymentCompletedException {
+    public FlightTicketGetDto updatePartial(Long id, FlightTicketUpdateDto flightTicket) throws FlightTicketNotFoundException, FareClassNotFoundException, PaymentCompletedException, InvoiceNotFoundException {
         FlightTicket fTUpdated = findById(id);
         verifyIfInvoicePaid(fTUpdated.getInvoice());
         fTUpdated.setFName(flightTicket.fName());
         fTUpdated.setEmail(flightTicket.email());
         fTUpdated.setPhone(flightTicket.phone());
         fTUpdated.setPrice(flightTicket.price());
+        invoiceService.updatePrice(fTUpdated.getInvoice().getId());
         fTUpdated.setFareClass(fareClassService.findByName(flightTicket.fareClass()));
         fTUpdated.setMaxLuggageWeight(flightTicket.maxLuggageWeight());
         fTUpdated.setCarryOnLuggage(flightTicket.carryOnLuggage());
@@ -130,7 +128,7 @@ public class FlightTicketServiceImpl implements FlightTicketService {
 
     private void verifyIfInvoicePaid(Invoice invoice) throws PaymentCompletedException {
         String status = invoice.getPaymentStatus().getStatusName();
-        if (status.equals("PENDING") || status.equals("COMPLETED")) {
+        if (status.equals(PENDING_PAYMENT) || status.equals(PAID_PAYMENT)) {
             throw new PaymentCompletedException(CANNOT_ALTER_PLANE_TICKET);
         }
     }

@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 @Component
@@ -22,7 +23,7 @@ public class InvoiceConverter {
     }
 
 
-    public List<InvoiceGetDto> fromEntityListToGetDtoList(List<Invoice> invoices) {
+    public List<InvoiceGetDto> fromEntityListToGetDtoList(Collection<Invoice> invoices) {
         if (invoices == null) return new ArrayList<>();
         return invoices.stream()
                 .map(this::fromEntityToGetDto)

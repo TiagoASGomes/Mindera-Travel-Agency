@@ -13,7 +13,10 @@ import java.util.stream.Collectors;
 @Component
 public class RoomInfoConverter {
     public RoomInfo fromExternalDtoToEntity(ExternalRoomInfoDto room) {
-        return new RoomInfo();
+        return RoomInfo.builder()
+                .externalId(room.externalId())
+                .pricePerNight(room.pricePerNight())
+                .build();
     }
 
     public List<RoomInfoGetDto> fromEntityListToGetDtoList(Set<RoomInfo> roomInfos) {

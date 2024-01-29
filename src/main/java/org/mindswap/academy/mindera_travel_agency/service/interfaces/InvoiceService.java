@@ -18,13 +18,11 @@ public interface InvoiceService {
 
     InvoiceGetDto getById(Long id) throws InvoiceNotFoundException;
 
-    List<InvoiceGetDto> getByUserId(Long id);
-
-    InvoiceGetDto create(InvoiceCreateDto invoice) throws UserNotFoundException;
+    InvoiceGetDto create(InvoiceCreateDto invoice) throws UserNotFoundException, PaymentStatusNotFoundException;
 
     void delete(Long id) throws InvoiceNotFoundException, PaymentCompletedException;
 
     InvoiceGetDto update(Long id, InvoiceUpdateDto invoice) throws InvoiceNotFoundException, PaymentStatusNotFoundException;
 
-    void updatePrice(Long id, int price) throws InvoiceNotFoundException;
+    void updatePrice(Long id) throws InvoiceNotFoundException;
 }

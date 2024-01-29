@@ -1,5 +1,8 @@
 package org.mindswap.academy.mindera_travel_agency.service.interfaces;
 
+import org.mindswap.academy.mindera_travel_agency.dto.flight_ticket.FlightTicketGetDto;
+import org.mindswap.academy.mindera_travel_agency.dto.hotel.HotelReservationGetDto;
+import org.mindswap.academy.mindera_travel_agency.dto.invoice.InvoiceGetDto;
 import org.mindswap.academy.mindera_travel_agency.dto.user.UserCreateDto;
 import org.mindswap.academy.mindera_travel_agency.dto.user.UserGetDto;
 import org.mindswap.academy.mindera_travel_agency.exception.User.EmailNotFoundException;
@@ -23,4 +26,10 @@ public interface UserService {
     void delete(long id) throws UserNotFoundException;
 
     UserGetDto getById(long id) throws UserNotFoundException;
+
+    List<InvoiceGetDto> getAllInvoices(Long id) throws UserNotFoundException;
+
+    List<HotelReservationGetDto> getAllReservations(Long id) throws UserNotFoundException;
+
+    List<FlightTicketGetDto> getAllTickets(Long id) throws UserNotFoundException;
 }

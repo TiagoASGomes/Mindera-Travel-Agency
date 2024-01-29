@@ -8,6 +8,8 @@ import org.mindswap.academy.mindera_travel_agency.exception.User.UserNotFoundExc
 import org.mindswap.academy.mindera_travel_agency.exception.invoice.InvoiceNotFoundException;
 import org.mindswap.academy.mindera_travel_agency.exception.invoice.PaymentCompletedException;
 import org.mindswap.academy.mindera_travel_agency.exception.payment_status.PaymentStatusNotFoundException;
+import org.mindswap.academy.mindera_travel_agency.model.FlightTicket;
+import org.mindswap.academy.mindera_travel_agency.model.HotelReservation;
 import org.mindswap.academy.mindera_travel_agency.model.Invoice;
 import org.mindswap.academy.mindera_travel_agency.repository.InvoiceRepository;
 import org.mindswap.academy.mindera_travel_agency.service.interfaces.InvoiceService;
@@ -18,8 +20,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-import static org.mindswap.academy.mindera_travel_agency.util.Messages.CANNOT_DELETE_INVOICE;
-import static org.mindswap.academy.mindera_travel_agency.util.Messages.ID_NOT_FOUND;
+import static org.mindswap.academy.mindera_travel_agency.util.Messages.*;
 
 @Service
 public class InvoiceServiceImpl implements InvoiceService {
@@ -48,20 +49,16 @@ public class InvoiceServiceImpl implements InvoiceService {
     }
 
     @Override
-    public List<InvoiceGetDto> getByUserId(Long id) {
-        return invoiceConverter.fromEntityListToGetDtoList(invoiceRepository.findByUserId(id));
-    }
-
-    @Override
-    public InvoiceGetDto create(InvoiceCreateDto invoiceDto) throws UserNotFoundException {
+    public InvoiceGetDto create(InvoiceCreateDto invoiceDto) throws UserNotFoundException, PaymentStatusNotFoundException {
         Invoice invoice = invoiceConverter.fromCreateDtoToEntity(userService.findById(invoiceDto.userId()));
+        invoice.setPaymentStatus(paymentStatusService.findByName(NOT_REQUESTED_PAYMENT));
         return invoiceConverter.fromEntityToGetDto(invoiceRepository.save(invoice));
     }
 
     @Override
     public void delete(Long id) throws InvoiceNotFoundException, PaymentCompletedException {
         Invoice invoice = findById(id);
-        if (invoice.getPaymentStatus().getStatusName().equals("PAID") || invoice.getPaymentStatus().getStatusName().equals("PENDING")) {
+        if (invoice.getPaymentStatus().getStatusName().equals(PAID_PAYMENT) || invoice.getPaymentStatus().getStatusName().equals(PENDING_PAYMENT)) {
             throw new PaymentCompletedException(CANNOT_DELETE_INVOICE);
         }
         invoiceRepository.deleteById(id);
@@ -80,10 +77,27 @@ public class InvoiceServiceImpl implements InvoiceService {
     }
 
     @Override
-    public void updatePrice(Long id, int price) throws InvoiceNotFoundException {
+    public void updatePrice(Long id) throws InvoiceNotFoundException {
         Invoice invoice = findById(id);
-        invoice.setTotalPrice(price);
+        invoice.setTotalPrice(calculatePrice(invoice));
         invoiceRepository.save(invoice);
+    }
+
+    private int calculatePrice(Invoice invoice) {
+        if(invoice.getHotelReservation()== null && invoice.getFlightTickets() == null){
+            return 0;
+        }
+        if(invoice.getHotelReservation() == null){
+            return invoice.getFlightTickets().stream()
+                    .mapToInt(FlightTicket::getPrice)
+                    .sum();
+        }
+        if(invoice.getFlightTickets() == null || invoice.getFlightTickets().isEmpty())  {
+            return invoice.getHotelReservation().getTotalPrice();
+        }
+        return invoice.getFlightTickets().stream()
+                .mapToInt(FlightTicket::getPrice)
+                .sum() + invoice.getHotelReservation().getTotalPrice();
     }
 
     @Override

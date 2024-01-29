@@ -1,11 +1,15 @@
 package org.mindswap.academy.mindera_travel_agency.model;
 
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.*;
 
 @Entity
 @Table(name = "room_info")
-@Data
+@Getter
+@Setter
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class RoomInfo {
 
     @Id
