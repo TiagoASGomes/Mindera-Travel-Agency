@@ -7,6 +7,11 @@ import org.springframework.data.jpa.repository.Query;
 public interface HotelReservationTestRepository extends HotelReservationRepository {
     @Modifying
     @Transactional
-    @Query(value = "ALTER TABLE courses ALTER COLUMN id RESTART WITH 1", nativeQuery = true)
+    @Query(value = "ALTER TABLE hotel_reservations ALTER COLUMN id RESTART WITH 1", nativeQuery = true)
     void resetAutoIncrement();
+
+    @Modifying
+    @Transactional
+    @Query(value = "DELETE FROM hotel_reservations", nativeQuery = true)
+    void deleteAll();
 }

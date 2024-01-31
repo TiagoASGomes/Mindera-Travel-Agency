@@ -2,7 +2,7 @@ package org.mindswap.academy.mindera_travel_agency.util;
 
 public class Messages {
     //TODO mensagens mais especificas
-    public static final String ID_NOT_FOUND = "No entity found with externalId: ";
+    public static final String ID_NOT_FOUND = "No entity found with id: ";
     public static final String NAME_NOT_FOUND = "No entity found with name: ";
     public static final String INVALID_DATE = "Invalid date";
     public static final String INVALID_HOTEL_INFO = "Invalid hotel info";

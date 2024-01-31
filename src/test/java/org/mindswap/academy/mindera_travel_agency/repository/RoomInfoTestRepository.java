@@ -7,6 +7,11 @@ import org.springframework.data.jpa.repository.Query;
 public interface RoomInfoTestRepository extends RoomInfoRepository {
     @Modifying
     @Transactional
-    @Query(value = "ALTER TABLE courses ALTER COLUMN id RESTART WITH 1", nativeQuery = true)
+    @Query(value = "ALTER TABLE room_info ALTER COLUMN id RESTART WITH 1", nativeQuery = true)
     void resetAutoIncrement();
+
+    @Modifying
+    @Transactional
+    @Query(value = "DELETE FROM room_info", nativeQuery = true)
+    void deleteAll();
 }

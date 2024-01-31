@@ -17,8 +17,7 @@ public class PaymentStatus {
     private Long id;
     @Column(unique = true)
     private String statusName;
-    @OneToMany(mappedBy = "paymentStatus",
-            cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "paymentStatus")
     private Set<Invoice> invoices;
 
     public PaymentStatus(String statusName) {

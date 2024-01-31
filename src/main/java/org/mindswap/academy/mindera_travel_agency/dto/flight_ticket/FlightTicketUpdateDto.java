@@ -13,10 +13,10 @@ public record FlightTicketUpdateDto(
         @Pattern(regexp = "^[a-zA-Z ]{2,}$", message = INVALID_NAME)
         String fName,
         @NotNull(message = INVALID_EMAIL)
-        @Pattern(regexp = "", message = INVALID_EMAIL)
+        @Pattern(regexp = "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,6}$", message = INVALID_EMAIL)
         String email,
         @NotNull(message = INVALID_PHONE_NUMBER)
-        @Pattern(regexp = "", message = INVALID_PHONE_NUMBER)
+        @Pattern(regexp = "^((\\+351|00351|351)?) ?(9[3621])\\d{7}$", message = INVALID_PHONE_NUMBER)
         String phone,
         @NotNull(message = INVALID_PRICE)
         @Min(value = 0, message = INVALID_PRICE)

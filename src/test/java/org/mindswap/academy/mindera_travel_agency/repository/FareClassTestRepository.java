@@ -11,6 +11,11 @@ import org.springframework.stereotype.Repository;
 public interface FareClassTestRepository extends FareClassRepository {
     @Modifying
     @Transactional
-    @Query(value = "ALTER TABLE courses ALTER COLUMN id RESTART WITH 1", nativeQuery = true)
+    @Query(value = "ALTER TABLE fare_classes ALTER COLUMN id RESTART WITH 1", nativeQuery = true)
     void resetAutoIncrement();
+
+    @Modifying
+    @Transactional
+    @Query(value = "DELETE FROM fare_classes", nativeQuery = true)
+    void deleteAll();
 }

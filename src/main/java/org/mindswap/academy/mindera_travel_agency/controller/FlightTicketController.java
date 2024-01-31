@@ -3,8 +3,8 @@ package org.mindswap.academy.mindera_travel_agency.controller;
 import jakarta.validation.Valid;
 import org.mindswap.academy.mindera_travel_agency.dto.flight_ticket.FlightTicketCreateDto;
 import org.mindswap.academy.mindera_travel_agency.dto.flight_ticket.FlightTicketGetDto;
-import org.mindswap.academy.mindera_travel_agency.dto.flight_ticket.FlightTicketInfoUpdateDto;
 import org.mindswap.academy.mindera_travel_agency.dto.flight_ticket.FlightTicketUpdateDto;
+import org.mindswap.academy.mindera_travel_agency.dto.flight_ticket.FlightTicketUpdateTicketDto;
 import org.mindswap.academy.mindera_travel_agency.exception.fare_class.FareClassNotFoundException;
 import org.mindswap.academy.mindera_travel_agency.exception.flight_tickets.FlightTicketDuplicateException;
 import org.mindswap.academy.mindera_travel_agency.exception.flight_tickets.FlightTicketNotFoundException;
@@ -40,7 +40,7 @@ public class FlightTicketController {
     }
 
     @GetMapping("/invoice/{invoiceId}")
-    public ResponseEntity<List<FlightTicketGetDto>> getAllByInvoice(@PathVariable Long invoiceId, @RequestParam(required = false) String sortBy) {
+    public ResponseEntity<List<FlightTicketGetDto>> getAllByInvoice(@PathVariable Long invoiceId, @RequestParam(required = false) String sortBy) throws InvoiceNotFoundException {
         return ResponseEntity.ok(flightTicketService.getAllByInvoice(sortBy, invoiceId));
     }
 
@@ -59,9 +59,9 @@ public class FlightTicketController {
         return ResponseEntity.ok(flightTicketService.updatePartial(id, flightTicket));
     }
 
-    @PatchMapping("/{id}/ticket")
-    public ResponseEntity<FlightTicketGetDto> updateTicketNumber(@PathVariable Long id, @Valid @RequestBody FlightTicketInfoUpdateDto flightTicket) throws FlightTicketDuplicateException, FlightTicketNotFoundException, PaymentCompletedException {
-        return ResponseEntity.ok(flightTicketService.updateFlightInfo(id, flightTicket));
+    @PatchMapping("/{id}/ticket_number")
+    public ResponseEntity<FlightTicketGetDto> updateTicketNumber(@PathVariable Long id, @Valid @RequestBody FlightTicketUpdateTicketDto flightTicket) throws FlightTicketDuplicateException, FlightTicketNotFoundException, PaymentCompletedException {
+        return ResponseEntity.ok(flightTicketService.updateTicketNumber(id, flightTicket));
     }
 
     @DeleteMapping("/{id}")

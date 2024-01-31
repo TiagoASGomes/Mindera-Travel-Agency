@@ -7,6 +7,11 @@ import org.springframework.data.jpa.repository.Query;
 public interface UserTestRepository extends UserRepository {
     @Modifying
     @Transactional
-    @Query(value = "ALTER TABLE courses ALTER COLUMN id RESTART WITH 1", nativeQuery = true)
+    @Query(value = "ALTER TABLE users ALTER COLUMN id RESTART WITH 1", nativeQuery = true)
     void resetAutoIncrement();
+
+    @Modifying
+    @Transactional
+    @Query(value = "DELETE FROM users", nativeQuery = true)
+    void deleteAll();
 }

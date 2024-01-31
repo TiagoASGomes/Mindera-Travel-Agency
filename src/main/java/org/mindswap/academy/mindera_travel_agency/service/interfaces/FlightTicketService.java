@@ -2,8 +2,8 @@ package org.mindswap.academy.mindera_travel_agency.service.interfaces;
 
 import org.mindswap.academy.mindera_travel_agency.dto.flight_ticket.FlightTicketCreateDto;
 import org.mindswap.academy.mindera_travel_agency.dto.flight_ticket.FlightTicketGetDto;
-import org.mindswap.academy.mindera_travel_agency.dto.flight_ticket.FlightTicketInfoUpdateDto;
 import org.mindswap.academy.mindera_travel_agency.dto.flight_ticket.FlightTicketUpdateDto;
+import org.mindswap.academy.mindera_travel_agency.dto.flight_ticket.FlightTicketUpdateTicketDto;
 import org.mindswap.academy.mindera_travel_agency.exception.fare_class.FareClassNotFoundException;
 import org.mindswap.academy.mindera_travel_agency.exception.flight_tickets.FlightTicketDuplicateException;
 import org.mindswap.academy.mindera_travel_agency.exception.flight_tickets.FlightTicketNotFoundException;
@@ -25,7 +25,7 @@ public interface FlightTicketService {
 
     void delete(Long id) throws FlightTicketNotFoundException;
 
-    List<FlightTicketGetDto> getAllByInvoice(String sortBy, Long invoiceId);
+    List<FlightTicketGetDto> getAllByInvoice(String sortBy, Long invoiceId) throws InvoiceNotFoundException;
 
-    FlightTicketGetDto updateFlightInfo(Long id, FlightTicketInfoUpdateDto flightTicket) throws FlightTicketDuplicateException, FlightTicketNotFoundException, PaymentCompletedException;
+    FlightTicketGetDto updateTicketNumber(Long id, FlightTicketUpdateTicketDto flightTicket) throws FlightTicketNotFoundException, PaymentCompletedException, FlightTicketDuplicateException;
 }
