@@ -59,7 +59,7 @@ public class FlightTicketController {
         return ResponseEntity.ok(flightTicketService.updatePersonalInfo(id, flightTicket));
     }
 
-    @PatchMapping("/{id}/ticket_number")
+    @PatchMapping("/{id}/ticket_info")
     public ResponseEntity<TicketGetDto> updateTicketNumber(@PathVariable Long id, @Valid @RequestBody TicketUpdateTicketDto flightTicket) throws FlightTicketDuplicateException, FlightTicketNotFoundException, PaymentCompletedException, FareClassNotFoundException, InvoiceNotFoundException {
         return ResponseEntity.ok(flightTicketService.updateTicketInfo(id, flightTicket));
     }

@@ -100,7 +100,7 @@ public class FlightTicketServiceImpl implements FlightTicketService {
         dbTicket.setSeatNumber(flightTicket.seatNumber());
         dbTicket.setPrice(flightTicket.price());
         invoiceService.updatePrice(dbTicket.getInvoice().getId());
-        dbTicket.setFareClass(fareClassService.findByName(flightTicket.fareClass()));
+        dbTicket.setFareClass(fareClassService.findByName(flightTicket.fareClass()));//TEST
         dbTicket.setMaxLuggageWeight(flightTicket.maxLuggageWeight());
         dbTicket.setCarryOnLuggage(flightTicket.carryOnLuggage());
         return flightTicketConverter.fromEntityToGetDto(flightTicketRepository.save(dbTicket));
