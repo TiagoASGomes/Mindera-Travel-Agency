@@ -7,7 +7,7 @@ import jakarta.validation.constraints.Pattern;
 
 import static org.mindswap.academy.mindera_travel_agency.util.Messages.*;
 
-public record FlightTicketCreateDto(
+public record TicketCreateDto(
         @NotNull(message = INVALID_NAME)
         @Pattern(regexp = "^[a-zA-Z ]{2,}$", message = INVALID_NAME)
         String fName,
