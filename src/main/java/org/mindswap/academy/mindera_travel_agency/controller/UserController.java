@@ -1,7 +1,7 @@
 package org.mindswap.academy.mindera_travel_agency.controller;
 
 import jakarta.validation.Valid;
-import org.mindswap.academy.mindera_travel_agency.dto.flight_ticket.FlightTicketGetDto;
+import org.mindswap.academy.mindera_travel_agency.dto.flight_ticket.TicketGetDto;
 import org.mindswap.academy.mindera_travel_agency.dto.hotel.HotelReservationGetDto;
 import org.mindswap.academy.mindera_travel_agency.dto.invoice.InvoiceGetDto;
 import org.mindswap.academy.mindera_travel_agency.dto.user.UserCreateDto;
@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("api/v1/users")
+@RequestMapping("/api/v1/users")
 public class UserController {
     private final UserService userService;
 
@@ -47,7 +47,7 @@ public class UserController {
     }
 
     @GetMapping("/{id}/tickets")
-    public ResponseEntity<List<FlightTicketGetDto>> getAllTickets(@PathVariable Long id) throws UserNotFoundException {
+    public ResponseEntity<List<TicketGetDto>> getAllTickets(@PathVariable Long id) throws UserNotFoundException {
         return ResponseEntity.ok(userService.getAllTickets(id));
     }
 

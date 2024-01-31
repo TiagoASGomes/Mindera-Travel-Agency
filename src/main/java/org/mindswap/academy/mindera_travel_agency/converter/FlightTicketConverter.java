@@ -1,7 +1,7 @@
 package org.mindswap.academy.mindera_travel_agency.converter;
 
-import org.mindswap.academy.mindera_travel_agency.dto.flight_ticket.FlightTicketCreateDto;
-import org.mindswap.academy.mindera_travel_agency.dto.flight_ticket.FlightTicketGetDto;
+import org.mindswap.academy.mindera_travel_agency.dto.flight_ticket.TicketCreateDto;
+import org.mindswap.academy.mindera_travel_agency.dto.flight_ticket.TicketGetDto;
 import org.mindswap.academy.mindera_travel_agency.model.FareClass;
 import org.mindswap.academy.mindera_travel_agency.model.FlightTicket;
 import org.mindswap.academy.mindera_travel_agency.model.Invoice;
@@ -13,15 +13,15 @@ import java.util.List;
 
 @Component
 public class FlightTicketConverter {
-    public List<FlightTicketGetDto> fromEntityListToGetDtoList(Collection<FlightTicket> flightTickets) {
+    public List<TicketGetDto> fromEntityListToGetDtoList(Collection<FlightTicket> flightTickets) {
         if (flightTickets == null) return new ArrayList<>();
         return flightTickets.stream()
                 .map(this::fromEntityToGetDto)
                 .toList();
     }
 
-    public FlightTicketGetDto fromEntityToGetDto(FlightTicket flightTicket) {
-        return new FlightTicketGetDto(
+    public TicketGetDto fromEntityToGetDto(FlightTicket flightTicket) {
+        return new TicketGetDto(
                 flightTicket.getId(),
                 flightTicket.getFName(),
                 flightTicket.getEmail(),
@@ -30,17 +30,17 @@ public class FlightTicketConverter {
                 flightTicket.getSeatNumber(),
                 flightTicket.getPrice(),
                 flightTicket.getMaxLuggageWeight(),
-                flightTicket.isCarryOnLuggage()
+                flightTicket.isCarryOnLuggage(),
+                flightTicket.getFareClass().getClassName()
         );
     }
 
-    public FlightTicket fromCreateDtoToEntity(FlightTicketCreateDto flightTicket, FareClass fareClass, Invoice invoice) {
+    public FlightTicket fromCreateDtoToEntity(TicketCreateDto flightTicket, FareClass fareClass, Invoice invoice) {
 
         return FlightTicket.builder()
                 .fName(flightTicket.fName())
                 .email(flightTicket.email())
                 .phone(flightTicket.phone())
-                .ticketNumber(flightTicket.ticketNumber())
                 .seatNumber(flightTicket.seatNumber())
                 .price(flightTicket.price())
                 .maxLuggageWeight(flightTicket.maxLuggageWeight())

@@ -43,7 +43,7 @@ public class InvoiceController {
         return new ResponseEntity<>(invoiceService.create(invoice), HttpStatus.CREATED);
     }
 
-    @PatchMapping("/{id}")
+    @PatchMapping("/{id}/payment")
     public ResponseEntity<InvoiceGetDto> updatePayment(@PathVariable Long id, @Valid @RequestBody InvoiceUpdateDto invoice) throws InvoiceNotFoundException, PaymentStatusNotFoundException {
         return ResponseEntity.ok(invoiceService.update(id, invoice));
     }
