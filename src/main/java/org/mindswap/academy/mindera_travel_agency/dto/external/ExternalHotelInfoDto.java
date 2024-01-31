@@ -6,6 +6,8 @@ public record ExternalHotelInfoDto(
         Long externalId,
         String name,
         String address,
-        int phoneNumber
+        int phoneNumber,
+        Set<ExternalRoomInfoDto> rooms
+
 ) {
 }

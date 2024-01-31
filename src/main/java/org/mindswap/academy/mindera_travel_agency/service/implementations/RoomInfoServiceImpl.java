@@ -18,6 +18,6 @@ public class RoomInfoServiceImpl implements RoomInfoService {
 
     @Override
     public void delete(Long id) {
-        roomInfoRepository.deleteByExternalId(id);
+        roomInfoRepository.deleteById(id);
     }
 }

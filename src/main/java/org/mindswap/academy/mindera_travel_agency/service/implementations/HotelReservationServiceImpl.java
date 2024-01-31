@@ -20,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Set;
 
 import static org.mindswap.academy.mindera_travel_agency.util.Messages.CANNOT_ALTER_HOTEL_RESERVATION;
 import static org.mindswap.academy.mindera_travel_agency.util.Messages.ID_NOT_FOUND;
@@ -54,12 +55,18 @@ public class HotelReservationServiceImpl implements HotelReservationService {
     }
 
     @Override
-    public HotelReservationGetDto create(HotelReservationCreateDto dtoReservation) throws InvoiceNotFoundException {
+    public HotelReservationGetDto create(HotelReservationCreateDto dtoReservation) throws InvoiceNotFoundException, HotelReservationNotFoundException {
         Invoice invoice = invoiceService.findById(dtoReservation.invoiceId());
         HotelReservation convertedReservation = hRConverter.fromCreateDtoToEntity(dtoReservation, invoice);
-        HotelReservationGetDto reservation = hRConverter.fromEntityToGetDto(hRRepository.save(convertedReservation));
+        Set<RoomInfo> roomInfo = roomInfoConverter.fromExternalDtoListToEntityList(dtoReservation.hotelInfo().rooms());
+        convertedReservation.setRooms(roomInfo);
+        convertedReservation.setPricePerNight(calculatePrice(convertedReservation));
+        convertedReservation.setTotalPrice(convertedReservation.getPricePerNight() * convertedReservation.getDurationOfStay());
+        HotelReservation savedHotel = hRRepository.save(convertedReservation);
         invoiceService.updatePrice(invoice.getId());
-        return reservation;
+        roomInfo.forEach(room -> room.setHotelReservation(savedHotel));
+        roomInfo.forEach(roomInfoService::create);
+        return hRConverter.fromEntityToGetDto(findById(savedHotel.getId()));
     }
 
     @Override
@@ -142,7 +149,7 @@ public class HotelReservationServiceImpl implements HotelReservationService {
     }
 
     private int calculatePrice(HotelReservation hotelReservationToUpdate) {
-       return hotelReservationToUpdate.getRooms().stream()
+        return hotelReservationToUpdate.getRooms().stream()
                 .map(RoomInfo::getPricePerNight)
                 .reduce(0, Integer::sum);
     }

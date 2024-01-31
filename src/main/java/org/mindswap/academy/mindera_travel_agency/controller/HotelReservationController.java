@@ -38,7 +38,7 @@ public class HotelReservationController {
     }
 
     @PostMapping("/")
-    public ResponseEntity<HotelReservationGetDto> create(@Valid @RequestBody HotelReservationCreateDto hotelReservation) throws InvoiceNotFoundException {
+    public ResponseEntity<HotelReservationGetDto> create(@Valid @RequestBody HotelReservationCreateDto hotelReservation) throws InvoiceNotFoundException, HotelReservationNotFoundException {
         return new ResponseEntity<>(hotelReservationService.create(hotelReservation), HttpStatus.CREATED);
     }
 

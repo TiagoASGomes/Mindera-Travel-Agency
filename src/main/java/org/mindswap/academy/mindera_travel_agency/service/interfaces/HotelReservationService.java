@@ -16,7 +16,7 @@ public interface HotelReservationService {
 
     HotelReservationGetDto getById(Long id) throws HotelReservationNotFoundException;
 
-    HotelReservationGetDto create(HotelReservationCreateDto hotelReservation) throws InvoiceNotFoundException;
+    HotelReservationGetDto create(HotelReservationCreateDto hotelReservation) throws InvoiceNotFoundException, HotelReservationNotFoundException;
 
     HotelReservationGetDto updateDuration(Long id, HotelReservationDurationDto hotelReservation) throws HotelReservationNotFoundException, PaymentCompletedException, InvoiceNotFoundException;
 
