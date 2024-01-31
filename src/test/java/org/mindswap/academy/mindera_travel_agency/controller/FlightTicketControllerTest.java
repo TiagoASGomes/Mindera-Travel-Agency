@@ -104,8 +104,6 @@ class FlightTicketControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$", hasSize(2)));
-
-
     }
 
     @Test

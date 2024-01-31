@@ -27,9 +27,6 @@ import static org.mindswap.academy.mindera_travel_agency.util.Messages.*;
 
 @Service
 public class FlightTicketServiceImpl implements FlightTicketService {
-
-    //TODO Separar patch em personal info e ticket info
-
     private final FlightTicketConverter flightTicketConverter;
     private final FlightTicketRepository flightTicketRepository;
     private final FareClassService fareClassService;

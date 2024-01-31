@@ -33,7 +33,7 @@ public class AgencyExceptionHandler {
             FlightTicketDuplicateException.class,
             PaymentCompletedException.class})
     public ResponseEntity<AgencyError> handleBadRequest(Exception e, HttpServletRequest request) {
-        logger.error(e.getMessage(), e);
+        logger.error(e.getMessage());
         return new ResponseEntity<>(
                 AgencyError.builder()
                         .message(e.getMessage())
@@ -52,7 +52,7 @@ public class AgencyExceptionHandler {
             UserNotFoundException.class,
             EmailNotFoundException.class})
     public ResponseEntity<AgencyError> handleNotFound(Exception e, HttpServletRequest request) {
-        logger.error(e.getMessage(), e);
+        logger.error(e.getMessage());
         return new ResponseEntity<>(
                 AgencyError.builder()
                         .message(e.getMessage())
@@ -72,7 +72,7 @@ public class AgencyExceptionHandler {
         errors.forEach(error -> errorMessageBuilder.append(error).append(", "));
         errorMessageBuilder.delete(errorMessageBuilder.length() - 2, errorMessageBuilder.length()).append(".");
         String errorMessage = errorMessageBuilder.toString();
-        logger.error(errorMessage, ex);
+        logger.error(errorMessage);
         return new ResponseEntity<>(
                 AgencyError.builder()
                         .message(errorMessage)

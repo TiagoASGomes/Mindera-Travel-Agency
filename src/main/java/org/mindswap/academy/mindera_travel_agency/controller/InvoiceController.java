@@ -19,7 +19,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/invoices")
 public class InvoiceController {
-
+//TODO promoçoes many to many de x a x desconto
 
     private final InvoiceService invoiceService;
 

@@ -31,6 +31,4 @@ public class Messages {
     public static final String PENDING_PAYMENT = "PENDING";
     public static final String PAID_PAYMENT = "PAID";
     public static final String NOT_REQUESTED_PAYMENT = "NOT_REQUESTED";
-    public static final String CANCELLED_PAYMENT = "CANCELLED";
-
 }
