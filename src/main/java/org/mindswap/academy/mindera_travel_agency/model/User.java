@@ -20,14 +20,10 @@ public class User {
     private Long id;
     @Column(unique = true)
     private String email;
-
     private String password;
-
     private String userName;
-
     private LocalDate dateOfBirth;
     private String phoneNumber;
-
     @OneToMany(mappedBy = "user")
     private Set<Invoice> invoices;
 

@@ -70,7 +70,7 @@ public class AgencyExceptionHandler {
                 .toList();
         StringBuilder errorMessageBuilder = new StringBuilder();
         errors.forEach(error -> errorMessageBuilder.append(error).append(", "));
-        errorMessageBuilder.delete(errorMessageBuilder.length() - 2, errorMessageBuilder.length());
+        errorMessageBuilder.delete(errorMessageBuilder.length() - 2, errorMessageBuilder.length()).append(".");
         String errorMessage = errorMessageBuilder.toString();
         logger.error(errorMessage, ex);
         return new ResponseEntity<>(

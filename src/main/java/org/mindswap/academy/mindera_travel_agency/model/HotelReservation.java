@@ -27,10 +27,10 @@ public class HotelReservation {
     private int totalPrice;
     private LocalDateTime checkInDate;
     private LocalDateTime checkOutDate;
-    @OneToMany(mappedBy = "hotelReservation")
-    private Set<RoomInfo> rooms;
-    @OneToOne(cascade = CascadeType.ALL,
+    @OneToMany(mappedBy = "hotelReservation",
             fetch = FetchType.EAGER)
+    private Set<RoomInfo> rooms;
+    @OneToOne(fetch = FetchType.EAGER)
     private Invoice invoice;
 
     public void addRoom(RoomInfo roomInfo) {

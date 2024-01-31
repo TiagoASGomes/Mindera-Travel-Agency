@@ -24,10 +24,8 @@ public class FlightTicket {
     private int price;
     private int maxLuggageWeight;
     private boolean carryOnLuggage;
-    @ManyToOne(cascade = CascadeType.ALL,
-            fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     private Invoice invoice;
-    @ManyToOne(cascade = CascadeType.ALL,
-            fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.EAGER)
     private FareClass fareClass;
 }
