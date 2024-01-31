@@ -25,7 +25,7 @@ public interface FlightTicketService {
 
     void delete(Long id) throws FlightTicketNotFoundException;
 
-    List<TicketGetDto> getAllByInvoice(String sortBy, Long invoiceId) throws InvoiceNotFoundException;
+    List<TicketGetDto> getAllByInvoice(Long invoiceId) throws InvoiceNotFoundException;
 
     TicketGetDto updateTicketInfo(Long id, TicketUpdateTicketDto flightTicket) throws FlightTicketNotFoundException, PaymentCompletedException, FlightTicketDuplicateException, FareClassNotFoundException, InvoiceNotFoundException;
 }

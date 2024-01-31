@@ -5,6 +5,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.junit.jupiter.api.*;
 import org.mindswap.academy.mindera_travel_agency.aspect.AgencyError;
 import org.mindswap.academy.mindera_travel_agency.dto.flight_ticket.TicketGetDto;
+import org.mindswap.academy.mindera_travel_agency.dto.invoice.InvoiceGetDto;
 import org.mindswap.academy.mindera_travel_agency.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -184,6 +185,7 @@ class FlightTicketControllerTest {
         assertEquals("2B", ticket.seatNumber());
         assertEquals(100, ticket.price());
         assertEquals(22, ticket.maxLuggageWeight());
+        assertEquals("first", ticket.fareClass());
         assertTrue(ticket.carryOnLuggage());
     }
 
@@ -211,7 +213,12 @@ class FlightTicketControllerTest {
                 .andExpect(status().isCreated())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andReturn().getResponse().getContentAsString();
+        String response2 = mockMvc.perform(get("/api/v1/invoices/1"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andReturn().getResponse().getContentAsString();
         TicketGetDto ticket = objectMapper.readValue(response, TicketGetDto.class);
+        InvoiceGetDto invoice = objectMapper.readValue(response2, InvoiceGetDto.class);
         // THEN
         assertEquals(1, ticket.id());
         assertEquals("teste um", ticket.fName());
@@ -220,7 +227,29 @@ class FlightTicketControllerTest {
         assertEquals("2B", ticket.seatNumber());
         assertEquals(100, ticket.price());
         assertEquals(22, ticket.maxLuggageWeight());
+        assertEquals("first", ticket.fareClass());
         assertTrue(ticket.carryOnLuggage());
+        assertEquals(100, invoice.totalPrice());
+    }
+
+    @Test
+    @DisplayName("Create 2 tickets and expect invoice price updated")
+    void createTwoTickets() throws Exception {
+        // GIVEN
+        // WHEN
+        mockMvc.perform(post(BASE_URL)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(FLIGHT_TICKET_JSON));
+        mockMvc.perform(post(BASE_URL)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(FLIGHT_TICKET_JSON_2));
+        String response = mockMvc.perform(get("/api/v1/invoices/1"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andReturn().getResponse().getContentAsString();
+        InvoiceGetDto invoice = objectMapper.readValue(response, InvoiceGetDto.class);
+        // THEN
+        assertEquals(175, invoice.totalPrice());
     }
 
     @Test
@@ -325,6 +354,7 @@ class FlightTicketControllerTest {
         assertEquals("4D", ticket.seatNumber());
         assertEquals(75, ticket.price());
         assertEquals(15, ticket.maxLuggageWeight());
+        assertEquals("business", ticket.fareClass());
         assertFalse(ticket.carryOnLuggage());
     }
 
@@ -448,7 +478,8 @@ class FlightTicketControllerTest {
         assertEquals("2B", ticket.seatNumber());
         assertEquals(100, ticket.price());
         assertEquals(22, ticket.maxLuggageWeight());
-        assertFalse(ticket.carryOnLuggage());
+        assertEquals("first", ticket.fareClass());
+        assertTrue(ticket.carryOnLuggage());
     }
 
     @Test
@@ -473,20 +504,84 @@ class FlightTicketControllerTest {
     }
 
     @Test
-    @DisplayName("Test patch request to update ticket number and expect status 200 and the ticket")
-    void updateTicketNumber() throws Exception {
+    @DisplayName("Test patch personalInfo request with empty body and expect status 400")
+    void updatePersonalInfoWithEmptyBody() throws Exception {
         // GIVEN
-        String json = "{\"ticketNumber\": 2,\"seatNumber\": \"5B\",\"price\": 15,\"fareClass\": \"economy\",\"maxLuggageWeight\": 22,\"carryOnLuggage\": true}";
         mockMvc.perform(post(BASE_URL)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(FLIGHT_TICKET_JSON));
         // WHEN
-        String response = mockMvc.perform(patch(BASE_URL + "1/ticket_number")
+        String response = mockMvc.perform(patch(BASE_URL + "1/personal_info")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{}"))
+                .andExpect(status().isBadRequest())
+                .andReturn().getResponse().getContentAsString();
+        AgencyError error = objectMapper.readValue(response, AgencyError.class);
+        // THEN
+        assertTrue(error.getMessage().contains(INVALID_NAME));
+        assertTrue(error.getMessage().contains(INVALID_EMAIL));
+        assertTrue(error.getMessage().contains(INVALID_PHONE_NUMBER));
+    }
+
+    @Test
+    @DisplayName("Test patch personalInfo request with no ticket in db and expect status 404")
+    void updatePersonalInfoWithNoTicketInDb() throws Exception {
+        // GIVEN
+        String json = "{\"fName\": \"teste updated\",\"email\": \"updated@example.com\",\"phone\": \"912345678\"}";
+        // WHEN
+        String response = mockMvc.perform(patch(BASE_URL + "1/personal_info")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json))
+                .andExpect(status().isNotFound())
+                .andReturn().getResponse().getContentAsString();
+        AgencyError error = objectMapper.readValue(response, AgencyError.class);
+        // THEN
+        assertEquals(ID_NOT_FOUND + 1, error.getMessage());
+    }
+
+    @Test
+    @DisplayName("Test patch personalInfo request with invoice paid and expect status 400 and error message")
+    void updatePersonalInfoWithInvoicePaid() throws Exception {
+        // GIVEN
+        String json = FLIGHT_TICKET_JSON.replace("\"fName\": \"teste um\"", "\"fName\": \"teste dois\"");
+        mockMvc.perform(post(BASE_URL)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(FLIGHT_TICKET_JSON));
+        mockMvc.perform(patch("/api/v1/invoices/1/payment")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"paymentStatus\": \"PAID\"}"));
+        // WHEN
+        String response = mockMvc.perform(patch(BASE_URL + "1/personal_info")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json))
+                .andExpect(status().isBadRequest())
+                .andReturn().getResponse().getContentAsString();
+        AgencyError error = objectMapper.readValue(response, AgencyError.class);
+        // THEN
+        assertEquals(CANNOT_ALTER_PLANE_TICKET, error.getMessage());
+    }
+
+
+    @Test
+    @DisplayName("Test patch request to update ticket info and expect status 200 and the ticket")
+    void updateTicketInfo() throws Exception {
+        // GIVEN
+        String json = "{\"ticketNumber\": 2,\"seatNumber\": \"5B\",\"price\": 15,\"fareClass\": \"economy\",\"maxLuggageWeight\": 10,\"carryOnLuggage\": false}";
+        mockMvc.perform(post(BASE_URL)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(FLIGHT_TICKET_JSON));
+        // WHEN
+        String response = mockMvc.perform(patch(BASE_URL + "1/ticket_info")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json))
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();
+        String response2 = mockMvc.perform(get("/api/v1/invoices/1"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andReturn().getResponse().getContentAsString();
         TicketGetDto ticket = objectMapper.readValue(response, TicketGetDto.class);
+        InvoiceGetDto invoice = objectMapper.readValue(response2, InvoiceGetDto.class);
         // THEN
         assertEquals(2, ticket.ticketNumber());
         assertEquals("5B", ticket.seatNumber());
@@ -494,9 +589,117 @@ class FlightTicketControllerTest {
         assertEquals("teste um", ticket.fName());
         assertEquals("teste@example.com", ticket.email());
         assertEquals("910410860", ticket.phone());
-        assertEquals(100, ticket.price());
-        assertEquals(22, ticket.maxLuggageWeight());
-        assertTrue(ticket.carryOnLuggage());
+        assertEquals(15, ticket.price());
+        assertEquals(10, ticket.maxLuggageWeight());
+        assertEquals("economy", ticket.fareClass());
+        assertFalse(ticket.carryOnLuggage());
+        assertEquals(15, invoice.totalPrice());
+    }
+
+    @Test
+    @DisplayName("Test patch request to update 1 ticket info with 2 tickets in db and expect invoice price updated")
+    void updateTicketInfoWithTwoTickets() throws Exception {
+        // GIVEN
+        String json = "{\"ticketNumber\": 2,\"seatNumber\": \"5B\",\"price\": 15,\"fareClass\": \"economy\",\"maxLuggageWeight\": 10,\"carryOnLuggage\": false}";
+        mockMvc.perform(post(BASE_URL)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(FLIGHT_TICKET_JSON));
+        mockMvc.perform(post(BASE_URL)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(FLIGHT_TICKET_JSON_2));
+        // WHEN
+        mockMvc.perform(patch(BASE_URL + "1/ticket_info")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(json));
+        String response = mockMvc.perform(get("/api/v1/invoices/1"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andReturn().getResponse().getContentAsString();
+        InvoiceGetDto invoice = objectMapper.readValue(response, InvoiceGetDto.class);
+        // THEN
+        assertEquals(90, invoice.totalPrice());
+    }
+
+    @Test
+    @DisplayName("Test patch request to update ticket info with no ticket in db and expect status 404")
+    void updateTicketInfoWithNoTicketInDb() throws Exception {
+        // GIVEN
+        String json = "{\"ticketNumber\": 2,\"seatNumber\": \"5B\",\"price\": 15,\"fareClass\": \"economy\",\"maxLuggageWeight\": 10,\"carryOnLuggage\": false}";
+        // WHEN
+        String response = mockMvc.perform(patch(BASE_URL + "1/ticket_info")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json))
+                .andExpect(status().isNotFound())
+                .andReturn().getResponse().getContentAsString();
+        AgencyError error = objectMapper.readValue(response, AgencyError.class);
+        // THEN
+        assertEquals(ID_NOT_FOUND + 1, error.getMessage());
+    }
+
+    @Test
+    @DisplayName("Test patch request to update ticket info with duplicate ticket number and expect status 400")
+    void updateTicketInfoWithDuplicateTicketNumber() throws Exception {
+        // GIVEN
+        String json = "{\"ticketNumber\": 2,\"seatNumber\": \"5B\",\"price\": 15,\"fareClass\": \"economy\",\"maxLuggageWeight\": 10,\"carryOnLuggage\": false}";
+        mockMvc.perform(post(BASE_URL)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(FLIGHT_TICKET_JSON));
+        mockMvc.perform(post(BASE_URL)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(FLIGHT_TICKET_JSON_2));
+        // WHEN
+        mockMvc.perform(patch(BASE_URL + "2/ticket_info")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(json));
+        String response = mockMvc.perform(patch(BASE_URL + "1/ticket_info")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json))
+                .andExpect(status().isBadRequest())
+                .andReturn().getResponse().getContentAsString();
+        AgencyError error = objectMapper.readValue(response, AgencyError.class);
+        // THEN
+        assertEquals(DUPLICATE_FLIGHT_TICKET_NUMBER, error.getMessage());
+    }
+
+    @Test
+    @DisplayName("Test patch request to update ticket info with invoice paid and expect status 400 and error message")
+    void updateTicketInfoWithInvoicePaid() throws Exception {
+        // GIVEN
+        String json = "{\"ticketNumber\": 2,\"seatNumber\": \"5B\",\"price\": 15,\"fareClass\": \"economy\",\"maxLuggageWeight\": 10,\"carryOnLuggage\": false}";
+        mockMvc.perform(post(BASE_URL)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(FLIGHT_TICKET_JSON));
+        mockMvc.perform(patch("/api/v1/invoices/1/payment")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"paymentStatus\": \"PAID\"}"));
+        // WHEN
+        String response = mockMvc.perform(patch(BASE_URL + "1/ticket_info")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json))
+                .andExpect(status().isBadRequest())
+                .andReturn().getResponse().getContentAsString();
+        AgencyError error = objectMapper.readValue(response, AgencyError.class);
+        // THEN
+        assertEquals(CANNOT_ALTER_PLANE_TICKET, error.getMessage());
+    }
+
+    @Test
+    @DisplayName("Test patch request to update ticket info with incorrect fare class and expect status 404 and error message")
+    void updateTicketInfoWithIncorrectFareClass() throws Exception {
+        // GIVEN
+        String json = "{\"ticketNumber\": 2,\"seatNumber\": \"5B\",\"price\": 15,\"fareClass\": \"teste\",\"maxLuggageWeight\": 10,\"carryOnLuggage\": false}";
+        mockMvc.perform(post(BASE_URL)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(FLIGHT_TICKET_JSON));
+        // WHEN
+        String response = mockMvc.perform(patch(BASE_URL + "1/ticket_info")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json))
+                .andExpect(status().isNotFound())
+                .andReturn().getResponse().getContentAsString();
+        AgencyError error = objectMapper.readValue(response, AgencyError.class);
+        // THEN
+        assertEquals(NAME_NOT_FOUND + "teste", error.getMessage());
     }
 
     @Test
@@ -511,5 +714,13 @@ class FlightTicketControllerTest {
                 .andExpect(status().isNoContent());
         // THEN
         assertEquals(0, flightTicketTestRepository.count());
+    }
+
+    @Test
+    @DisplayName("Test delete request with no ticket in db and expect status 404")
+    void deleteWithNoTicketInDb() throws Exception {
+        mockMvc.perform(delete(BASE_URL + "1"))
+                .andExpect(status().isNotFound());
+
     }
 }

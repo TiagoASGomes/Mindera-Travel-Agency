@@ -21,6 +21,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/flights")
 public class FlightTicketController {
+    //TODO sort e testes para sort
 
     private final FlightTicketService flightTicketService;
 
@@ -40,8 +41,8 @@ public class FlightTicketController {
     }
 
     @GetMapping("/invoice/{invoiceId}")
-    public ResponseEntity<List<TicketGetDto>> getAllByInvoice(@PathVariable Long invoiceId, @RequestParam(required = false) String sortBy) throws InvoiceNotFoundException {
-        return ResponseEntity.ok(flightTicketService.getAllByInvoice(sortBy, invoiceId));
+    public ResponseEntity<List<TicketGetDto>> getAllByInvoice(@PathVariable Long invoiceId) throws InvoiceNotFoundException {
+        return ResponseEntity.ok(flightTicketService.getAllByInvoice(invoiceId));
     }
 
     @PostMapping("/")
@@ -59,7 +60,7 @@ public class FlightTicketController {
         return ResponseEntity.ok(flightTicketService.updatePersonalInfo(id, flightTicket));
     }
 
-    @PatchMapping("/{id}/ticket_number")
+    @PatchMapping("/{id}/ticket_info")
     public ResponseEntity<TicketGetDto> updateTicketNumber(@PathVariable Long id, @Valid @RequestBody TicketUpdateTicketDto flightTicket) throws FlightTicketDuplicateException, FlightTicketNotFoundException, PaymentCompletedException, FareClassNotFoundException, InvoiceNotFoundException {
         return ResponseEntity.ok(flightTicketService.updateTicketInfo(id, flightTicket));
     }

@@ -30,7 +30,8 @@ public class FlightTicketConverter {
                 flightTicket.getSeatNumber(),
                 flightTicket.getPrice(),
                 flightTicket.getMaxLuggageWeight(),
-                flightTicket.isCarryOnLuggage()
+                flightTicket.isCarryOnLuggage(),
+                flightTicket.getFareClass().getClassName()
         );
     }
 
