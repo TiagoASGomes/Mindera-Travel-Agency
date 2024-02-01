@@ -20,7 +20,6 @@ public class RoomInfo {
     private int numberOfBeds;
     private int pricePerNight;
     private Long externalId;
-    @ManyToOne(cascade = CascadeType.ALL,
-            fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.EAGER)
     private HotelReservation hotelReservation;
 }

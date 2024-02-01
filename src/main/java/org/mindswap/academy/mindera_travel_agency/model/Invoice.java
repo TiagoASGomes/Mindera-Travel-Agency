@@ -27,11 +27,11 @@ public class Invoice {
     @ManyToOne
     private User user;
     @OneToOne(mappedBy = "invoice",
-            cascade = CascadeType.REMOVE,
+            cascade = CascadeType.ALL,
             fetch = FetchType.EAGER)
     private HotelReservation hotelReservation;
     @OneToMany(mappedBy = "invoice",
-            cascade = CascadeType.REMOVE,
+            cascade = CascadeType.ALL,
             fetch = FetchType.EAGER)
     private Set<FlightTicket> flightTickets;
 
