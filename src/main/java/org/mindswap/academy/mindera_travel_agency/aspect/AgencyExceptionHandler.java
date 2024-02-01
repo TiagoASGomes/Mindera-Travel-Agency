@@ -7,7 +7,10 @@ import org.mindswap.academy.mindera_travel_agency.exception.fare_class.FareClass
 import org.mindswap.academy.mindera_travel_agency.exception.fare_class.FareClassNotFoundException;
 import org.mindswap.academy.mindera_travel_agency.exception.flight_tickets.FlightTicketDuplicateException;
 import org.mindswap.academy.mindera_travel_agency.exception.flight_tickets.FlightTicketNotFoundException;
+import org.mindswap.academy.mindera_travel_agency.exception.hotel_reservation.CannotChangeInvoiceException;
 import org.mindswap.academy.mindera_travel_agency.exception.hotel_reservation.HotelReservationNotFoundException;
+import org.mindswap.academy.mindera_travel_agency.exception.hotel_reservation.InvalidCheckInOutDateException;
+import org.mindswap.academy.mindera_travel_agency.exception.hotel_reservation.RoomNotFoundException;
 import org.mindswap.academy.mindera_travel_agency.exception.invoice.InvoiceNotFoundException;
 import org.mindswap.academy.mindera_travel_agency.exception.invoice.PaymentCompletedException;
 import org.mindswap.academy.mindera_travel_agency.exception.payment_status.PaymentStatusNotFoundException;
@@ -31,7 +34,9 @@ public class AgencyExceptionHandler {
 
     @ExceptionHandler({FareClassDuplicateNameException.class,
             FlightTicketDuplicateException.class,
-            PaymentCompletedException.class})
+            PaymentCompletedException.class,
+            InvalidCheckInOutDateException.class,
+            CannotChangeInvoiceException.class})
     public ResponseEntity<AgencyError> handleBadRequest(Exception e, HttpServletRequest request) {
         logger.error(e.getMessage());
         return new ResponseEntity<>(
@@ -50,7 +55,8 @@ public class AgencyExceptionHandler {
             InvoiceNotFoundException.class,
             PaymentStatusNotFoundException.class,
             UserNotFoundException.class,
-            EmailNotFoundException.class})
+            EmailNotFoundException.class,
+            RoomNotFoundException.class})
     public ResponseEntity<AgencyError> handleNotFound(Exception e, HttpServletRequest request) {
         logger.error(e.getMessage());
         return new ResponseEntity<>(

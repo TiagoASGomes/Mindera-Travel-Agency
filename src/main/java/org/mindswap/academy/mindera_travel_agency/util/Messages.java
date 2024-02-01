@@ -31,4 +31,7 @@ public class Messages {
     public static final String PENDING_PAYMENT = "PENDING";
     public static final String PAID_PAYMENT = "PAID";
     public static final String NOT_REQUESTED_PAYMENT = "NOT_REQUESTED";
+    public static final String INVALID_CHECK_IN_OUT_DATE = "Check in date must be before check out date";
+    public static final String ROOM_NOT_FOUND = "No room found with this external id";
+    public static final String INVALID_INVOICE = "Cannot change invoice.";
 }

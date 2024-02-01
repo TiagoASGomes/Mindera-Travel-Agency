@@ -5,5 +5,5 @@ import org.mindswap.academy.mindera_travel_agency.model.RoomInfo;
 public interface RoomInfoService {
     void create(RoomInfo roomInfo);
 
-    void delete(Long id);
+    void delete(Long id, Long hotelId);
 }
