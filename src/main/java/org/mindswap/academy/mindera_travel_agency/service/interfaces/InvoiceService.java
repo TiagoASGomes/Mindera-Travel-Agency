@@ -22,7 +22,7 @@ public interface InvoiceService {
 
     void delete(Long id) throws InvoiceNotFoundException, PaymentCompletedException;
 
-    InvoiceGetDto update(Long id, InvoiceUpdateDto invoice) throws InvoiceNotFoundException, PaymentStatusNotFoundException;
+    InvoiceGetDto update(Long id, InvoiceUpdateDto invoice) throws InvoiceNotFoundException, PaymentStatusNotFoundException, PaymentCompletedException;
 
     void updatePrice(Long id) throws InvoiceNotFoundException;
 }

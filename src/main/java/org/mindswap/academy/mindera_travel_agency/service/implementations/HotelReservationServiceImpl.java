@@ -68,9 +68,9 @@ public class HotelReservationServiceImpl implements HotelReservationService {
         convertedReservation.setPricePerNight(calculatePrice(convertedReservation));
         convertedReservation.setTotalPrice(convertedReservation.getPricePerNight() * convertedReservation.getDurationOfStay());
         HotelReservation savedHotel = hRRepository.save(convertedReservation);
-        invoiceService.updatePrice(invoice.getId());
         roomInfo.forEach(room -> room.setHotelReservation(savedHotel));
         roomInfo.forEach(roomInfoService::create);
+        invoiceService.updatePrice(invoice.getId());
         return hRConverter.fromEntityToGetDto(findById(savedHotel.getId()));
     }
 

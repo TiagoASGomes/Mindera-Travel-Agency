@@ -22,15 +22,17 @@ public class Invoice {
     private Long id;
     private int totalPrice;
     private LocalDateTime paymentDate;
-    @ManyToOne(cascade = CascadeType.ALL,
-            fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.EAGER)
     private PaymentStatus paymentStatus;
-    @ManyToOne(cascade = CascadeType.ALL,
-            fetch = FetchType.LAZY)
+    @ManyToOne
     private User user;
-    @OneToOne(mappedBy = "invoice")
+    @OneToOne(mappedBy = "invoice",
+            cascade = CascadeType.REMOVE,
+            fetch = FetchType.EAGER)
     private HotelReservation hotelReservation;
-    @OneToMany(mappedBy = "invoice")
+    @OneToMany(mappedBy = "invoice",
+            cascade = CascadeType.REMOVE,
+            fetch = FetchType.EAGER)
     private Set<FlightTicket> flightTickets;
 
     public Invoice(User user) {

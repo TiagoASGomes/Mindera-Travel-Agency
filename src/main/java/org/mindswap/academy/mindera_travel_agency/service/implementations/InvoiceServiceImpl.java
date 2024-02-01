@@ -9,7 +9,6 @@ import org.mindswap.academy.mindera_travel_agency.exception.invoice.InvoiceNotFo
 import org.mindswap.academy.mindera_travel_agency.exception.invoice.PaymentCompletedException;
 import org.mindswap.academy.mindera_travel_agency.exception.payment_status.PaymentStatusNotFoundException;
 import org.mindswap.academy.mindera_travel_agency.model.FlightTicket;
-import org.mindswap.academy.mindera_travel_agency.model.HotelReservation;
 import org.mindswap.academy.mindera_travel_agency.model.Invoice;
 import org.mindswap.academy.mindera_travel_agency.repository.InvoiceRepository;
 import org.mindswap.academy.mindera_travel_agency.service.interfaces.InvoiceService;
@@ -65,8 +64,9 @@ public class InvoiceServiceImpl implements InvoiceService {
     }
 
     @Override
-    public InvoiceGetDto update(Long id, InvoiceUpdateDto invoiceDto) throws InvoiceNotFoundException, PaymentStatusNotFoundException {
+    public InvoiceGetDto update(Long id, InvoiceUpdateDto invoiceDto) throws InvoiceNotFoundException, PaymentStatusNotFoundException, PaymentCompletedException {
         Invoice invoice = findById(id);
+        checkIfCanUpdate(invoice, invoiceDto);
         if (invoiceDto.paymentDate() != null) {
             invoice.setPaymentDate(invoiceDto.paymentDate());
         }
@@ -74,6 +74,12 @@ public class InvoiceServiceImpl implements InvoiceService {
             invoice.setPaymentStatus(paymentStatusService.findByName(invoiceDto.paymentStatus()));
         }
         return invoiceConverter.fromEntityToGetDto(invoiceRepository.save(invoice));
+    }
+
+    private void checkIfCanUpdate(Invoice invoice, InvoiceUpdateDto invoiceDto) throws PaymentCompletedException {
+        if (invoice.getPaymentStatus().getStatusName().equals(PAID_PAYMENT)) {
+            throw new PaymentCompletedException(CANNOT_UPDATE_INVOICE);
+        }
     }
 
     @Override
@@ -84,15 +90,15 @@ public class InvoiceServiceImpl implements InvoiceService {
     }
 
     private int calculatePrice(Invoice invoice) {
-        if(invoice.getHotelReservation()== null && invoice.getFlightTickets() == null){
+        if (invoice.getHotelReservation() == null && invoice.getFlightTickets() == null) {
             return 0;
         }
-        if(invoice.getHotelReservation() == null){
+        if (invoice.getHotelReservation() == null) {
             return invoice.getFlightTickets().stream()
                     .mapToInt(FlightTicket::getPrice)
                     .sum();
         }
-        if(invoice.getFlightTickets() == null || invoice.getFlightTickets().isEmpty())  {
+        if (invoice.getFlightTickets() == null || invoice.getFlightTickets().isEmpty()) {
             return invoice.getHotelReservation().getTotalPrice();
         }
         return invoice.getFlightTickets().stream()
