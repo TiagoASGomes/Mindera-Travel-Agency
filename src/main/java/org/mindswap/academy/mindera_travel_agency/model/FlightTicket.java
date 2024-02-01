@@ -24,7 +24,7 @@ public class FlightTicket {
     private int price;
     private int maxLuggageWeight;
     private boolean carryOnLuggage;
-    @ManyToOne(cascade = CascadeType.REMOVE)
+    @ManyToOne
     private Invoice invoice;
     @ManyToOne(fetch = FetchType.EAGER)
     private FareClass fareClass;

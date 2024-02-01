@@ -31,8 +31,7 @@ public class Invoice {
             fetch = FetchType.EAGER)
     private HotelReservation hotelReservation;
     @OneToMany(mappedBy = "invoice",
-            cascade = CascadeType.ALL,
-            fetch = FetchType.EAGER)
+            cascade = CascadeType.REMOVE)
     private Set<FlightTicket> flightTickets;
 
     public Invoice(User user) {
