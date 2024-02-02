@@ -9,7 +9,7 @@ import org.mindswap.academy.mindera_travel_agency.converter.InvoiceConverter;
 import org.mindswap.academy.mindera_travel_agency.converter.UserConverter;
 import org.mindswap.academy.mindera_travel_agency.dto.user.UserCreateDto;
 import org.mindswap.academy.mindera_travel_agency.dto.user.UserGetDto;
-import org.mindswap.academy.mindera_travel_agency.exception.User.EmailNotFoundException;
+import org.mindswap.academy.mindera_travel_agency.exception.User.DuplicateEmailException;
 import org.mindswap.academy.mindera_travel_agency.model.User;
 import org.mindswap.academy.mindera_travel_agency.repository.UserRepository;
 import org.mindswap.academy.mindera_travel_agency.service.interfaces.UserService;
@@ -22,7 +22,7 @@ import java.time.LocalDate;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mindswap.academy.mindera_travel_agency.util.Messages.EMAIL_NOT_FOUND;
+import static org.mindswap.academy.mindera_travel_agency.util.Messages.DUPLICATE_EMAIL;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(SpringExtension.class)
@@ -79,8 +79,8 @@ class UserServiceImplTest {
         when(userRepositoryMock.findByEmail(userCreateDto.email())).thenReturn(Optional.of(new User()));
 
 
-        EmailNotFoundException exception = assertThrows(EmailNotFoundException.class, () -> userService.add(userCreateDto));
-        assertEquals(EMAIL_NOT_FOUND, exception.getMessage());
+        DuplicateEmailException exception = assertThrows(DuplicateEmailException.class, () -> userService.add(userCreateDto));
+        assertEquals(DUPLICATE_EMAIL, exception.getMessage());
 
         verify(userConverterMock, never()).fromUserCreateDtoToModel(any(UserCreateDto.class));
         verify(userRepositoryMock, times(1)).findByEmail(userCreateDto.email());
