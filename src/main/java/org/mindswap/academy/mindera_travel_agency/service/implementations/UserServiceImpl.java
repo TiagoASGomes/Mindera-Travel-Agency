@@ -4,6 +4,7 @@ import org.mindswap.academy.mindera_travel_agency.converter.FlightTicketConverte
 import org.mindswap.academy.mindera_travel_agency.converter.HotelReservationConverter;
 import org.mindswap.academy.mindera_travel_agency.converter.InvoiceConverter;
 import org.mindswap.academy.mindera_travel_agency.converter.UserConverter;
+import org.mindswap.academy.mindera_travel_agency.dto.external.ExternalHotelInfoDto;
 import org.mindswap.academy.mindera_travel_agency.dto.flight_ticket.TicketGetDto;
 import org.mindswap.academy.mindera_travel_agency.dto.hotel.HotelReservationGetDto;
 import org.mindswap.academy.mindera_travel_agency.dto.invoice.InvoiceGetDto;
@@ -16,6 +17,7 @@ import org.mindswap.academy.mindera_travel_agency.model.HotelReservation;
 import org.mindswap.academy.mindera_travel_agency.model.Invoice;
 import org.mindswap.academy.mindera_travel_agency.model.User;
 import org.mindswap.academy.mindera_travel_agency.repository.UserRepository;
+import org.mindswap.academy.mindera_travel_agency.service.interfaces.ExternalService;
 import org.mindswap.academy.mindera_travel_agency.service.interfaces.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,8 +27,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-import static org.mindswap.academy.mindera_travel_agency.util.Messages.DUPLICATE_EMAIL;
-import static org.mindswap.academy.mindera_travel_agency.util.Messages.ID_NOT_FOUND;
+import static org.mindswap.academy.mindera_travel_agency.util.Messages.*;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -35,15 +36,17 @@ public class UserServiceImpl implements UserService {
     private final InvoiceConverter invoiceConverter;
     private final FlightTicketConverter flightTicketConverter;
     private final HotelReservationConverter hotelReservationConverter;
+    private final ExternalService externalService;
 
 
     @Autowired
-    public UserServiceImpl(UserRepository userRepository, UserConverter userConverter, InvoiceConverter invoiceConverter, FlightTicketConverter flightTicketConverter, HotelReservationConverter hotelReservationConverter) {
+    public UserServiceImpl(UserRepository userRepository, UserConverter userConverter, InvoiceConverter invoiceConverter, FlightTicketConverter flightTicketConverter, HotelReservationConverter hotelReservationConverter, ExternalService externalService) {
         this.userRepository = userRepository;
         this.userConverter = userConverter;
         this.invoiceConverter = invoiceConverter;
         this.flightTicketConverter = flightTicketConverter;
         this.hotelReservationConverter = hotelReservationConverter;
+        this.externalService = externalService;
     }
 
 
@@ -127,6 +130,22 @@ public class UserServiceImpl implements UserService {
         user.getInvoices()
                 .forEach(invoice -> userTickets.addAll(invoice.getFlightTickets()));
         return flightTicketConverter.fromEntityListToGetDtoList(userTickets);
+    }
+
+    @Override
+    public UserGetDto getByEmail(String email) throws UserNotFoundException {
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new UserNotFoundException(EMAIL_NOT_FOUND + email));
+        return userConverter.fromUserModelToGetDto(user);
+    }
+
+    @Override
+    public List<ExternalHotelInfoDto> getAvailableHotels() {
+        return null;
+    }
+
+    @Override
+    public List<ExternalHotelInfoDto> getAvailableFlights() {
+        return null;
     }
 
 

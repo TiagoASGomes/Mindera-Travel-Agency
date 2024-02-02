@@ -14,6 +14,7 @@ import org.mindswap.academy.mindera_travel_agency.model.FareClass;
 import org.mindswap.academy.mindera_travel_agency.model.FlightTicket;
 import org.mindswap.academy.mindera_travel_agency.model.Invoice;
 import org.mindswap.academy.mindera_travel_agency.repository.FlightTicketRepository;
+import org.mindswap.academy.mindera_travel_agency.service.interfaces.ExternalService;
 import org.mindswap.academy.mindera_travel_agency.service.interfaces.FareClassService;
 import org.mindswap.academy.mindera_travel_agency.service.interfaces.FlightTicketService;
 import org.mindswap.academy.mindera_travel_agency.service.interfaces.InvoiceService;
@@ -31,13 +32,15 @@ public class FlightTicketServiceImpl implements FlightTicketService {
     private final FlightTicketRepository flightTicketRepository;
     private final FareClassService fareClassService;
     private final InvoiceService invoiceService;
+    private final ExternalService externalService;
 
     @Autowired
-    public FlightTicketServiceImpl(FlightTicketConverter flightTicketConverter, FlightTicketRepository flightTicketRepository, FareClassService fareClassService, InvoiceService invoiceService) {
+    public FlightTicketServiceImpl(FlightTicketConverter flightTicketConverter, FlightTicketRepository flightTicketRepository, FareClassService fareClassService, InvoiceService invoiceService, ExternalService externalService) {
         this.flightTicketConverter = flightTicketConverter;
         this.flightTicketRepository = flightTicketRepository;
         this.fareClassService = fareClassService;
         this.invoiceService = invoiceService;
+        this.externalService = externalService;
     }
 
 

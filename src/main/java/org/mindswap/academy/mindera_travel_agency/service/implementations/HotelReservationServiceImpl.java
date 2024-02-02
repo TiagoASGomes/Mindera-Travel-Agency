@@ -16,6 +16,7 @@ import org.mindswap.academy.mindera_travel_agency.model.HotelReservation;
 import org.mindswap.academy.mindera_travel_agency.model.Invoice;
 import org.mindswap.academy.mindera_travel_agency.model.RoomInfo;
 import org.mindswap.academy.mindera_travel_agency.repository.HotelReservationRepository;
+import org.mindswap.academy.mindera_travel_agency.service.interfaces.ExternalService;
 import org.mindswap.academy.mindera_travel_agency.service.interfaces.HotelReservationService;
 import org.mindswap.academy.mindera_travel_agency.service.interfaces.InvoiceService;
 import org.mindswap.academy.mindera_travel_agency.service.interfaces.RoomInfoService;
@@ -37,14 +38,16 @@ public class HotelReservationServiceImpl implements HotelReservationService {
     private final RoomInfoService roomInfoService;
     private final RoomInfoConverter roomInfoConverter;
     private final InvoiceService invoiceService;
+    private final ExternalService externalService;
 
     @Autowired
-    public HotelReservationServiceImpl(HotelReservationRepository hRRepository, HotelReservationConverter hRConverter, RoomInfoService roomInfoService, RoomInfoConverter roomInfoConverter, InvoiceService invoiceService) {
+    public HotelReservationServiceImpl(HotelReservationRepository hRRepository, HotelReservationConverter hRConverter, RoomInfoService roomInfoService, RoomInfoConverter roomInfoConverter, InvoiceService invoiceService, ExternalService externalService) {
         this.hRRepository = hRRepository;
         this.hRConverter = hRConverter;
         this.roomInfoService = roomInfoService;
         this.roomInfoConverter = roomInfoConverter;
         this.invoiceService = invoiceService;
+        this.externalService = externalService;
     }
 
     @Override
