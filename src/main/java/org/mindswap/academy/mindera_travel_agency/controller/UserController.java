@@ -6,7 +6,7 @@ import org.mindswap.academy.mindera_travel_agency.dto.hotel.HotelReservationGetD
 import org.mindswap.academy.mindera_travel_agency.dto.invoice.InvoiceGetDto;
 import org.mindswap.academy.mindera_travel_agency.dto.user.UserCreateDto;
 import org.mindswap.academy.mindera_travel_agency.dto.user.UserGetDto;
-import org.mindswap.academy.mindera_travel_agency.exception.User.EmailNotFoundException;
+import org.mindswap.academy.mindera_travel_agency.exception.User.DuplicateEmailException;
 import org.mindswap.academy.mindera_travel_agency.exception.User.UserNotFoundException;
 import org.mindswap.academy.mindera_travel_agency.service.interfaces.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,17 +55,18 @@ public class UserController {
     }
 
     @PostMapping("/")
-    public ResponseEntity<UserGetDto> create(@Valid @RequestBody UserCreateDto user) throws EmailNotFoundException {
+    public ResponseEntity<UserGetDto> create(@Valid @RequestBody UserCreateDto user) throws DuplicateEmailException {
         return new ResponseEntity<>(userService.add(user), HttpStatus.CREATED);
     }
 
-    @PatchMapping("/{id}")
-    public ResponseEntity<UserGetDto> update(@PathVariable Long id, @Valid @RequestBody UserCreateDto user) throws UserNotFoundException, EmailNotFoundException {
-        return new ResponseEntity<>(userService.update(id, user), HttpStatus.OK);
-    }
+    //TODO mudar patch
+//    @PatchMapping("/{id}")
+//    public ResponseEntity<UserGetDto> update(@PathVariable Long id, @Valid @RequestBody UserCreateDto user) throws UserNotFoundException, DuplicateEmailException {
+//        return new ResponseEntity<>(userService.update(id, user), HttpStatus.OK);
+//    }
 
     @PutMapping("/{id}")
-    public ResponseEntity<UserGetDto> put(@PathVariable Long id, @Valid @RequestBody UserCreateDto user) throws UserNotFoundException {
+    public ResponseEntity<UserGetDto> put(@PathVariable Long id, @Valid @RequestBody UserCreateDto user) throws UserNotFoundException, DuplicateEmailException {
         return new ResponseEntity<>(userService.put(id, user), HttpStatus.OK);
     }
 

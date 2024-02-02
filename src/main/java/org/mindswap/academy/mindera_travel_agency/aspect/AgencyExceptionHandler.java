@@ -1,6 +1,7 @@
 package org.mindswap.academy.mindera_travel_agency.aspect;
 
 import jakarta.servlet.http.HttpServletRequest;
+import org.mindswap.academy.mindera_travel_agency.exception.User.DuplicateEmailException;
 import org.mindswap.academy.mindera_travel_agency.exception.User.EmailNotFoundException;
 import org.mindswap.academy.mindera_travel_agency.exception.User.UserNotFoundException;
 import org.mindswap.academy.mindera_travel_agency.exception.fare_class.FareClassDuplicateNameException;
@@ -42,7 +43,8 @@ public class AgencyExceptionHandler {
             CannotChangeInvoiceException.class,
             StatusNameAlreadyExistsException.class,
             PaymentStatusInUseException.class,
-            FareClassInUseException.class})
+            FareClassInUseException.class,
+            DuplicateEmailException.class})
     public ResponseEntity<AgencyError> handleBadRequest(Exception e, HttpServletRequest request) {
         logger.error(e.getMessage());
         return new ResponseEntity<>(
