@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.mindswap.academy.mindera_travel_agency.exception.User.EmailNotFoundException;
 import org.mindswap.academy.mindera_travel_agency.exception.User.UserNotFoundException;
 import org.mindswap.academy.mindera_travel_agency.exception.fare_class.FareClassDuplicateNameException;
+import org.mindswap.academy.mindera_travel_agency.exception.fare_class.FareClassInUseException;
 import org.mindswap.academy.mindera_travel_agency.exception.fare_class.FareClassNotFoundException;
 import org.mindswap.academy.mindera_travel_agency.exception.flight_tickets.FlightTicketDuplicateException;
 import org.mindswap.academy.mindera_travel_agency.exception.flight_tickets.FlightTicketNotFoundException;
@@ -13,7 +14,9 @@ import org.mindswap.academy.mindera_travel_agency.exception.hotel_reservation.In
 import org.mindswap.academy.mindera_travel_agency.exception.hotel_reservation.RoomNotFoundException;
 import org.mindswap.academy.mindera_travel_agency.exception.invoice.InvoiceNotFoundException;
 import org.mindswap.academy.mindera_travel_agency.exception.invoice.PaymentCompletedException;
+import org.mindswap.academy.mindera_travel_agency.exception.payment_status.PaymentStatusInUseException;
 import org.mindswap.academy.mindera_travel_agency.exception.payment_status.PaymentStatusNotFoundException;
+import org.mindswap.academy.mindera_travel_agency.exception.payment_status.StatusNameAlreadyExistsException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -36,7 +39,10 @@ public class AgencyExceptionHandler {
             FlightTicketDuplicateException.class,
             PaymentCompletedException.class,
             InvalidCheckInOutDateException.class,
-            CannotChangeInvoiceException.class})
+            CannotChangeInvoiceException.class,
+            StatusNameAlreadyExistsException.class,
+            PaymentStatusInUseException.class,
+            FareClassInUseException.class})
     public ResponseEntity<AgencyError> handleBadRequest(Exception e, HttpServletRequest request) {
         logger.error(e.getMessage());
         return new ResponseEntity<>(

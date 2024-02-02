@@ -4,6 +4,7 @@ import org.mindswap.academy.mindera_travel_agency.converter.FareClassConverter;
 import org.mindswap.academy.mindera_travel_agency.dto.fare_class.FareClassCreateDto;
 import org.mindswap.academy.mindera_travel_agency.dto.fare_class.FareClassGetDto;
 import org.mindswap.academy.mindera_travel_agency.exception.fare_class.FareClassDuplicateNameException;
+import org.mindswap.academy.mindera_travel_agency.exception.fare_class.FareClassInUseException;
 import org.mindswap.academy.mindera_travel_agency.exception.fare_class.FareClassNotFoundException;
 import org.mindswap.academy.mindera_travel_agency.model.FareClass;
 import org.mindswap.academy.mindera_travel_agency.repository.FareClassRepository;
@@ -59,8 +60,11 @@ public class FareClassServiceImpl implements FareClassService {
     }
 
     @Override
-    public void delete(Long id) throws FareClassNotFoundException {
-        findById(id);
+    public void delete(Long id) throws FareClassNotFoundException, FareClassInUseException {
+        FareClass fareClass = findById(id);
+        if (fareClass.getFlightTicket() != null && !fareClass.getFlightTicket().isEmpty()) {
+            throw new FareClassInUseException(FARE_CLASS_IN_USE);
+        }
         fareClassRepository.deleteById(id);
     }
 
