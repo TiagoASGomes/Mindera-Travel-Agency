@@ -16,11 +16,10 @@ public class RoomInfo {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String roomType;
-    private String roomNumber;
+    private int roomNumber;
     private int numberOfBeds;
     private int pricePerNight;
-    @Column(unique = true)
     private Long externalId;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     private HotelReservation hotelReservation;
 }

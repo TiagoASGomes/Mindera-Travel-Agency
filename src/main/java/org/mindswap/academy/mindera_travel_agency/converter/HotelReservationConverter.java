@@ -1,18 +1,14 @@
 package org.mindswap.academy.mindera_travel_agency.converter;
 
-import org.mindswap.academy.mindera_travel_agency.dto.external.ExternalRoomInfoDto;
 import org.mindswap.academy.mindera_travel_agency.dto.hotel.HotelReservationCreateDto;
 import org.mindswap.academy.mindera_travel_agency.dto.hotel.HotelReservationGetDto;
 import org.mindswap.academy.mindera_travel_agency.model.HotelReservation;
 import org.mindswap.academy.mindera_travel_agency.model.Invoice;
-import org.mindswap.academy.mindera_travel_agency.model.RoomInfo;
-import org.mindswap.academy.mindera_travel_agency.service.interfaces.RoomInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 @Component
 public class HotelReservationConverter {
@@ -21,7 +17,7 @@ public class HotelReservationConverter {
     private RoomInfoConverter roomInfoConverter;
 
     public HotelReservationGetDto fromEntityToGetDto(HotelReservation hotelReservation) {
-        if(hotelReservation == null) return null;
+        if (hotelReservation == null) return null;
         return new HotelReservationGetDto(
                 hotelReservation.getId(),
                 hotelReservation.getHotelName(),
@@ -49,9 +45,10 @@ public class HotelReservationConverter {
                 .hotelName(dtoReservation.hotelInfo().name())
                 .hotelAddress(dtoReservation.hotelInfo().address())
                 .hotelPhoneNumber(dtoReservation.hotelInfo().phoneNumber())
-                .hotelId(dtoReservation.hotelInfo().externalId())
+                .externalId(dtoReservation.hotelInfo().externalId())
                 .durationOfStay(dtoReservation.checkOutDate().getDayOfMonth() - dtoReservation.checkInDate().getDayOfMonth())
                 .invoice(invoice)
+                .externalId(dtoReservation.hotelInfo().externalId())
                 .build();
     }
 

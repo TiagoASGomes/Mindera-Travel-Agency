@@ -3,7 +3,9 @@ package org.mindswap.academy.mindera_travel_agency.controller;
 import jakarta.validation.Valid;
 import org.mindswap.academy.mindera_travel_agency.dto.payment_status.PaymentStatusCreateDto;
 import org.mindswap.academy.mindera_travel_agency.dto.payment_status.PaymentStatusGetDto;
+import org.mindswap.academy.mindera_travel_agency.exception.payment_status.PaymentStatusInUseException;
 import org.mindswap.academy.mindera_travel_agency.exception.payment_status.PaymentStatusNotFoundException;
+import org.mindswap.academy.mindera_travel_agency.exception.payment_status.StatusNameAlreadyExistsException;
 import org.mindswap.academy.mindera_travel_agency.service.interfaces.PaymentStatusService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -40,17 +42,17 @@ public class PaymentStatusController {
     }
 
     @PostMapping("/")
-    public ResponseEntity<PaymentStatusGetDto> create(@Valid @RequestBody PaymentStatusCreateDto paymentStatus) {
+    public ResponseEntity<PaymentStatusGetDto> create(@Valid @RequestBody PaymentStatusCreateDto paymentStatus) throws StatusNameAlreadyExistsException {
         return new ResponseEntity<>(paymentStatusService.create(paymentStatus), HttpStatus.CREATED);
     }
 
-    @PatchMapping("/{id}")
-    public ResponseEntity<PaymentStatusGetDto> update(@PathVariable Long id, @Valid @RequestBody PaymentStatusCreateDto paymentStatus) throws PaymentStatusNotFoundException {
+    @PutMapping("/{id}")
+    public ResponseEntity<PaymentStatusGetDto> update(@PathVariable Long id, @Valid @RequestBody PaymentStatusCreateDto paymentStatus) throws PaymentStatusNotFoundException, StatusNameAlreadyExistsException {
         return ResponseEntity.ok(paymentStatusService.update(id, paymentStatus));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) throws PaymentStatusNotFoundException {
+    public ResponseEntity<Void> delete(@PathVariable Long id) throws PaymentStatusNotFoundException, PaymentStatusInUseException {
         paymentStatusService.delete(id);
         return ResponseEntity.noContent().build();
     }

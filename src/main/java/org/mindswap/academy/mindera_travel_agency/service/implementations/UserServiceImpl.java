@@ -4,7 +4,7 @@ import org.mindswap.academy.mindera_travel_agency.converter.FlightTicketConverte
 import org.mindswap.academy.mindera_travel_agency.converter.HotelReservationConverter;
 import org.mindswap.academy.mindera_travel_agency.converter.InvoiceConverter;
 import org.mindswap.academy.mindera_travel_agency.converter.UserConverter;
-import org.mindswap.academy.mindera_travel_agency.dto.flight_ticket.FlightTicketGetDto;
+import org.mindswap.academy.mindera_travel_agency.dto.flight_ticket.TicketGetDto;
 import org.mindswap.academy.mindera_travel_agency.dto.hotel.HotelReservationGetDto;
 import org.mindswap.academy.mindera_travel_agency.dto.invoice.InvoiceGetDto;
 import org.mindswap.academy.mindera_travel_agency.dto.user.UserCreateDto;
@@ -116,7 +116,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<FlightTicketGetDto> getAllTickets(Long id) throws UserNotFoundException {
+    public List<TicketGetDto> getAllTickets(Long id) throws UserNotFoundException {
         User user = findById(id);
         List<FlightTicket> userTickets = new ArrayList<>();
         user.getInvoices()

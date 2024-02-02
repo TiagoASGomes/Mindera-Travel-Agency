@@ -4,13 +4,19 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.mindswap.academy.mindera_travel_agency.exception.User.EmailNotFoundException;
 import org.mindswap.academy.mindera_travel_agency.exception.User.UserNotFoundException;
 import org.mindswap.academy.mindera_travel_agency.exception.fare_class.FareClassDuplicateNameException;
+import org.mindswap.academy.mindera_travel_agency.exception.fare_class.FareClassInUseException;
 import org.mindswap.academy.mindera_travel_agency.exception.fare_class.FareClassNotFoundException;
 import org.mindswap.academy.mindera_travel_agency.exception.flight_tickets.FlightTicketDuplicateException;
 import org.mindswap.academy.mindera_travel_agency.exception.flight_tickets.FlightTicketNotFoundException;
+import org.mindswap.academy.mindera_travel_agency.exception.hotel_reservation.CannotChangeInvoiceException;
 import org.mindswap.academy.mindera_travel_agency.exception.hotel_reservation.HotelReservationNotFoundException;
+import org.mindswap.academy.mindera_travel_agency.exception.hotel_reservation.InvalidCheckInOutDateException;
+import org.mindswap.academy.mindera_travel_agency.exception.hotel_reservation.RoomNotFoundException;
 import org.mindswap.academy.mindera_travel_agency.exception.invoice.InvoiceNotFoundException;
 import org.mindswap.academy.mindera_travel_agency.exception.invoice.PaymentCompletedException;
+import org.mindswap.academy.mindera_travel_agency.exception.payment_status.PaymentStatusInUseException;
 import org.mindswap.academy.mindera_travel_agency.exception.payment_status.PaymentStatusNotFoundException;
+import org.mindswap.academy.mindera_travel_agency.exception.payment_status.StatusNameAlreadyExistsException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -31,9 +37,14 @@ public class AgencyExceptionHandler {
 
     @ExceptionHandler({FareClassDuplicateNameException.class,
             FlightTicketDuplicateException.class,
-            PaymentCompletedException.class})
+            PaymentCompletedException.class,
+            InvalidCheckInOutDateException.class,
+            CannotChangeInvoiceException.class,
+            StatusNameAlreadyExistsException.class,
+            PaymentStatusInUseException.class,
+            FareClassInUseException.class})
     public ResponseEntity<AgencyError> handleBadRequest(Exception e, HttpServletRequest request) {
-        logger.error(e.getMessage(), e);
+        logger.error(e.getMessage());
         return new ResponseEntity<>(
                 AgencyError.builder()
                         .message(e.getMessage())
@@ -50,9 +61,10 @@ public class AgencyExceptionHandler {
             InvoiceNotFoundException.class,
             PaymentStatusNotFoundException.class,
             UserNotFoundException.class,
-            EmailNotFoundException.class})
+            EmailNotFoundException.class,
+            RoomNotFoundException.class})
     public ResponseEntity<AgencyError> handleNotFound(Exception e, HttpServletRequest request) {
-        logger.error(e.getMessage(), e);
+        logger.error(e.getMessage());
         return new ResponseEntity<>(
                 AgencyError.builder()
                         .message(e.getMessage())
@@ -72,7 +84,7 @@ public class AgencyExceptionHandler {
         errors.forEach(error -> errorMessageBuilder.append(error).append(", "));
         errorMessageBuilder.delete(errorMessageBuilder.length() - 2, errorMessageBuilder.length()).append(".");
         String errorMessage = errorMessageBuilder.toString();
-        logger.error(errorMessage, ex);
+        logger.error(errorMessage);
         return new ResponseEntity<>(
                 AgencyError.builder()
                         .message(errorMessage)

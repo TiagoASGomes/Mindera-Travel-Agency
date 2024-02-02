@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import org.mindswap.academy.mindera_travel_agency.dto.fare_class.FareClassCreateDto;
 import org.mindswap.academy.mindera_travel_agency.dto.fare_class.FareClassGetDto;
 import org.mindswap.academy.mindera_travel_agency.exception.fare_class.FareClassDuplicateNameException;
+import org.mindswap.academy.mindera_travel_agency.exception.fare_class.FareClassInUseException;
 import org.mindswap.academy.mindera_travel_agency.exception.fare_class.FareClassNotFoundException;
 import org.mindswap.academy.mindera_travel_agency.service.interfaces.FareClassService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,13 +41,13 @@ public class FareClassController {
         return new ResponseEntity<>(fareClassService.create(fareClass), HttpStatus.CREATED);
     }
 
-    @PatchMapping("/{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<FareClassGetDto> update(@PathVariable Long id, @Valid @RequestBody FareClassCreateDto fareClass) throws FareClassDuplicateNameException, FareClassNotFoundException {
         return ResponseEntity.ok(fareClassService.update(id, fareClass));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) throws FareClassNotFoundException {
+    public ResponseEntity<Void> delete(@PathVariable Long id) throws FareClassNotFoundException, FareClassInUseException {
         fareClassService.delete(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }

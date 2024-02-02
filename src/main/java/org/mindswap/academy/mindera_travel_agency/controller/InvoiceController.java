@@ -5,6 +5,8 @@ import org.mindswap.academy.mindera_travel_agency.dto.invoice.InvoiceCreateDto;
 import org.mindswap.academy.mindera_travel_agency.dto.invoice.InvoiceGetDto;
 import org.mindswap.academy.mindera_travel_agency.dto.invoice.InvoiceUpdateDto;
 import org.mindswap.academy.mindera_travel_agency.exception.User.UserNotFoundException;
+import org.mindswap.academy.mindera_travel_agency.exception.flight_tickets.FlightTicketNotFoundException;
+import org.mindswap.academy.mindera_travel_agency.exception.hotel_reservation.HotelReservationNotFoundException;
 import org.mindswap.academy.mindera_travel_agency.exception.invoice.InvoiceNotFoundException;
 import org.mindswap.academy.mindera_travel_agency.exception.invoice.PaymentCompletedException;
 import org.mindswap.academy.mindera_travel_agency.exception.payment_status.PaymentStatusNotFoundException;
@@ -19,7 +21,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/invoices")
 public class InvoiceController {
-
+//TODO promoçoes many to many de x a x desconto
 
     private final InvoiceService invoiceService;
 
@@ -43,13 +45,13 @@ public class InvoiceController {
         return new ResponseEntity<>(invoiceService.create(invoice), HttpStatus.CREATED);
     }
 
-    @PatchMapping("/{id}")
-    public ResponseEntity<InvoiceGetDto> updatePayment(@PathVariable Long id, @Valid @RequestBody InvoiceUpdateDto invoice) throws InvoiceNotFoundException, PaymentStatusNotFoundException {
+    @PatchMapping("/{id}/payment")
+    public ResponseEntity<InvoiceGetDto> updatePayment(@PathVariable Long id, @Valid @RequestBody InvoiceUpdateDto invoice) throws InvoiceNotFoundException, PaymentStatusNotFoundException, PaymentCompletedException {
         return ResponseEntity.ok(invoiceService.update(id, invoice));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) throws InvoiceNotFoundException, PaymentCompletedException {
+    public ResponseEntity<Void> delete(@PathVariable Long id) throws InvoiceNotFoundException, PaymentCompletedException, HotelReservationNotFoundException, FlightTicketNotFoundException {
         invoiceService.delete(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }

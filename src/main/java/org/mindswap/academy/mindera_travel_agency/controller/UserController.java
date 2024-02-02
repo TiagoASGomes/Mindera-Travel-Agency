@@ -1,7 +1,7 @@
 package org.mindswap.academy.mindera_travel_agency.controller;
 
 import jakarta.validation.Valid;
-import org.mindswap.academy.mindera_travel_agency.dto.flight_ticket.FlightTicketGetDto;
+import org.mindswap.academy.mindera_travel_agency.dto.flight_ticket.TicketGetDto;
 import org.mindswap.academy.mindera_travel_agency.dto.hotel.HotelReservationGetDto;
 import org.mindswap.academy.mindera_travel_agency.dto.invoice.InvoiceGetDto;
 import org.mindswap.academy.mindera_travel_agency.dto.user.UserCreateDto;
@@ -28,6 +28,7 @@ public class UserController {
 
     @GetMapping("/")
     public ResponseEntity<List<UserGetDto>> getAll() {
+        //TODO paginar
         return ResponseEntity.ok(userService.getAll());
     }
 
@@ -35,6 +36,8 @@ public class UserController {
     public ResponseEntity<UserGetDto> getById(@PathVariable Long id) throws UserNotFoundException {
         return ResponseEntity.ok(userService.getById(id));
     }
+
+    //TODO get by email
 
     @GetMapping("/{id}/invoices")
     public ResponseEntity<List<InvoiceGetDto>> getAllInvoices(@PathVariable Long id) throws UserNotFoundException {
@@ -47,7 +50,7 @@ public class UserController {
     }
 
     @GetMapping("/{id}/tickets")
-    public ResponseEntity<List<FlightTicketGetDto>> getAllTickets(@PathVariable Long id) throws UserNotFoundException {
+    public ResponseEntity<List<TicketGetDto>> getAllTickets(@PathVariable Long id) throws UserNotFoundException {
         return ResponseEntity.ok(userService.getAllTickets(id));
     }
 

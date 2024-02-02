@@ -18,7 +18,7 @@ public class HotelReservation {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private Long hotelId;
+    private Long externalId;
     private String hotelName;
     private String hotelAddress;
     private int hotelPhoneNumber;
@@ -28,9 +28,10 @@ public class HotelReservation {
     private LocalDateTime checkInDate;
     private LocalDateTime checkOutDate;
     @OneToMany(mappedBy = "hotelReservation",
-            fetch = FetchType.EAGER)
+            fetch = FetchType.EAGER,
+            cascade = CascadeType.ALL)
     private Set<RoomInfo> rooms;
-    @OneToOne(fetch = FetchType.EAGER)
+    @OneToOne(cascade = CascadeType.REMOVE)
     private Invoice invoice;
 
     public void addRoom(RoomInfo roomInfo) {

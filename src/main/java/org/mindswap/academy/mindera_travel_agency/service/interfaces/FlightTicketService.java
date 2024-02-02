@@ -1,9 +1,9 @@
 package org.mindswap.academy.mindera_travel_agency.service.interfaces;
 
-import org.mindswap.academy.mindera_travel_agency.dto.flight_ticket.FlightTicketCreateDto;
-import org.mindswap.academy.mindera_travel_agency.dto.flight_ticket.FlightTicketGetDto;
-import org.mindswap.academy.mindera_travel_agency.dto.flight_ticket.FlightTicketUpdateDto;
-import org.mindswap.academy.mindera_travel_agency.dto.flight_ticket.FlightTicketUpdateTicketDto;
+import org.mindswap.academy.mindera_travel_agency.dto.flight_ticket.TicketCreateDto;
+import org.mindswap.academy.mindera_travel_agency.dto.flight_ticket.TicketGetDto;
+import org.mindswap.academy.mindera_travel_agency.dto.flight_ticket.TicketUpdatePersonalInfo;
+import org.mindswap.academy.mindera_travel_agency.dto.flight_ticket.TicketUpdateTicketDto;
 import org.mindswap.academy.mindera_travel_agency.exception.fare_class.FareClassNotFoundException;
 import org.mindswap.academy.mindera_travel_agency.exception.flight_tickets.FlightTicketDuplicateException;
 import org.mindswap.academy.mindera_travel_agency.exception.flight_tickets.FlightTicketNotFoundException;
@@ -13,19 +13,19 @@ import org.mindswap.academy.mindera_travel_agency.exception.invoice.PaymentCompl
 import java.util.List;
 
 public interface FlightTicketService {
-    List<FlightTicketGetDto> getAll();
+    List<TicketGetDto> getAll();
 
-    FlightTicketGetDto getById(Long id) throws FlightTicketNotFoundException;
+    TicketGetDto getById(Long id) throws FlightTicketNotFoundException;
 
-    FlightTicketGetDto create(FlightTicketCreateDto flightTicket) throws FlightTicketDuplicateException, FareClassNotFoundException, InvoiceNotFoundException;
+    TicketGetDto create(TicketCreateDto flightTicket) throws FlightTicketDuplicateException, FareClassNotFoundException, InvoiceNotFoundException;
 
-    FlightTicketGetDto updateTotal(Long id, FlightTicketCreateDto flightTicket) throws FlightTicketDuplicateException, FareClassNotFoundException, InvoiceNotFoundException, FlightTicketNotFoundException, PaymentCompletedException;
+    TicketGetDto updateTotal(Long id, TicketCreateDto flightTicket) throws FareClassNotFoundException, InvoiceNotFoundException, FlightTicketNotFoundException, PaymentCompletedException;
 
-    FlightTicketGetDto updatePartial(Long id, FlightTicketUpdateDto flightTicket) throws FlightTicketNotFoundException, FlightTicketDuplicateException, FareClassNotFoundException, PaymentCompletedException, InvoiceNotFoundException;
+    TicketGetDto updatePersonalInfo(Long id, TicketUpdatePersonalInfo flightTicket) throws FlightTicketNotFoundException, FlightTicketDuplicateException, FareClassNotFoundException, PaymentCompletedException, InvoiceNotFoundException;
 
     void delete(Long id) throws FlightTicketNotFoundException;
 
-    List<FlightTicketGetDto> getAllByInvoice(String sortBy, Long invoiceId) throws InvoiceNotFoundException;
+    List<TicketGetDto> getAllByInvoice(Long invoiceId) throws InvoiceNotFoundException;
 
-    FlightTicketGetDto updateTicketNumber(Long id, FlightTicketUpdateTicketDto flightTicket) throws FlightTicketNotFoundException, PaymentCompletedException, FlightTicketDuplicateException;
+    TicketGetDto updateTicketInfo(Long id, TicketUpdateTicketDto flightTicket) throws FlightTicketNotFoundException, PaymentCompletedException, FlightTicketDuplicateException, FareClassNotFoundException, InvoiceNotFoundException;
 }
