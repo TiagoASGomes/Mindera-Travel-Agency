@@ -17,7 +17,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/payment_status")
 public class PaymentStatusController {
-
+    // TODO add post with list of payment status
 
     private final PaymentStatusService paymentStatusService;
 

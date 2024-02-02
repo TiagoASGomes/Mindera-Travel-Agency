@@ -23,6 +23,7 @@ import java.util.List;
 @RequestMapping("/api/v1/reservations")
 public class HotelReservationController {
 
+    //TODO add external service
     private final HotelReservationService hotelReservationService;
 
     @Autowired

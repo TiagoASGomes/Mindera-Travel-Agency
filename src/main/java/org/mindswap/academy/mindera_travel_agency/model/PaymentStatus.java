@@ -11,7 +11,6 @@ import java.util.Set;
 @Data
 @NoArgsConstructor
 public class PaymentStatus {
-    //TODO add unique constraint and check in service
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

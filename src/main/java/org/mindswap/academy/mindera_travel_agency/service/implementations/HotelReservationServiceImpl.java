@@ -156,11 +156,6 @@ public class HotelReservationServiceImpl implements HotelReservationService {
         return hRRepository.findById(id).orElseThrow(() -> new HotelReservationNotFoundException(ID_NOT_FOUND + id));
     }
 
-    private List<HotelReservation> sort(List<HotelReservation> hotelReservations, String sortBy) {
-        //TODO adicionar sort
-        return hotelReservations;
-    }
-
     private void verifyIfInvoicePaid(Invoice invoice) throws PaymentCompletedException {
         String status = invoice.getPaymentStatus().getStatusName();
         if (status.equals("PENDING") || status.equals("PAID")) {

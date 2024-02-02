@@ -21,7 +21,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/flights")
 public class FlightTicketController {
-    //TODO sort e testes para sort
 
     private final FlightTicketService flightTicketService;
 

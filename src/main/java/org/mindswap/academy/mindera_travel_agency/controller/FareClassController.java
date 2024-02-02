@@ -17,7 +17,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/fare_classes")
 public class FareClassController {
-
+    //TODO add post with list of fare classes
 
     private final FareClassService fareClassService;
 
