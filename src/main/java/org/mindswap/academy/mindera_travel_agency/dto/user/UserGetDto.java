@@ -11,11 +11,9 @@ public record UserGetDto(
         String userName,
         @Schema(example = "email@example.com")
         String email,
-        @Schema(example = "zxlmn!!23K")
-        String password,
         @Schema(example = "01/01/1900")
         LocalDate dateOfBirth,
-        @Schema(example = "351 923456789")
+        @Schema(example = "351 9********")
         String phoneNumber
 ) {
 }

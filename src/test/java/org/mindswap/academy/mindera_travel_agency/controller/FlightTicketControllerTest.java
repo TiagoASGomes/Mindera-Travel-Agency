@@ -1,4 +1,4 @@
-package org.mindswap.academy.mindera_travel_agency.controller;
+package org.mindswap.academy.mindera_travel_agency.Controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;

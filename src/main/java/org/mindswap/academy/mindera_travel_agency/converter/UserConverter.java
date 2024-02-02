@@ -25,7 +25,6 @@ public class UserConverter {
                 user.getId(),
                 user.getUserName(),
                 user.getEmail(),
-                user.getPassword(),
                 user.getDateOfBirth(),
                 user.getPhoneNumber()
         );
@@ -36,4 +35,6 @@ public class UserConverter {
                 .map(this::fromUserModelToGetDto)
                 .toList();
     }
+
+
 }
