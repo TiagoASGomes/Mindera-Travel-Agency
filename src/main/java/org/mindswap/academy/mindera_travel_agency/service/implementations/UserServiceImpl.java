@@ -20,6 +20,7 @@ import org.mindswap.academy.mindera_travel_agency.service.interfaces.UserService
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -34,6 +35,7 @@ public class UserServiceImpl implements UserService {
     private final FlightTicketConverter flightTicketConverter;
     private final HotelReservationConverter hotelReservationConverter;
 
+
     @Autowired
     public UserServiceImpl(UserRepository userRepository, UserConverter userConverter, InvoiceConverter invoiceConverter, FlightTicketConverter flightTicketConverter, HotelReservationConverter hotelReservationConverter) {
         this.userRepository = userRepository;
@@ -42,6 +44,7 @@ public class UserServiceImpl implements UserService {
         this.flightTicketConverter = flightTicketConverter;
         this.hotelReservationConverter = hotelReservationConverter;
     }
+
 
     @Override
     public UserGetDto add(UserCreateDto user) throws EmailNotFoundException {
@@ -64,9 +67,8 @@ public class UserServiceImpl implements UserService {
             throw new EmailNotFoundException(EMAIL_ALREADY_EXISTS);
         }
         newUser.setEmail(user.email());
-        newUser.setPassword(user.password());
         newUser.setUserName(user.userName());
-        newUser.setDateOfBirth(user.dateOfBirth());
+        newUser.setDateOfBirth(LocalDate.parse(user.dateOfBirth()));
         newUser.setPhoneNumber(user.phoneNumber());
         return userConverter.fromUserModelToGetDto(userRepository.save(newUser));
     }

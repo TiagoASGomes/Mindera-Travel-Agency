@@ -9,7 +9,7 @@ import java.util.List;
 
 @Component
 public class UserConverter {
-    public User fromUserCreateDtoToModel(UserCreateDto user) {
+    public static User fromUserCreateDtoToModel(UserCreateDto user) {
         return User.builder()
                 .email(user.email())
                 .password(user.password())
@@ -25,7 +25,6 @@ public class UserConverter {
                 user.getId(),
                 user.getUserName(),
                 user.getEmail(),
-                user.getPassword(),
                 user.getDateOfBirth(),
                 user.getPhoneNumber()
         );
@@ -36,4 +35,6 @@ public class UserConverter {
                 .map(this::fromUserModelToGetDto)
                 .toList();
     }
+
+
 }
