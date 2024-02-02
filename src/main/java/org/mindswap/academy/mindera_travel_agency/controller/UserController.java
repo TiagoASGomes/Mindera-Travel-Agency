@@ -1,6 +1,7 @@
 package org.mindswap.academy.mindera_travel_agency.controller;
 
 import jakarta.validation.Valid;
+import org.mindswap.academy.mindera_travel_agency.dto.external.ExternalHotelInfoDto;
 import org.mindswap.academy.mindera_travel_agency.dto.flight_ticket.TicketGetDto;
 import org.mindswap.academy.mindera_travel_agency.dto.hotel.HotelReservationGetDto;
 import org.mindswap.academy.mindera_travel_agency.dto.invoice.InvoiceGetDto;
@@ -37,7 +38,10 @@ public class UserController {
         return ResponseEntity.ok(userService.getById(id));
     }
 
-    //TODO get by email
+    @GetMapping("/email/{email}")
+    public ResponseEntity<UserGetDto> getByEmail(@PathVariable String email) throws UserNotFoundException {
+        return ResponseEntity.ok(userService.getByEmail(email));
+    }
 
     @GetMapping("/{id}/invoices")
     public ResponseEntity<List<InvoiceGetDto>> getAllInvoices(@PathVariable Long id) throws UserNotFoundException {
@@ -52,6 +56,17 @@ public class UserController {
     @GetMapping("/{id}/tickets")
     public ResponseEntity<List<TicketGetDto>> getAllTickets(@PathVariable Long id) throws UserNotFoundException {
         return ResponseEntity.ok(userService.getAllTickets(id));
+    }
+
+    //TODO chamar external apis
+    @GetMapping("/hotels")
+    public ResponseEntity<List<ExternalHotelInfoDto>> getAvailableHotels() {
+        return ResponseEntity.ok(userService.getAvailableHotels());
+    }
+
+    @GetMapping("/flights")
+    public ResponseEntity<List<ExternalHotelInfoDto>> getAvailableFlights() {
+        return ResponseEntity.ok(userService.getAvailableFlights());
     }
 
     @PostMapping("/")

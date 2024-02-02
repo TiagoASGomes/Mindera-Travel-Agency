@@ -1,5 +1,6 @@
 package org.mindswap.academy.mindera_travel_agency.service.interfaces;
 
+import org.mindswap.academy.mindera_travel_agency.dto.external.ExternalHotelInfoDto;
 import org.mindswap.academy.mindera_travel_agency.dto.flight_ticket.TicketGetDto;
 import org.mindswap.academy.mindera_travel_agency.dto.hotel.HotelReservationGetDto;
 import org.mindswap.academy.mindera_travel_agency.dto.invoice.InvoiceGetDto;
@@ -32,4 +33,10 @@ public interface UserService {
     List<HotelReservationGetDto> getAllReservations(Long id) throws UserNotFoundException;
 
     List<TicketGetDto> getAllTickets(Long id) throws UserNotFoundException;
+
+    UserGetDto getByEmail(String email) throws UserNotFoundException;
+
+    List<ExternalHotelInfoDto> getAvailableHotels();
+
+    List<ExternalHotelInfoDto> getAvailableFlights();
 }

@@ -6,13 +6,12 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mindswap.academy.mindera_travel_agency.aspect.AgencyError;
 import org.mindswap.academy.mindera_travel_agency.dto.fare_class.FareClassGetDto;
-import org.mindswap.academy.mindera_travel_agency.repository.FareClassTestRepository;
-import org.mindswap.academy.mindera_travel_agency.repository.FlightTicketTestRepository;
+import org.mindswap.academy.mindera_travel_agency.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Profile;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
@@ -26,7 +25,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
-@Profile("test")
+@ActiveProfiles("test")
 class FareClassControllerTest {
 
     private final String BASE_URL = "/api/v1/fare_classes/";
@@ -37,6 +36,12 @@ class FareClassControllerTest {
     private FareClassTestRepository fareClassTestRepository;
     @Autowired
     private FlightTicketTestRepository flightTicketTestRepository;
+    @Autowired
+    private PaymentStatusTestRepository paymentStatusTestRepository;
+    @Autowired
+    private InvoiceTestRepository invoiceTestRepository;
+    @Autowired
+    private UserTestRepository userTestRepository;
 
     @AfterEach
     void tearDown() {
@@ -279,5 +284,13 @@ class FareClassControllerTest {
         assertEquals(FARE_CLASS_IN_USE, agencyError.getMessage());
         assertEquals(1, fareClassTestRepository.count());
         flightTicketTestRepository.deleteAll();
+        flightTicketTestRepository.resetAutoIncrement();
+        invoiceTestRepository.deleteAll();
+        invoiceTestRepository.resetAutoIncrement();
+        paymentStatusTestRepository.deleteAll();
+        paymentStatusTestRepository.resetAutoIncrement();
+        userTestRepository.deleteAll();
+        userTestRepository.resetAutoIncrement();
+
     }
 }
