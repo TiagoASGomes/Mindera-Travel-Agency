@@ -14,8 +14,8 @@ public interface HotelReservationTestRepository extends HotelReservationReposito
     @Query(value = "ALTER TABLE hotel_reservations ALTER COLUMN id RESTART WITH 1", nativeQuery = true)
     void resetAutoIncrement();
 
-    @Modifying
-    @Transactional
-    @Query(value = "DELETE FROM hotel_reservations", nativeQuery = true)
-    void deleteAll();
+//    @Modifying
+//    @Transactional
+//    @Query(value = "DELETE FROM hotel_reservations", nativeQuery = true)
+//    void deleteAll();
 }

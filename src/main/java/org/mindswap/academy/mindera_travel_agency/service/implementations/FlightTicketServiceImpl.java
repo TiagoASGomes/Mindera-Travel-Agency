@@ -27,9 +27,6 @@ import static org.mindswap.academy.mindera_travel_agency.util.Messages.*;
 
 @Service
 public class FlightTicketServiceImpl implements FlightTicketService {
-
-    //TODO Separar patch em personal info e ticket info
-
     private final FlightTicketConverter flightTicketConverter;
     private final FlightTicketRepository flightTicketRepository;
     private final FareClassService fareClassService;
@@ -100,7 +97,7 @@ public class FlightTicketServiceImpl implements FlightTicketService {
         dbTicket.setSeatNumber(flightTicket.seatNumber());
         dbTicket.setPrice(flightTicket.price());
         invoiceService.updatePrice(dbTicket.getInvoice().getId());
-        dbTicket.setFareClass(fareClassService.findByName(flightTicket.fareClass()));//TEST
+        dbTicket.setFareClass(fareClassService.findByName(flightTicket.fareClass()));
         dbTicket.setMaxLuggageWeight(flightTicket.maxLuggageWeight());
         dbTicket.setCarryOnLuggage(flightTicket.carryOnLuggage());
         return flightTicketConverter.fromEntityToGetDto(flightTicketRepository.save(dbTicket));

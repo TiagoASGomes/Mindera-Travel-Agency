@@ -1,31 +1,37 @@
 package org.mindswap.academy.mindera_travel_agency.model;
 
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 import java.util.Set;
 
 @Entity
 @Table(name = "invoices")
-@Data
+@Getter
+@Setter
+@AllArgsConstructor
 @NoArgsConstructor
 public class Invoice {
+    //TODO adicionar descontos paymentMethod, paymentCurrency.
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private int totalPrice;
     private LocalDateTime paymentDate;
-    @ManyToOne(cascade = CascadeType.ALL,
-            fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.EAGER)
     private PaymentStatus paymentStatus;
-    @ManyToOne(cascade = CascadeType.ALL,
-            fetch = FetchType.LAZY)
+    @ManyToOne
     private User user;
-    @OneToOne(mappedBy = "invoice")
+    @OneToOne(mappedBy = "invoice",
+            cascade = CascadeType.ALL,
+            fetch = FetchType.EAGER)
     private HotelReservation hotelReservation;
-    @OneToMany(mappedBy = "invoice")
+    @OneToMany(mappedBy = "invoice",
+            cascade = CascadeType.REMOVE)
     private Set<FlightTicket> flightTickets;
 
     public Invoice(User user) {

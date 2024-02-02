@@ -28,6 +28,7 @@ public class UserController {
 
     @GetMapping("/")
     public ResponseEntity<List<UserGetDto>> getAll() {
+        //TODO paginar
         return ResponseEntity.ok(userService.getAll());
     }
 
@@ -35,6 +36,8 @@ public class UserController {
     public ResponseEntity<UserGetDto> getById(@PathVariable Long id) throws UserNotFoundException {
         return ResponseEntity.ok(userService.getById(id));
     }
+
+    //TODO get by email
 
     @GetMapping("/{id}/invoices")
     public ResponseEntity<List<InvoiceGetDto>> getAllInvoices(@PathVariable Long id) throws UserNotFoundException {
