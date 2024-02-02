@@ -5,7 +5,7 @@ import org.mindswap.academy.mindera_travel_agency.dto.hotel.HotelReservationGetD
 import org.mindswap.academy.mindera_travel_agency.dto.invoice.InvoiceGetDto;
 import org.mindswap.academy.mindera_travel_agency.dto.user.UserCreateDto;
 import org.mindswap.academy.mindera_travel_agency.dto.user.UserGetDto;
-import org.mindswap.academy.mindera_travel_agency.exception.User.EmailNotFoundException;
+import org.mindswap.academy.mindera_travel_agency.exception.User.DuplicateEmailException;
 import org.mindswap.academy.mindera_travel_agency.exception.User.UserNotFoundException;
 import org.mindswap.academy.mindera_travel_agency.model.User;
 
@@ -13,13 +13,13 @@ import java.util.List;
 
 public interface UserService {
 
-    UserGetDto add(UserCreateDto user) throws EmailNotFoundException;
+    UserGetDto add(UserCreateDto user) throws DuplicateEmailException;
 
     List<UserGetDto> getAll();
 
-    UserGetDto update(long id, UserCreateDto user) throws UserNotFoundException, EmailNotFoundException;
+//    UserGetDto update(long id, UserCreateDto user) throws UserNotFoundException, DuplicateEmailException;
 
-    UserGetDto put(long id, UserCreateDto user) throws UserNotFoundException;
+    UserGetDto put(long id, UserCreateDto user) throws UserNotFoundException, DuplicateEmailException;
 
     User findById(long id) throws UserNotFoundException;
 

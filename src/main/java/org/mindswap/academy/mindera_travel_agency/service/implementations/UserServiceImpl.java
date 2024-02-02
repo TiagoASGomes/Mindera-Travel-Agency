@@ -9,7 +9,7 @@ import org.mindswap.academy.mindera_travel_agency.dto.hotel.HotelReservationGetD
 import org.mindswap.academy.mindera_travel_agency.dto.invoice.InvoiceGetDto;
 import org.mindswap.academy.mindera_travel_agency.dto.user.UserCreateDto;
 import org.mindswap.academy.mindera_travel_agency.dto.user.UserGetDto;
-import org.mindswap.academy.mindera_travel_agency.exception.User.EmailNotFoundException;
+import org.mindswap.academy.mindera_travel_agency.exception.User.DuplicateEmailException;
 import org.mindswap.academy.mindera_travel_agency.exception.User.UserNotFoundException;
 import org.mindswap.academy.mindera_travel_agency.model.FlightTicket;
 import org.mindswap.academy.mindera_travel_agency.model.HotelReservation;
@@ -20,12 +20,13 @@ import org.mindswap.academy.mindera_travel_agency.service.interfaces.UserService
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
-import static org.mindswap.academy.mindera_travel_agency.util.Messages.*;
+import static org.mindswap.academy.mindera_travel_agency.util.Messages.DUPLICATE_EMAIL;
+import static org.mindswap.academy.mindera_travel_agency.util.Messages.ID_NOT_FOUND;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -47,9 +48,9 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
-    public UserGetDto add(UserCreateDto user) throws EmailNotFoundException {
+    public UserGetDto add(UserCreateDto user) throws DuplicateEmailException {
         if (userRepository.findByEmail(user.email()).isPresent()) {
-            throw new EmailNotFoundException(EMAIL_NOT_FOUND);
+            throw new DuplicateEmailException(DUPLICATE_EMAIL);
         }
         User newUser = userConverter.fromUserCreateDtoToModel(user);
         return userConverter.fromUserModelToGetDto(userRepository.save(newUser));
@@ -60,23 +61,27 @@ public class UserServiceImpl implements UserService {
         return userConverter.fromUserModelListToGetDto(userRepository.findAll());
     }
 
-    @Override
-    public UserGetDto update(long id, UserCreateDto user) throws UserNotFoundException, EmailNotFoundException {
-        User newUser = findById(id);
-        if (userRepository.findByEmail(user.email()).isPresent() && !newUser.getEmail().equals(user.email())) {
-            throw new EmailNotFoundException(EMAIL_ALREADY_EXISTS);
-        }
-        newUser.setEmail(user.email());
-        newUser.setUserName(user.userName());
-        newUser.setDateOfBirth(LocalDate.parse(user.dateOfBirth()));
-        newUser.setPhoneNumber(user.phoneNumber());
-        return userConverter.fromUserModelToGetDto(userRepository.save(newUser));
-    }
+//    @Override
+//    public UserGetDto update(long id, UserCreateDto user) throws UserNotFoundException, DuplicateEmailException {
+//        User newUser = findById(id);
+//        if (userRepository.findByEmail(user.email()).isPresent() && !newUser.getEmail().equals(user.email())) {
+//            throw new DuplicateEmailException(DUPLICATE_EMAIL);
+//        }
+//        newUser.setEmail(user.email());
+//        newUser.setUserName(user.userName());
+//        newUser.setDateOfBirth(user.dateOfBirth());
+//        newUser.setPhoneNumber(user.phoneNumber());
+//        return userConverter.fromUserModelToGetDto(userRepository.save(newUser));
+//    }
 
 
     @Override
-    public UserGetDto put(long id, UserCreateDto user) throws UserNotFoundException {
+    public UserGetDto put(long id, UserCreateDto user) throws UserNotFoundException, DuplicateEmailException {
         findById(id);
+        Optional<User> userOptional = userRepository.findByEmail(user.email());
+        if (userOptional.isPresent() && userOptional.get().getId() != id) {
+            throw new DuplicateEmailException(DUPLICATE_EMAIL);
+        }
         User newUser = userConverter.fromUserCreateDtoToModel(user);
         newUser.setId(id);
         return userConverter.fromUserModelToGetDto(userRepository.save(newUser));

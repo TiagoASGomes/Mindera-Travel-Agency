@@ -9,7 +9,7 @@ import java.util.List;
 
 @Component
 public class UserConverter {
-    public static User fromUserCreateDtoToModel(UserCreateDto user) {
+    public User fromUserCreateDtoToModel(UserCreateDto user) {
         return User.builder()
                 .email(user.email())
                 .password(user.password())
