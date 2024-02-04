@@ -90,19 +90,22 @@ class InvoiceControllerTest {
 
     @Test
     @DisplayName("Test get all and expect status 200 and a list of invoices")
-    void getAll() throws Exception {
+    void getAllPaged() throws Exception {
         // GIVEN
-        mockMvc.perform(post(BASE_URL)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(EXAMPLE1));
-        mockMvc.perform(post(BASE_URL)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(EXAMPLE1));
+        for (int i = 0; i < 30; i++) {
+            mockMvc.perform(post(BASE_URL)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(EXAMPLE1));
+        }
         // WHEN
-        mockMvc.perform(get(BASE_URL))
+        mockMvc.perform(get(BASE_URL + "?page=0&size=20"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$", hasSize(2)));
+                .andExpect(jsonPath("$.content", hasSize(20)));
+        mockMvc.perform(get(BASE_URL + "?page=1&size=20"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.content", hasSize(10)));
     }
 
     @Test

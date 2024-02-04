@@ -8,13 +8,14 @@ import org.mindswap.academy.mindera_travel_agency.exception.invoice.InvoiceNotFo
 import org.mindswap.academy.mindera_travel_agency.exception.invoice.PaymentCompletedException;
 import org.mindswap.academy.mindera_travel_agency.exception.payment_status.PaymentStatusNotFoundException;
 import org.mindswap.academy.mindera_travel_agency.model.Invoice;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
-import java.util.List;
 
 public interface InvoiceService {
     Invoice findById(Long id) throws InvoiceNotFoundException;
 
-    List<InvoiceGetDto> getAll();
+    Page<InvoiceGetDto> getAll(Pageable page);
 
     InvoiceGetDto getById(Long id) throws InvoiceNotFoundException;
 

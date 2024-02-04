@@ -15,9 +15,10 @@ import org.mindswap.academy.mindera_travel_agency.service.interfaces.InvoiceServ
 import org.mindswap.academy.mindera_travel_agency.service.interfaces.PaymentStatusService;
 import org.mindswap.academy.mindera_travel_agency.service.interfaces.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 import static org.mindswap.academy.mindera_travel_agency.util.Messages.*;
 
@@ -38,8 +39,10 @@ public class InvoiceServiceImpl implements InvoiceService {
     }
 
     @Override
-    public List<InvoiceGetDto> getAll() {
-        return invoiceConverter.fromEntityListToGetDtoList(invoiceRepository.findAll());
+    @Cacheable("tripCache")
+    public Page<InvoiceGetDto> getAll(Pageable page) {
+        Page<Invoice> result = invoiceRepository.findAll(page);
+        return result.map(invoiceConverter::fromEntityToGetDto);
     }
 
     @Override
