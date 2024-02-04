@@ -7,7 +7,10 @@ import org.mindswap.academy.mindera_travel_agency.dto.hotel.HotelReservationGetD
 import org.mindswap.academy.mindera_travel_agency.dto.invoice.InvoiceGetDto;
 import org.mindswap.academy.mindera_travel_agency.dto.user.UserCreateDto;
 import org.mindswap.academy.mindera_travel_agency.dto.user.UserGetDto;
+import org.mindswap.academy.mindera_travel_agency.dto.user.UserUpdateDto;
+import org.mindswap.academy.mindera_travel_agency.dto.user.UserUpdatePasswordDto;
 import org.mindswap.academy.mindera_travel_agency.exception.User.DuplicateEmailException;
+import org.mindswap.academy.mindera_travel_agency.exception.User.PasswordsDidNotMatchException;
 import org.mindswap.academy.mindera_travel_agency.exception.User.UserNotFoundException;
 import org.mindswap.academy.mindera_travel_agency.service.interfaces.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +34,11 @@ public class UserController {
     public ResponseEntity<List<UserGetDto>> getAll() {
         //TODO paginar
         return ResponseEntity.ok(userService.getAll());
+    }
+
+    @GetMapping("/active")
+    public ResponseEntity<List<UserGetDto>> getAllActive() {
+        return ResponseEntity.ok(userService.getAllActive());
     }
 
     @GetMapping("/{id}")
@@ -58,14 +66,14 @@ public class UserController {
         return ResponseEntity.ok(userService.getAllTickets(id));
     }
 
-    //TODO chamar external apis
-    @GetMapping("/hotels")
-    public ResponseEntity<List<ExternalHotelInfoDto>> getAvailableHotels() {
+    //TODO chamar external apis adicionar filtros e sort
+    @GetMapping("/hotels/{location}/{arrivalDate}/{leaveDate}")
+    public ResponseEntity<List<ExternalHotelInfoDto>> getAvailableHotels(@PathVariable String location, @PathVariable String arrivalDate, @PathVariable String leaveDate) {
         return ResponseEntity.ok(userService.getAvailableHotels());
     }
 
-    @GetMapping("/flights")
-    public ResponseEntity<List<ExternalHotelInfoDto>> getAvailableFlights() {
+    @GetMapping("/flights/{source}/{destination}/{arrivalDate}/")
+    public ResponseEntity<List<ExternalHotelInfoDto>> getAvailableFlights(@PathVariable String source, @PathVariable String destination, @PathVariable String arrivalDate) {
         return ResponseEntity.ok(userService.getAvailableFlights());
     }
 
@@ -74,11 +82,15 @@ public class UserController {
         return new ResponseEntity<>(userService.add(user), HttpStatus.CREATED);
     }
 
-    //TODO mudar patch
-//    @PatchMapping("/{id}")
-//    public ResponseEntity<UserGetDto> update(@PathVariable Long id, @Valid @RequestBody UserCreateDto user) throws UserNotFoundException, DuplicateEmailException {
-//        return new ResponseEntity<>(userService.update(id, user), HttpStatus.OK);
-//    }
+    @PatchMapping("/{id}")
+    public ResponseEntity<UserGetDto> update(@PathVariable Long id, @Valid @RequestBody UserUpdateDto user) throws UserNotFoundException, DuplicateEmailException {
+        return new ResponseEntity<>(userService.update(id, user), HttpStatus.OK);
+    }
+
+    @PatchMapping("/{id}/password")
+    public ResponseEntity<UserGetDto> updatePassword(@PathVariable Long id, @Valid @RequestBody UserUpdatePasswordDto user) throws UserNotFoundException, PasswordsDidNotMatchException {
+        return new ResponseEntity<>(userService.updatePassword(id, user), HttpStatus.OK);
+    }
 
     @PutMapping("/{id}")
     public ResponseEntity<UserGetDto> put(@PathVariable Long id, @Valid @RequestBody UserCreateDto user) throws UserNotFoundException, DuplicateEmailException {

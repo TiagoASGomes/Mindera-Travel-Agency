@@ -56,10 +56,10 @@ class FareClassControllerTest {
         String json1 = "{\"className\": \"first\"}";
         String json2 = "{\"className\": \"economy\"}";
         mockMvc.perform(post(BASE_URL)
-                .contentType("application/json")
+                .contentType(MediaType.APPLICATION_JSON)
                 .content(json1));
         mockMvc.perform(post(BASE_URL)
-                .contentType("application/json")
+                .contentType(MediaType.APPLICATION_JSON)
                 .content(json2));
         // WHEN
         mockMvc.perform(get(BASE_URL))
@@ -84,7 +84,7 @@ class FareClassControllerTest {
         // GIVEN
         String json = "{\"className\": \"first\"}";
         mockMvc.perform(post(BASE_URL)
-                .contentType("application/json")
+                .contentType(MediaType.APPLICATION_JSON)
                 .content(json));
         // WHEN
         String respone = mockMvc.perform(get(BASE_URL + "/name/first"))
@@ -116,7 +116,7 @@ class FareClassControllerTest {
         String json = "{\"className\": \"first\"}";
         // WHEN
         String response = mockMvc.perform(post(BASE_URL)
-                        .contentType("application/json")
+                        .contentType(MediaType.APPLICATION_JSON)
                         .content(json))
                 .andExpect(status().isCreated())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -134,11 +134,11 @@ class FareClassControllerTest {
         String json1 = "{\"className\": \"first\"}";
         String json2 = "{\"className\": \"first\"}";
         mockMvc.perform(post(BASE_URL)
-                .contentType("application/json")
+                .contentType(MediaType.APPLICATION_JSON)
                 .content(json1));
         // WHEN
         String response = mockMvc.perform(post(BASE_URL)
-                        .contentType("application/json")
+                        .contentType(MediaType.APPLICATION_JSON)
                         .content(json2))
                 .andExpect(status().isBadRequest())
                 .andReturn().getResponse().getContentAsString();
@@ -154,7 +154,7 @@ class FareClassControllerTest {
         String json = "{\"className\": \"first1\"}";
         // WHEN
         String response = mockMvc.perform(post(BASE_URL)
-                        .contentType("application/json")
+                        .contentType(MediaType.APPLICATION_JSON)
                         .content(json))
                 .andExpect(status().isBadRequest())
                 .andReturn().getResponse().getContentAsString();
@@ -164,17 +164,76 @@ class FareClassControllerTest {
     }
 
     @Test
+    @DisplayName("Test create list and expect status 201 and fare classes")
+    void createList() throws Exception {
+        // GIVEN
+        String json = "[{\"className\": \"first\"},{\"className\": \"economy\"}]";
+        // WHEN
+        String response = mockMvc.perform(post(BASE_URL + "list")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json))
+                .andExpect(status().isCreated())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andReturn().getResponse().getContentAsString();
+        FareClassGetDto[] fareClassGetDtos = objectMapper.readValue(response, FareClassGetDto[].class);
+        // THEN
+        assertEquals(1L, fareClassGetDtos[0].id());
+        assertEquals("first", fareClassGetDtos[0].className());
+        assertEquals(2L, fareClassGetDtos[1].id());
+        assertEquals("economy", fareClassGetDtos[1].className());
+        assertEquals(2, fareClassTestRepository.count());
+    }
+
+    @Test
+    @DisplayName("Test create list with duplicate name and expect status 400")
+    void createListWithDuplicateName() throws Exception {
+        // GIVEN
+        String json1 = "[{\"className\": \"first\"},{\"className\": \"economy\"}]";
+        String json2 = "[{\"className\": \"first\"},{\"className\": \"economy\"},{\"className\": \"first\"}]";
+        mockMvc.perform(post(BASE_URL + "list")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(json1));
+        // WHEN
+        String response = mockMvc.perform(post(BASE_URL + "list")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json2))
+                .andExpect(status().isBadRequest())
+                .andReturn().getResponse().getContentAsString();
+        AgencyError agencyError = objectMapper.readValue(response, AgencyError.class);
+        // THEN
+        assertEquals(NAME_TAKEN, agencyError.getMessage());
+        assertEquals(2, fareClassTestRepository.count());
+    }
+
+    @Test
+    @DisplayName("Test create list with second name invalid and expect status 400")
+    void createListWithSecondNameInvalid() throws Exception {
+        // GIVEN
+        String json = "[{\"className\": \"first\"},{\"className\": \"first\"}]";
+        // WHEN
+        String response = mockMvc.perform(post(BASE_URL + "list")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json))
+                .andExpect(status().isBadRequest())
+                .andReturn().getResponse().getContentAsString();
+        AgencyError agencyError = objectMapper.readValue(response, AgencyError.class);
+        // THEN
+        assertEquals(NAME_TAKEN, agencyError.getMessage());
+        assertEquals(1, fareClassTestRepository.count());
+    }
+
+    @Test
     @DisplayName("Test update and expect status 200 and fare class")
     void update() throws Exception {
         // GIVEN
         String json = "{\"className\": \"first\"}";
         String jsonUpdate = "{\"className\": \"economy\"}";
         mockMvc.perform(post(BASE_URL)
-                .contentType("application/json")
+                .contentType(MediaType.APPLICATION_JSON)
                 .content(json));
         // WHEN
         String response = mockMvc.perform(put(BASE_URL + "1")
-                        .contentType("application/json")
+                        .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonUpdate))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -192,10 +251,10 @@ class FareClassControllerTest {
         String json1 = "{\"className\": \"first\"}";
         String json2 = "{\"className\": \"economy\"}";
         mockMvc.perform(post(BASE_URL)
-                .contentType("application/json")
+                .contentType(MediaType.APPLICATION_JSON)
                 .content(json1));
         mockMvc.perform(post(BASE_URL)
-                .contentType("application/json")
+                .contentType(MediaType.APPLICATION_JSON)
                 .content(json2));
         // WHEN
         String response = mockMvc.perform(put(BASE_URL + "2")
@@ -215,7 +274,7 @@ class FareClassControllerTest {
         String json = "{\"className\": \"first\"}";
         // WHEN
         String response = mockMvc.perform(put(BASE_URL + "1")
-                        .contentType("application/json")
+                        .contentType(MediaType.APPLICATION_JSON)
                         .content(json))
                 .andExpect(status().isNotFound())
                 .andReturn().getResponse().getContentAsString();
@@ -230,7 +289,7 @@ class FareClassControllerTest {
         // GIVEN
         String json = "{\"className\": \"first\"}";
         mockMvc.perform(post(BASE_URL)
-                .contentType("application/json")
+                .contentType(MediaType.APPLICATION_JSON)
                 .content(json));
         // WHEN
         mockMvc.perform(delete(BASE_URL + "1"))
@@ -261,7 +320,7 @@ class FareClassControllerTest {
         String paymentStatusJson = "{\"statusName\":\"NOT_REQUESTED\"}";
         String flightJson = "{\"carryOnLuggage\": true,\"email\": \"teste@example.com\",\"fName\": \"teste um\",\"fareClass\": \"first\",\"invoiceId\": 1,\"maxLuggageWeight\": \"22\",\"phone\": \"910410860\",\"price\": 100,\"seatNumber\": \"2B\"}";
         mockMvc.perform(post(BASE_URL)
-                .contentType("application/json")
+                .contentType(MediaType.APPLICATION_JSON)
                 .content(json));
         mockMvc.perform(post("/api/v1/users/")
                 .contentType(MediaType.APPLICATION_JSON)

@@ -12,6 +12,7 @@ import org.mindswap.academy.mindera_travel_agency.service.interfaces.PaymentStat
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -74,6 +75,15 @@ public class PaymentStatusServiceImpl implements PaymentStatusService {
             throw new PaymentStatusInUseException(PAYMENT_STATUS_IN_USE);
         }
         paymentStatusRepository.deleteById(id);
+    }
+
+    @Override
+    public List<PaymentStatusGetDto> createList(List<PaymentStatusCreateDto> paymentStatusList) throws StatusNameAlreadyExistsException {
+        List<PaymentStatusGetDto> result = new ArrayList<>();
+        for (PaymentStatusCreateDto paymentStatus : paymentStatusList) {
+            result.add(create(paymentStatus));
+        }
+        return result;
     }
 
     public PaymentStatus findById(Long id) throws PaymentStatusNotFoundException {

@@ -17,7 +17,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/fare_classes")
 public class FareClassController {
-    //TODO add post with list of fare classes
 
     private final FareClassService fareClassService;
 
@@ -39,6 +38,11 @@ public class FareClassController {
     @PostMapping("/")
     public ResponseEntity<FareClassGetDto> create(@Valid @RequestBody FareClassCreateDto fareClass) throws FareClassDuplicateNameException {
         return new ResponseEntity<>(fareClassService.create(fareClass), HttpStatus.CREATED);
+    }
+
+    @PostMapping("/list")
+    public ResponseEntity<List<FareClassGetDto>> createList(@Valid @RequestBody List<FareClassCreateDto> fareClasses) throws FareClassDuplicateNameException {
+        return new ResponseEntity<>(fareClassService.createList(fareClasses), HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")

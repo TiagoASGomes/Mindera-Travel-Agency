@@ -18,6 +18,8 @@ public interface FareClassService {
 
     FareClassGetDto create(FareClassCreateDto fareClass) throws FareClassDuplicateNameException;
 
+    List<FareClassGetDto> createList(List<FareClassCreateDto> fareClasses) throws FareClassDuplicateNameException;
+
     FareClassGetDto update(Long id, FareClassCreateDto fareClass) throws FareClassDuplicateNameException, FareClassNotFoundException;
 
     void delete(Long id) throws FareClassNotFoundException, FareClassInUseException;

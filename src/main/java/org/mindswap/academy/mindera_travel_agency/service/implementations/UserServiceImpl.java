@@ -10,7 +10,10 @@ import org.mindswap.academy.mindera_travel_agency.dto.hotel.HotelReservationGetD
 import org.mindswap.academy.mindera_travel_agency.dto.invoice.InvoiceGetDto;
 import org.mindswap.academy.mindera_travel_agency.dto.user.UserCreateDto;
 import org.mindswap.academy.mindera_travel_agency.dto.user.UserGetDto;
+import org.mindswap.academy.mindera_travel_agency.dto.user.UserUpdateDto;
+import org.mindswap.academy.mindera_travel_agency.dto.user.UserUpdatePasswordDto;
 import org.mindswap.academy.mindera_travel_agency.exception.User.DuplicateEmailException;
+import org.mindswap.academy.mindera_travel_agency.exception.User.PasswordsDidNotMatchException;
 import org.mindswap.academy.mindera_travel_agency.exception.User.UserNotFoundException;
 import org.mindswap.academy.mindera_travel_agency.model.FlightTicket;
 import org.mindswap.academy.mindera_travel_agency.model.HotelReservation;
@@ -52,9 +55,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserGetDto add(UserCreateDto user) throws DuplicateEmailException {
-        if (userRepository.findByEmail(user.email()).isPresent()) {
-            throw new DuplicateEmailException(DUPLICATE_EMAIL);
-        }
+        checkDuplicateEmail(0, user.email());
         User newUser = userConverter.fromUserCreateDtoToModel(user);
         return userConverter.fromUserModelToGetDto(userRepository.save(newUser));
     }
@@ -64,30 +65,21 @@ public class UserServiceImpl implements UserService {
         return userConverter.fromUserModelListToGetDto(userRepository.findAll());
     }
 
-//    @Override
-//    public UserGetDto update(long id, UserCreateDto user) throws UserNotFoundException, DuplicateEmailException {
-//        User newUser = findById(id);
-//        if (userRepository.findByEmail(user.email()).isPresent() && !newUser.getEmail().equals(user.email())) {
-//            throw new DuplicateEmailException(DUPLICATE_EMAIL);
-//        }
-//        newUser.setEmail(user.email());
-//        newUser.setUserName(user.userName());
-//        newUser.setDateOfBirth(user.dateOfBirth());
-//        newUser.setPhoneNumber(user.phoneNumber());
-//        return userConverter.fromUserModelToGetDto(userRepository.save(newUser));
-//    }
-
 
     @Override
     public UserGetDto put(long id, UserCreateDto user) throws UserNotFoundException, DuplicateEmailException {
         findById(id);
-        Optional<User> userOptional = userRepository.findByEmail(user.email());
-        if (userOptional.isPresent() && userOptional.get().getId() != id) {
-            throw new DuplicateEmailException(DUPLICATE_EMAIL);
-        }
+        checkDuplicateEmail(id, user.email());
         User newUser = userConverter.fromUserCreateDtoToModel(user);
         newUser.setId(id);
         return userConverter.fromUserModelToGetDto(userRepository.save(newUser));
+    }
+
+    private void checkDuplicateEmail(long id, String email) throws DuplicateEmailException {
+        Optional<User> userOptional = userRepository.findByEmail(email);
+        if (userOptional.isPresent() && userOptional.get().getId() != id) {
+            throw new DuplicateEmailException(DUPLICATE_EMAIL);
+        }
     }
 
     @Override
@@ -98,8 +90,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void delete(long id) throws UserNotFoundException {
-        findById(id);
-        userRepository.deleteById(id);
+        User user = findById(id);
+        user.setDeleted(true);
+        userRepository.save(user);
     }
 
     @Override
@@ -146,6 +139,37 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<ExternalHotelInfoDto> getAvailableFlights() {
         return null;
+    }
+
+    @Override
+    public List<UserGetDto> getAllActive() {
+        return userConverter.fromUserModelListToGetDto(userRepository.findAllActive());
+    }
+
+    @Override
+    public UserGetDto update(Long id, UserUpdateDto userDto) throws UserNotFoundException, DuplicateEmailException {
+        User dbUser = findById(id);
+        if (userDto.email() != null) {
+            checkDuplicateEmail(id, userDto.email());
+            dbUser.setEmail(userDto.email());
+        }
+        if (userDto.userName() != null) {
+            dbUser.setUserName(userDto.userName());
+        }
+        if (userDto.phoneNumber() != null) {
+            dbUser.setPhoneNumber(userDto.phoneNumber());
+        }
+        return userConverter.fromUserModelToGetDto(userRepository.save(dbUser));
+    }
+
+    @Override
+    public UserGetDto updatePassword(Long id, UserUpdatePasswordDto user) throws UserNotFoundException, PasswordsDidNotMatchException {
+        User dbUser = findById(id);
+        if (!user.oldPassword().equals(dbUser.getPassword())) {
+            throw new PasswordsDidNotMatchException(PASSWORDS_DID_NOT_MATCH);
+        }
+        dbUser.setPassword(user.newPassword());
+        return userConverter.fromUserModelToGetDto(userRepository.save(dbUser));
     }
 
 

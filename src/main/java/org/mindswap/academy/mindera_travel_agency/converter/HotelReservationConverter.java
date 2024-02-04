@@ -26,8 +26,8 @@ public class HotelReservationConverter {
                 hotelReservation.getPricePerNight(),
                 hotelReservation.getDurationOfStay(),
                 hotelReservation.getTotalPrice(),
-                hotelReservation.getCheckInDate(),
-                hotelReservation.getCheckOutDate(),
+                hotelReservation.getArrivalDate(),
+                hotelReservation.getLeaveDate(),
                 roomInfoConverter.fromEntityListToGetDtoList(hotelReservation.getRooms()));
     }
 
@@ -40,13 +40,13 @@ public class HotelReservationConverter {
 
     public HotelReservation fromCreateDtoToEntity(HotelReservationCreateDto dtoReservation, Invoice invoice) {
         return HotelReservation.builder()
-                .checkInDate(dtoReservation.checkInDate())
-                .checkOutDate(dtoReservation.checkOutDate())
+                .arrivalDate(dtoReservation.arrivalDate())
+                .leaveDate(dtoReservation.leaveDate())
                 .hotelName(dtoReservation.hotelInfo().name())
                 .hotelAddress(dtoReservation.hotelInfo().address())
                 .hotelPhoneNumber(dtoReservation.hotelInfo().phoneNumber())
                 .externalId(dtoReservation.hotelInfo().externalId())
-                .durationOfStay(dtoReservation.checkOutDate().getDayOfMonth() - dtoReservation.checkInDate().getDayOfMonth())
+                .durationOfStay(dtoReservation.leaveDate().getDayOfMonth() - dtoReservation.arrivalDate().getDayOfMonth())
                 .invoice(invoice)
                 .externalId(dtoReservation.hotelInfo().externalId())
                 .build();

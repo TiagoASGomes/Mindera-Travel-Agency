@@ -29,7 +29,7 @@ class InvoiceControllerTest {
     private static ObjectMapper objectMapper;
     private final String BASE_URL = "/api/v1/invoices/";
     private final String EXAMPLE1 = "{\"userId\": 1}";
-    private final String HOTEL_EXAMPLE = "{\"invoiceId\": 1,\"checkInDate\": \"2025-01-01T12:00:00\",\"checkOutDate\": \"2025-01-05T12:00:00\",\"hotelInfo\": {\"externalId\": 1,\"name\": \"Hotel Teste\",\"address\": \"teste adress\",\"phoneNumber\": \"120312312\",\"rooms\": [{\"externalId\":1,\"pricePerNight\":10,\"roomType\":\"TYPE\",\"roomNumber\":101,\"numberOfBeds\":3},{\"externalId\":2,\"pricePerNight\":15,\"roomType\":\"TYPE2\",\"roomNumber\":102,\"numberOfBeds\":2}]}}";
+    private final String HOTEL_EXAMPLE = "{\"invoiceId\": 1,\"arrivalDate\": \"2025-01-01T12:00:00\",\"leaveDate\": \"2025-01-05T12:00:00\",\"hotelInfo\": {\"externalId\": 1,\"name\": \"Hotel Teste\",\"address\": \"teste adress\",\"phoneNumber\": \"120312312\",\"rooms\": [{\"externalId\":1,\"pricePerNight\":10,\"roomType\":\"TYPE\",\"roomNumber\":101,\"numberOfBeds\":3},{\"externalId\":2,\"pricePerNight\":15,\"roomType\":\"TYPE2\",\"roomNumber\":102,\"numberOfBeds\":2}]}}";
     private final String FLIGHT_EXAMPLE = "{\"carryOnLuggage\": true,\"email\": \"teste@example.com\",\"fName\": \"teste um\",\"fareClass\": \"first\",\"invoiceId\": 1,\"maxLuggageWeight\": \"22\",\"phone\": \"910410860\",\"price\": 100,\"seatNumber\": \"2B\"}";
     private final String UPDATE_EXAMPLE1 = "{\"paymentStatus\": \"PENDING\", \"paymentDate\": \"2025-01-01T00:00:00\"}";
     @Autowired

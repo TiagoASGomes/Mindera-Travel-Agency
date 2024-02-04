@@ -321,99 +321,94 @@ public class UserControllerTest {
         assertTrue(error.getMessage().contains(INVALID_DATE));
     }
 
-//    @Test
-//    @DisplayName("Test patch request with correct data and expect status 200")
-//    void updateSomeUserFields() throws Exception {
-//
-//        String json = USER_JSON;
-//
-//        mockMvc.perform(post(BASE_URL)
-//                .contentType(MediaType.APPLICATION_JSON)
-//                .content(USER_JSON));
-//
-//
-//        String response = mockMvc.perform(patch(BASE_URL + "/1")
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .content(json))
-//                .andExpect(status().isOk())
-//                .andReturn().getResponse().getContentAsString();
-//
-//        User updatedUser = objectMapper.readValue(response, User.class);
-//
-//
-//        assertEquals(1L, updatedUser.getId());
-//        assertEquals("joe", updatedUser.getUserName());
-//        assertEquals("updated_joe@coldmail.com", updatedUser.getEmail());
-//        assertEquals("1995-01-01", updatedUser.getDateOfBirth());
-//        assertEquals("351 9********", updatedUser.getPhoneNumber());
-//        assertEquals("******", updatedUser.getPassword());
-//    }
+    @Test
+    @DisplayName("Test patch request with correct data and expect status 200")
+    void patchRequestWithCorrectDataExpectStatus200() throws Exception {
+        mockMvc.perform(post(BASE_URL)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(USER_JSON));
 
-//    @Test
-//    @DisplayName("Test patch request with incorrect data and expect status 400")
-//    void updateSomeUserFieldsWithIncorrectData() throws Exception {
-//        // GIVEN
-//        String json = USER_JSON;
-//
-//        mockMvc.perform(post(BASE_URL)
-//                .contentType(MediaType.APPLICATION_JSON)
-//                .content(USER_JSON));
-//
-//        // WHEN
-//        String response = mockMvc.perform(patch(BASE_URL + "/1")
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .content(json))
-//                .andExpect(status().isBadRequest())
-//                .andReturn().getResponse().getContentAsString();
-//
-//        AgencyError error = objectMapper.readValue(response, AgencyError.class);
-//
-//        // THEN
-//        assertTrue(error.getMessage().contains(INVALID_EMAIL));
-//        assertTrue(error.getMessage().contains(INVALID_DATE_OF_BIRTH));
-//        assertTrue(error.getMessage().contains(INVALID_PHONE_NUMBER));
-//        assertTrue(error.getMessage().contains(INVALID_USER_NAME));
-//        assertTrue(error.getMessage().contains(INVALID_PASSWORD));
-//    }
+        String updatedUserJson = "{\"userName\":\"updated_joe\",\"phoneNumber\":\"912345678\",\"email\":\"email2@example.com\"}";
 
-//    @Test
-//    @DisplayName("Test patch a user with non-existing id and expect status 404")
-//    void TestPatchUserWithNonExistingIdAndExpectStatus404() throws Exception {
-//        String userJson = "{\"email\":\"jane@coldmail.com\"}";
-//
-//        mockMvc.perform(patch(BASE_URL + "/9999")
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .content(userJson))
-//                .andExpect(status().isNotFound())
-//                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-//                .andExpect(jsonPath("$.message").value("User not found"));
-//    }
+        String response = mockMvc.perform(patch(BASE_URL + "/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(updatedUserJson))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andReturn().getResponse().getContentAsString();
 
-//    @Test
-//    @DisplayName("Test patch a user with duplicate email and expect status 400")
-//    void TestPatchUserWithDuplicateEmailAndExpectStatus400() throws Exception {
-//        String userJson = "{\"email\":\"joe@coldmail.com\"}";
-//
-//        mockMvc.perform(patch(BASE_URL + "/1")
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .content(userJson))
-//                .andExpect(status().isBadRequest())
-//                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-//                .andExpect(jsonPath("$.message").value("Email already exists"));
-//    }
+        UserGetDto updatedUser = objectMapper.readValue(response, UserGetDto.class);
 
-//    @Test
-//    @DisplayName("Test patch a user with invalid date of birth and expect status 400")
-//    void TestPatchUserWithInvalidDateOfBirthAndExpectStatus400() throws Exception {
-//        String userJson = "{\"dateOfBirth\":\"1992-13-01\"}";
-//
-//        mockMvc.perform(patch(BASE_URL + "/1")
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .content(userJson))
-//                .andExpect(status().isBadRequest())
-//                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-//                .andExpect(jsonPath("$.message").value("Invalid date of birth"));
-//    }
+        assertEquals(1, updatedUser.id());
+        assertEquals("updated_joe", updatedUser.userName());
+        assertEquals("email2@example.com", updatedUser.email());
+        assertEquals("1990-01-01", updatedUser.dateOfBirth().toString());
+        assertEquals("912345678", updatedUser.phoneNumber());
+    }
+
+    @Test
+    @DisplayName("Test patch a user with only username and expect status 200 and only username updated")
+    void TestPatchUserWithOnlyUsernameAndExpectStatus200AndOnlyUsernameUpdated() throws Exception {
+        mockMvc.perform(post(BASE_URL)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(USER_JSON));
+
+        String updatedUserJson = "{\"userName\":\"updated_joe\"}";
+
+        String response = mockMvc.perform(patch(BASE_URL + "/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(updatedUserJson))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andReturn().getResponse().getContentAsString();
+
+        UserGetDto updatedUser = objectMapper.readValue(response, UserGetDto.class);
+
+        assertEquals(1, updatedUser.id());
+        assertEquals("updated_joe", updatedUser.userName());
+        assertEquals("email@example.com", updatedUser.email());
+        assertEquals("1990-01-01", updatedUser.dateOfBirth().toString());
+        assertEquals("912345678", updatedUser.phoneNumber());
+    }
+
+    @Test
+    @DisplayName("Test update password with correct data and expect status 200")
+    void updatePasswordWithCorrectDataExpectStatus200() throws Exception {
+        mockMvc.perform(post(BASE_URL)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(USER_JSON));
+
+        String updatedUserJson = "{\"oldPassword\":\"zxlmn!!23K\",\"newPassword\":\"new123Password\"}";
+
+        mockMvc.perform(patch(BASE_URL + "/1/password")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(updatedUserJson))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON));
+
+        userTestRepository.findById(1L).ifPresent(user -> assertEquals("new123Password", user.getPassword()));
+    }
+
+    @Test
+    @DisplayName("Test update password with incorrect old password and expect status 400")
+    void updatePasswordWithIncorrectOldPasswordAndExpectStatus400() throws Exception {
+        mockMvc.perform(post(BASE_URL)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(USER_JSON));
+
+        String updatedUserJson = "{\"oldPassword\":\"wrong123Password\",\"newPassword\":\"new123Password\"}";
+
+        String response = mockMvc.perform(patch(BASE_URL + "/1/password")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(updatedUserJson))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andReturn().getResponse().getContentAsString();
+        AgencyError error = objectMapper.readValue(response, AgencyError.class);
+
+        assertEquals(PASSWORDS_DID_NOT_MATCH, error.getMessage());
+    }
+
 
     @Test
     @DisplayName("Test delete request with user in db and expect status 204")
@@ -426,8 +421,24 @@ public class UserControllerTest {
         mockMvc.perform(delete(BASE_URL + "/1"))
                 .andExpect(status().isNoContent());
 
-        assertEquals(0, userTestRepository.count());
-        assertFalse(userTestRepository.existsById(1L));
+        mockMvc.perform(get(BASE_URL + "active"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$", hasSize(0)));
+    }
+
+    @Test
+    @DisplayName("Test update a user with non-existing id and expect status 404")
+    void TestPatchUserWithNonExistingIdAndExpectStatus404() throws Exception {
+        String response = mockMvc.perform(put(BASE_URL + "9999")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(USER_JSON))
+                .andExpect(status().isNotFound())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andReturn().getResponse().getContentAsString();
+        AgencyError error = objectMapper.readValue(response, AgencyError.class);
+
+        assertEquals(ID_NOT_FOUND + 9999, error.getMessage());
     }
 
     @Test
@@ -440,28 +451,6 @@ public class UserControllerTest {
         AgencyError error = objectMapper.readValue(response, AgencyError.class);
 
         assertEquals(ID_NOT_FOUND + 9999, error.getMessage());
-    }
-
-    @Test
-    @DisplayName("Test delete a user with existing id and expect status 204")
-    void TestDeleteUserWithExistingIdAndExpectStatus204() throws Exception {
-        mockMvc.perform(post(BASE_URL)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(USER_JSON));
-        mockMvc.perform(delete(BASE_URL + "/1"))
-                .andExpect(status().isNoContent());
-    }
-
-    @Test
-    @DisplayName("Test delete a user with existing id and then get the user expect status 404")
-    void TestDeleteUserWithExistingIdAndThenGetTheUserExpectStatus404() throws Exception {
-        mockMvc.perform(post(BASE_URL)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(USER_JSON));
-        mockMvc.perform(delete(BASE_URL + "/1"))
-                .andExpect(status().isNoContent());
-
-        assertEquals(0, userTestRepository.count());
     }
 
 

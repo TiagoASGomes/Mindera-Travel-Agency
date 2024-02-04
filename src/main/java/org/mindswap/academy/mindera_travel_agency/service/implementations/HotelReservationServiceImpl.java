@@ -64,7 +64,7 @@ public class HotelReservationServiceImpl implements HotelReservationService {
     public HotelReservationGetDto create(HotelReservationCreateDto dtoReservation) throws InvoiceNotFoundException, HotelReservationNotFoundException, PaymentCompletedException, InvalidCheckInOutDateException {
         Invoice invoice = invoiceService.findById(dtoReservation.invoiceId());
         verifyIfInvoicePaid(invoice);
-        checkIfCheckInDateIsBeforeCheckOutDate(dtoReservation.checkInDate(), dtoReservation.checkOutDate());
+        checkIfCheckInDateIsBeforeCheckOutDate(dtoReservation.arrivalDate(), dtoReservation.leaveDate());
         HotelReservation convertedReservation = hRConverter.fromCreateDtoToEntity(dtoReservation, invoice);
         Set<RoomInfo> roomInfo = roomInfoConverter.fromExternalDtoListToEntityList(dtoReservation.hotelInfo().rooms());
         convertedReservation.setRooms(roomInfo);
@@ -84,7 +84,7 @@ public class HotelReservationServiceImpl implements HotelReservationService {
         dbReservation.getRooms().forEach(roomInfo -> roomInfoService.delete(roomInfo.getId(), dbReservation.getId()));
         Invoice invoice = invoiceService.findById(dtoReservation.invoiceId());
         verifyIfInvoicePaid(invoice);
-        checkIfCheckInDateIsBeforeCheckOutDate(dtoReservation.checkInDate(), dtoReservation.checkOutDate());
+        checkIfCheckInDateIsBeforeCheckOutDate(dtoReservation.arrivalDate(), dtoReservation.leaveDate());
         HotelReservation convertedReservation = hRConverter.fromCreateDtoToEntity(dtoReservation, invoice);
         Set<RoomInfo> roomInfo = roomInfoConverter.fromExternalDtoListToEntityList(dtoReservation.hotelInfo().rooms());
         convertedReservation.setRooms(roomInfo);
@@ -109,8 +109,8 @@ public class HotelReservationServiceImpl implements HotelReservationService {
         checkIfCheckInDateIsBeforeCheckOutDate(dtoReservation.checkInDate(), dtoReservation.checkOutDate());
         HotelReservation dbReservation = findById(id);
         verifyIfInvoicePaid(dbReservation.getInvoice());
-        dbReservation.setCheckInDate(dtoReservation.checkInDate());
-        dbReservation.setCheckOutDate(dtoReservation.checkOutDate());
+        dbReservation.setArrivalDate(dtoReservation.checkInDate());
+        dbReservation.setLeaveDate(dtoReservation.checkOutDate());
         dbReservation.setDurationOfStay(dtoReservation.checkOutDate().getDayOfMonth() - dtoReservation.checkInDate().getDayOfMonth());
         dbReservation.setTotalPrice(dbReservation.getPricePerNight() * dbReservation.getDurationOfStay());
         HotelReservationGetDto reservation = hRConverter.fromEntityToGetDto(hRRepository.save(dbReservation));

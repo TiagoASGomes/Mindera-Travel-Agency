@@ -12,6 +12,7 @@ import org.mindswap.academy.mindera_travel_agency.service.interfaces.FareClassSe
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -49,6 +50,15 @@ public class FareClassServiceImpl implements FareClassService {
         checkDuplicateName(fareClass.className());
         FareClass fareClassToSave = fareClassConverter.fromCreateDtoToEntity(fareClass);
         return fareClassConverter.fromEntityToGetDto(fareClassRepository.save(fareClassToSave));
+    }
+
+    @Override
+    public List<FareClassGetDto> createList(List<FareClassCreateDto> fareClasses) throws FareClassDuplicateNameException {
+        List<FareClassGetDto> returnList = new ArrayList<>();
+        for (FareClassCreateDto fareClass : fareClasses) {
+            returnList.add(create(fareClass));
+        }
+        return returnList;
     }
 
     @Override

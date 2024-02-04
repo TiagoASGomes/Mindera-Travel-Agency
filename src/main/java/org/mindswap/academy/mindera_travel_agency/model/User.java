@@ -18,12 +18,13 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    private String userName;
     @Column(unique = true)
     private String email;
     private String password;
-    private String userName;
     private LocalDate dateOfBirth;
     private String phoneNumber;
+    private boolean deleted;
     @OneToMany(mappedBy = "user")
     private Set<Invoice> invoices;
 

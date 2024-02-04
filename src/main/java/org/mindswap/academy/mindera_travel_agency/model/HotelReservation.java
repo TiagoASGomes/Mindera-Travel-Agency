@@ -25,8 +25,8 @@ public class HotelReservation {
     private int pricePerNight;
     private int durationOfStay;
     private int totalPrice;
-    private LocalDateTime checkInDate;
-    private LocalDateTime checkOutDate;
+    private LocalDateTime arrivalDate;
+    private LocalDateTime leaveDate;
     @OneToMany(mappedBy = "hotelReservation",
             fetch = FetchType.EAGER,
             cascade = CascadeType.ALL)
