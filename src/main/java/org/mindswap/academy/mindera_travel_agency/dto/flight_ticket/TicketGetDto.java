@@ -8,6 +8,7 @@ public record TicketGetDto(
         Long ticketNumber,
         String seatNumber,
         int price,
+        String fareClass,
         int maxLuggageWeight,
         boolean carryOnLuggage
 ) {

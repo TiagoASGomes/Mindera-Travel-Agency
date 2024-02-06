@@ -7,6 +7,7 @@ import org.mindswap.academy.mindera_travel_agency.dto.flight_ticket.TicketUpdate
 import org.mindswap.academy.mindera_travel_agency.dto.flight_ticket.TicketUpdateTicketDto;
 import org.mindswap.academy.mindera_travel_agency.exception.flight_tickets.FlightTicketDuplicateException;
 import org.mindswap.academy.mindera_travel_agency.exception.flight_tickets.FlightTicketNotFoundException;
+import org.mindswap.academy.mindera_travel_agency.exception.flight_tickets.MaxFlightPerInvoiceException;
 import org.mindswap.academy.mindera_travel_agency.exception.invoice.InvoiceNotFoundException;
 import org.mindswap.academy.mindera_travel_agency.exception.invoice.PaymentCompletedException;
 import org.mindswap.academy.mindera_travel_agency.service.interfaces.FlightTicketService;
@@ -35,18 +36,18 @@ public class FlightTicketController {
         return ResponseEntity.ok(flightTicketService.getAll(page));
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<TicketGetDto> getById(@PathVariable Long id) throws FlightTicketNotFoundException {
-        return ResponseEntity.ok(flightTicketService.getById(id));
-    }
-
     @GetMapping("/invoice/{invoiceId}")
     public ResponseEntity<List<TicketGetDto>> getAllByInvoice(@PathVariable Long invoiceId) throws InvoiceNotFoundException {
         return ResponseEntity.ok(flightTicketService.getAllByInvoice(invoiceId));
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<TicketGetDto> getById(@PathVariable Long id) throws FlightTicketNotFoundException {
+        return ResponseEntity.ok(flightTicketService.getById(id));
+    }
+
     @PostMapping("/")
-    public ResponseEntity<TicketGetDto> create(@Valid @RequestBody TicketCreateDto flightTicket) throws FlightTicketDuplicateException, InvoiceNotFoundException {
+    public ResponseEntity<TicketGetDto> create(@Valid @RequestBody TicketCreateDto flightTicket) throws FlightTicketDuplicateException, InvoiceNotFoundException, MaxFlightPerInvoiceException, PaymentCompletedException {
         return new ResponseEntity<>(flightTicketService.create(flightTicket), HttpStatus.CREATED);
     }
 
@@ -56,18 +57,18 @@ public class FlightTicketController {
     }
 
     @PatchMapping("/{id}/personal_info")
-    public ResponseEntity<TicketGetDto> updatePersonalInfo(@PathVariable Long id, @Valid @RequestBody TicketUpdatePersonalInfo flightTicket) throws FlightTicketNotFoundException, FlightTicketDuplicateException, PaymentCompletedException, InvoiceNotFoundException {
+    public ResponseEntity<TicketGetDto> updatePersonalInfo(@PathVariable Long id, @Valid @RequestBody TicketUpdatePersonalInfo flightTicket) throws FlightTicketNotFoundException, PaymentCompletedException {
         return ResponseEntity.ok(flightTicketService.updatePersonalInfo(id, flightTicket));
     }
 
     @PatchMapping("/{id}/ticket_info")
-    public ResponseEntity<TicketGetDto> updateTicketNumber(@PathVariable Long id, @Valid @RequestBody TicketUpdateTicketDto flightTicket) throws FlightTicketDuplicateException, FlightTicketNotFoundException, PaymentCompletedException, InvoiceNotFoundException {
+    public ResponseEntity<TicketGetDto> updateTicketNumber(@PathVariable Long id, @Valid @RequestBody TicketUpdateTicketDto flightTicket) throws FlightTicketNotFoundException, PaymentCompletedException, InvoiceNotFoundException {
         return ResponseEntity.ok(flightTicketService.updateTicketInfo(id, flightTicket));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) throws FlightTicketNotFoundException {
+    public ResponseEntity<Void> delete(@PathVariable Long id) throws FlightTicketNotFoundException, PaymentCompletedException {
         flightTicketService.delete(id);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok().build();
     }
 }
