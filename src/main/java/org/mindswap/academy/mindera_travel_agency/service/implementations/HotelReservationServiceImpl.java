@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import org.mindswap.academy.mindera_travel_agency.converter.HotelReservationConverter;
 import org.mindswap.academy.mindera_travel_agency.converter.RoomInfoConverter;
-import org.mindswap.academy.mindera_travel_agency.dto.external.ExternalRoomInfoDto;
+import org.mindswap.academy.mindera_travel_agency.dto.external.hotel.ExternalRoomInfoDto;
 import org.mindswap.academy.mindera_travel_agency.dto.hotel.HotelReservationCreateDto;
 import org.mindswap.academy.mindera_travel_agency.dto.hotel.HotelReservationDurationDto;
 import org.mindswap.academy.mindera_travel_agency.dto.hotel.HotelReservationGetDto;
@@ -130,13 +130,14 @@ public class HotelReservationServiceImpl implements HotelReservationService {
         return reservation;
     }
 
+    //TODO fix
     @Override
     public HotelReservationGetDto removeRoom(Long id, ExternalRoomInfoDto room) throws HotelReservationNotFoundException, PaymentCompletedException, InvoiceNotFoundException, RoomNotFoundException {
         HotelReservation hotelReservationToUpdate = findById(id);
         verifyIfInvoicePaid(hotelReservationToUpdate.getInvoice());
         checkIfRoomExists(hotelReservationToUpdate, room);
-        roomInfoService.delete(room.externalId(), hotelReservationToUpdate.getId());
-        hotelReservationToUpdate.removeRoom(room.externalId());
+        roomInfoService.delete(0L, hotelReservationToUpdate.getId());
+        hotelReservationToUpdate.removeRoom(0L);
         hotelReservationToUpdate.setPricePerNight(calculatePrice(hotelReservationToUpdate));
         hotelReservationToUpdate.setTotalPrice(hotelReservationToUpdate.getPricePerNight() * hotelReservationToUpdate.getDurationOfStay());
         hotelReservationToUpdate.setTotalPrice(hotelReservationToUpdate.getPricePerNight() * hotelReservationToUpdate.getDurationOfStay());
@@ -178,7 +179,7 @@ public class HotelReservationServiceImpl implements HotelReservationService {
 
     private void checkIfRoomExists(HotelReservation hotelReservationToUpdate, ExternalRoomInfoDto room) throws RoomNotFoundException {
         hotelReservationToUpdate.getRooms().stream()
-                .filter(roomInfo -> roomInfo.getExternalId().equals(room.externalId()))
+                .filter(roomInfo -> roomInfo.getRoomNumber() == 0L)
                 .findFirst()
                 .orElseThrow(() -> new RoomNotFoundException(ROOM_NOT_FOUND));
     }

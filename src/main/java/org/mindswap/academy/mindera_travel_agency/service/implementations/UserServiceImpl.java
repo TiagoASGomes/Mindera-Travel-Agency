@@ -1,11 +1,13 @@
 package org.mindswap.academy.mindera_travel_agency.service.implementations;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import org.mindswap.academy.mindera_travel_agency.converter.FlightTicketConverter;
 import org.mindswap.academy.mindera_travel_agency.converter.HotelReservationConverter;
 import org.mindswap.academy.mindera_travel_agency.converter.InvoiceConverter;
 import org.mindswap.academy.mindera_travel_agency.converter.UserConverter;
-import org.mindswap.academy.mindera_travel_agency.dto.external.ExternalHotelInfoDto;
+import org.mindswap.academy.mindera_travel_agency.dto.external.flight.ExternalFlightInfoDto;
+import org.mindswap.academy.mindera_travel_agency.dto.external.hotel.ExternalHotelInfoDto;
 import org.mindswap.academy.mindera_travel_agency.dto.flight_ticket.TicketGetDto;
 import org.mindswap.academy.mindera_travel_agency.dto.hotel.HotelReservationGetDto;
 import org.mindswap.academy.mindera_travel_agency.dto.invoice.InvoiceGetDto;
@@ -24,6 +26,7 @@ import org.mindswap.academy.mindera_travel_agency.repository.UserRepository;
 import org.mindswap.academy.mindera_travel_agency.service.interfaces.ExternalService;
 import org.mindswap.academy.mindera_travel_agency.service.interfaces.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -133,13 +136,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public String getAvailableHotels() throws UnirestException {
-        return externalService.getAvailableHotels();
+    public List<ExternalHotelInfoDto> getAvailableHotels(String location, String arrivalDate, String leaveDate, Pageable page) throws UnirestException, JsonProcessingException {
+        return externalService.getAvailableHotels(page.getPageNumber());
     }
 
     @Override
-    public List<ExternalHotelInfoDto> getAvailableFlights() {
-        return null;
+    public List<ExternalFlightInfoDto> getAvailableFlights(String source, String destination, String arrivalDate, Pageable page) throws UnirestException, JsonProcessingException {
+        return externalService.getFlights(page.getPageNumber());
     }
 
     @Override

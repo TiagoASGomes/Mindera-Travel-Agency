@@ -40,5 +40,5 @@ public class Messages {
     public static final String FARE_CLASS_IN_USE = "Fare class is in use";
     public static final String DUPLICATE_EMAIL = "Email already exists";
     public static final String PASSWORDS_DID_NOT_MATCH = "Old password does not match password in database";
-
+    public static final String INVOICE_NOT_COMPLETE = "Please finish planning your trip";
 }

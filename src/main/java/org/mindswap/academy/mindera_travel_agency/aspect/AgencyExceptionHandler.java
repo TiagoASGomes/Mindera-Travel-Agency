@@ -11,6 +11,7 @@ import org.mindswap.academy.mindera_travel_agency.exception.hotel_reservation.Ca
 import org.mindswap.academy.mindera_travel_agency.exception.hotel_reservation.HotelReservationNotFoundException;
 import org.mindswap.academy.mindera_travel_agency.exception.hotel_reservation.InvalidCheckInOutDateException;
 import org.mindswap.academy.mindera_travel_agency.exception.hotel_reservation.RoomNotFoundException;
+import org.mindswap.academy.mindera_travel_agency.exception.invoice.InvoiceNotCompleteException;
 import org.mindswap.academy.mindera_travel_agency.exception.invoice.InvoiceNotFoundException;
 import org.mindswap.academy.mindera_travel_agency.exception.invoice.PaymentCompletedException;
 import org.mindswap.academy.mindera_travel_agency.exception.payment_status.PaymentStatusInUseException;
@@ -42,7 +43,8 @@ public class AgencyExceptionHandler {
             StatusNameAlreadyExistsException.class,
             PaymentStatusInUseException.class,
             DuplicateEmailException.class,
-            PasswordsDidNotMatchException.class})
+            PasswordsDidNotMatchException.class,
+            InvoiceNotCompleteException.class,})
     public ResponseEntity<AgencyError> handleBadRequest(Exception e, HttpServletRequest request) {
         logger.error(e.getMessage());
         return new ResponseEntity<>(

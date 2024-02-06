@@ -3,7 +3,7 @@ package org.mindswap.academy.mindera_travel_agency.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import jakarta.validation.Valid;
-import org.mindswap.academy.mindera_travel_agency.dto.external.ExternalRoomInfoDto;
+import org.mindswap.academy.mindera_travel_agency.dto.external.hotel.ExternalRoomInfoDto;
 import org.mindswap.academy.mindera_travel_agency.dto.hotel.HotelReservationCreateDto;
 import org.mindswap.academy.mindera_travel_agency.dto.hotel.HotelReservationDurationDto;
 import org.mindswap.academy.mindera_travel_agency.dto.hotel.HotelReservationGetDto;

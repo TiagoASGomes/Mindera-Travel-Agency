@@ -19,7 +19,6 @@ public class RoomInfo {
     private int roomNumber;
     private int numberOfBeds;
     private int pricePerNight;
-    private Long externalId;
     @ManyToOne(fetch = FetchType.EAGER)
     private HotelReservation hotelReservation;
 }

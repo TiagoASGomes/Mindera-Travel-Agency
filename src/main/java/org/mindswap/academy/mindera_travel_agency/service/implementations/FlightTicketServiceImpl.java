@@ -28,14 +28,12 @@ public class FlightTicketServiceImpl implements FlightTicketService {
     private final FlightTicketConverter flightTicketConverter;
     private final FlightTicketRepository flightTicketRepository;
     private final InvoiceService invoiceService;
-    private final ExternalService externalService;
 
     @Autowired
-    public FlightTicketServiceImpl(FlightTicketConverter flightTicketConverter, FlightTicketRepository flightTicketRepository, InvoiceService invoiceService, ExternalService externalService) {
+    public FlightTicketServiceImpl(FlightTicketConverter flightTicketConverter, FlightTicketRepository flightTicketRepository, InvoiceService invoiceService) {
         this.flightTicketConverter = flightTicketConverter;
         this.flightTicketRepository = flightTicketRepository;
         this.invoiceService = invoiceService;
-        this.externalService = externalService;
     }
 
 
@@ -87,10 +85,7 @@ public class FlightTicketServiceImpl implements FlightTicketService {
     @Override
     public TicketGetDto updateTicketInfo(Long id, TicketUpdateTicketDto flightTicket) throws FlightTicketNotFoundException, PaymentCompletedException, FlightTicketDuplicateException, InvoiceNotFoundException {
         FlightTicket dbTicket = findById(id);
-        checkDuplicateTicketNumber(flightTicket.ticketNumber(), id);
         verifyIfInvoicePaid(dbTicket.getInvoice());
-        dbTicket.setTicketNumber(flightTicket.ticketNumber());
-        dbTicket.setSeatNumber(flightTicket.seatNumber());
         dbTicket.setPrice(flightTicket.price());
         invoiceService.updatePrice(dbTicket.getInvoice().getId());
         dbTicket.setMaxLuggageWeight(flightTicket.maxLuggageWeight());
