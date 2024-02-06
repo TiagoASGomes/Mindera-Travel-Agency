@@ -7,6 +7,7 @@ import org.mindswap.academy.mindera_travel_agency.exception.User.PasswordsDidNot
 import org.mindswap.academy.mindera_travel_agency.exception.User.UserNotFoundException;
 import org.mindswap.academy.mindera_travel_agency.exception.flight_tickets.FlightTicketDuplicateException;
 import org.mindswap.academy.mindera_travel_agency.exception.flight_tickets.FlightTicketNotFoundException;
+import org.mindswap.academy.mindera_travel_agency.exception.flight_tickets.MaxFlightPerInvoiceException;
 import org.mindswap.academy.mindera_travel_agency.exception.hotel_reservation.CannotChangeInvoiceException;
 import org.mindswap.academy.mindera_travel_agency.exception.hotel_reservation.HotelReservationNotFoundException;
 import org.mindswap.academy.mindera_travel_agency.exception.hotel_reservation.InvalidCheckInOutDateException;
@@ -44,7 +45,8 @@ public class AgencyExceptionHandler {
             PaymentStatusInUseException.class,
             DuplicateEmailException.class,
             PasswordsDidNotMatchException.class,
-            InvoiceNotCompleteException.class,})
+            InvoiceNotCompleteException.class,
+            MaxFlightPerInvoiceException.class})
     public ResponseEntity<AgencyError> handleBadRequest(Exception e, HttpServletRequest request) {
         logger.error(e.getMessage());
         return new ResponseEntity<>(

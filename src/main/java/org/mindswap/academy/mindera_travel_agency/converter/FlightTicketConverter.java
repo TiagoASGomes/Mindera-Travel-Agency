@@ -30,6 +30,7 @@ public class FlightTicketConverter {
                 flightTicket.getTicketNumber(),
                 flightTicket.getSeatNumber(),
                 flightTicket.getPrice(),
+                flightTicket.getFareClass(),
                 flightTicket.getMaxLuggageWeight(),
                 flightTicket.isCarryOnLuggage()
         );
@@ -41,6 +42,7 @@ public class FlightTicketConverter {
                 .fName(flightTicket.fName())
                 .email(flightTicket.email())
                 .phone(flightTicket.phone())
+                .fareClass(flightTicket.fareClass())
                 .price(flightTicket.price())
                 .maxLuggageWeight(flightTicket.maxLuggageWeight())
                 .carryOnLuggage(flightTicket.carryOnLuggage())
