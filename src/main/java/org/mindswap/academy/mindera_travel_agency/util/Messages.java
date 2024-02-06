@@ -1,16 +1,15 @@
 package org.mindswap.academy.mindera_travel_agency.util;
 
 public class Messages {
-    //TODO mensagens mais especificas
     public static final String ID_NOT_FOUND = "No entity found with id: ";
     public static final String NAME_NOT_FOUND = "No entity found with name: ";
     public static final String INVALID_DATE = "Invalid date";
-    public static final String INVALID_HOTEL_INFO = "Invalid hotel info";
+    public static final String INVALID_HOTEL_INFO = "Hotel info cannot be null";
     public static final String INVALID_ID = "Invalid id";
     public static final String INVALID_PAYMENT_STATUS = "Invalid payment status";
     public static final String INVALID_FARE_CLASS = "Invalid fare class, fare class can only contain upper case letters and spaces";
     public static final String CANNOT_DELETE_INVOICE = "Cannot delete paid or pending invoice";
-    public static final String CANNOT_ALTER_HOTEL_RESERVATION = "Cannot alter paid or pending hotel reservation";
+    public static final String CANNOT_ALTER_HOTEL_RESERVATION = "Cannot alter hotel reservation with paid or pending invoice";
     public static final String DUPLICATE_FLIGHT_TICKET_NUMBER = "Ticket number already exists";
     public static final String INVALID_NAME = "Invalid name, name must be 2 words or longer and can only contain upper and lower case letters and spaces";
     public static final String INVALID_EMAIL = "Invalid email";
@@ -29,7 +28,7 @@ public class Messages {
     public static final String PAID_PAYMENT = "PAID";
     public static final String NOT_REQUESTED_PAYMENT = "NOT_REQUESTED";
     public static final String INVALID_CHECK_IN_OUT_DATE = "Check in date must be before check out date";
-    public static final String ROOM_NOT_FOUND = "No room found with this external id";
+    public static final String ROOM_NOT_FOUND = "No room found with id: ";
     public static final String INVALID_INVOICE = "Cannot change invoice.";
     public static final String CANNOT_UPDATE_INVOICE = "Cannot update invoice.";
     public static final String PAYMENT_STATUS_DUPLICATE = "Payment status name already exists";
@@ -41,4 +40,8 @@ public class Messages {
     public static final String INVALID_PRICE_ID = "Invalid price id, price id must be greater than 0";
     public static final String INVOICE_FLIGHT_LIMIT_REACHED = "Max number of flights per invoice reached at 50 flights";
     public static final String FLIGHT_TICKET_ID_NOT_FOUND = "No flight ticket found with id: ";
+    public static final String HOTEL_RESERVATION_ID_NOT_FOUND = "No hotel reservation found with id: ";
+    public static final String CANNOT_CHANGE_INVOICE = "Cannot change reservation to a different invoice";
+    public static final String INVALID_ARRIVAL_DATE = "Invalid arrival date, arrival date must be in the future or present";
+    public static final String INVALID_LEAVE_DATE = "Invalid leave date, leave date must be in the future";
 }

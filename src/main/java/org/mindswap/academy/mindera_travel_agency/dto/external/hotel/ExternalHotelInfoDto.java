@@ -8,8 +8,7 @@ import java.util.Set;
 public record ExternalHotelInfoDto(
         String hotelN,
         String location,
-        int phoneNumber,
+        String phoneNumber,
         Set<ExternalRoomInfoDto> rooms
-
 ) {
 }

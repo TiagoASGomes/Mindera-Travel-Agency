@@ -7,9 +7,10 @@ import java.util.List;
 
 public record HotelReservationGetDto(
         Long id,
+        Long externalId,
         String hotelName,
         String hotelAddress,
-        int hotelPhoneNumber,
+        String hotelPhoneNumber,
         int pricePerNight,
         int durationOfStay,
         int totalPrice,
