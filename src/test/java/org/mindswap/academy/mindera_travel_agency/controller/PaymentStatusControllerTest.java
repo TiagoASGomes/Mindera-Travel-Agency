@@ -189,6 +189,43 @@ class PaymentStatusControllerTest {
     }
 
     @Test
+    @DisplayName("Test create list of payment status expect status 201 and payment status")
+    void createList() throws Exception {
+        // GIVEN
+        String json = "[{\"statusName\":\"PAID\"},{\"statusName\":\"PENDING\"}]";
+        // WHEN
+        String response = mockMvc.perform(post(BASE_URL + "List")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json))
+                .andExpect(status().isCreated())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andReturn().getResponse().getContentAsString();
+        PaymentStatusGetDto[] paymentStatusGetDtos = objectMapper.readValue(response, PaymentStatusGetDto[].class);
+        // THEN
+        assertEquals(1L, paymentStatusGetDtos[0].id());
+        assertEquals("PAID", paymentStatusGetDtos[0].statusName());
+        assertEquals(2L, paymentStatusGetDtos[1].id());
+        assertEquals("PENDING", paymentStatusGetDtos[1].statusName());
+    }
+
+    @Test
+    @DisplayName("Test create list of payment status with duplicate name expect status 400")
+    void createListWithDuplicateName() throws Exception {
+        // GIVEN
+        String json = "[{\"statusName\":\"PAID\"},{\"statusName\":\"PAID\"}]";
+        // WHEN
+        String response = mockMvc.perform(post(BASE_URL + "List")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json))
+                .andExpect(status().isBadRequest())
+                .andReturn().getResponse().getContentAsString();
+        AgencyError agencyError = objectMapper.readValue(response, AgencyError.class);
+        // THEN
+        assertEquals(PAYMENT_STATUS_DUPLICATE, agencyError.getMessage());
+        assertEquals(1, paymentStatusTestRepository.count());
+    }
+
+    @Test
     @DisplayName("Test update payment status expect status 200 and payment status")
     void update() throws Exception {
         // GIVEN

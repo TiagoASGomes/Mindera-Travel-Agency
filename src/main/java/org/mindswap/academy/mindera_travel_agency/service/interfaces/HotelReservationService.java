@@ -1,5 +1,7 @@
 package org.mindswap.academy.mindera_travel_agency.service.interfaces;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.mashape.unirest.http.exceptions.UnirestException;
 import org.mindswap.academy.mindera_travel_agency.dto.external.ExternalRoomInfoDto;
 import org.mindswap.academy.mindera_travel_agency.dto.hotel.HotelReservationCreateDto;
 import org.mindswap.academy.mindera_travel_agency.dto.hotel.HotelReservationDurationDto;
@@ -19,7 +21,7 @@ public interface HotelReservationService {
 
     HotelReservationGetDto getById(Long id) throws HotelReservationNotFoundException;
 
-    HotelReservationGetDto create(HotelReservationCreateDto hotelReservation) throws InvoiceNotFoundException, HotelReservationNotFoundException, PaymentCompletedException, InvalidCheckInOutDateException;
+    HotelReservationGetDto create(HotelReservationCreateDto hotelReservation) throws InvoiceNotFoundException, HotelReservationNotFoundException, PaymentCompletedException, InvalidCheckInOutDateException, UnirestException, JsonProcessingException;
 
     HotelReservationGetDto updateDuration(Long id, HotelReservationDurationDto hotelReservation) throws HotelReservationNotFoundException, PaymentCompletedException, InvoiceNotFoundException, InvalidCheckInOutDateException;
 

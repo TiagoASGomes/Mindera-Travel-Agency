@@ -1,5 +1,7 @@
 package org.mindswap.academy.mindera_travel_agency.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.mashape.unirest.http.exceptions.UnirestException;
 import jakarta.validation.Valid;
 import org.mindswap.academy.mindera_travel_agency.dto.external.ExternalRoomInfoDto;
 import org.mindswap.academy.mindera_travel_agency.dto.hotel.HotelReservationCreateDto;
@@ -42,7 +44,7 @@ public class HotelReservationController {
     }
 
     @PostMapping("/")
-    public ResponseEntity<HotelReservationGetDto> create(@Valid @RequestBody HotelReservationCreateDto hotelReservation) throws InvoiceNotFoundException, HotelReservationNotFoundException, PaymentCompletedException, InvalidCheckInOutDateException {
+    public ResponseEntity<HotelReservationGetDto> create(@Valid @RequestBody HotelReservationCreateDto hotelReservation) throws InvoiceNotFoundException, HotelReservationNotFoundException, PaymentCompletedException, InvalidCheckInOutDateException, UnirestException, JsonProcessingException {
         return new ResponseEntity<>(hotelReservationService.create(hotelReservation), HttpStatus.CREATED);
     }
 

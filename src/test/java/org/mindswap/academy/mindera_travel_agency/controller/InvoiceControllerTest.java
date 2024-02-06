@@ -29,7 +29,7 @@ class InvoiceControllerTest {
     private static ObjectMapper objectMapper;
     private final String BASE_URL = "/api/v1/invoices/";
     private final String EXAMPLE1 = "{\"userId\": 1}";
-    private final String HOTEL_EXAMPLE = "{\"invoiceId\": 1,\"checkInDate\": \"2025-01-01T12:00:00\",\"checkOutDate\": \"2025-01-05T12:00:00\",\"hotelInfo\": {\"externalId\": 1,\"name\": \"Hotel Teste\",\"address\": \"teste adress\",\"phoneNumber\": \"120312312\",\"rooms\": [{\"externalId\":1,\"pricePerNight\":10,\"roomType\":\"TYPE\",\"roomNumber\":101,\"numberOfBeds\":3},{\"externalId\":2,\"pricePerNight\":15,\"roomType\":\"TYPE2\",\"roomNumber\":102,\"numberOfBeds\":2}]}}";
+    private final String HOTEL_EXAMPLE = "{\"invoiceId\": 1,\"arrivalDate\": \"2025-01-01T12:00:00\",\"leaveDate\": \"2025-01-05T12:00:00\",\"hotelInfo\": {\"externalId\": 1,\"name\": \"Hotel Teste\",\"location\": \"teste adress\",\"phoneNumber\": \"120312312\",\"rooms\": [{\"externalId\":1,\"pricePerNight\":10,\"roomType\":\"TYPE\",\"roomNumber\":101,\"numberOfBeds\":3},{\"externalId\":2,\"pricePerNight\":15,\"roomType\":\"TYPE2\",\"roomNumber\":102,\"numberOfBeds\":2}]}}";
     private final String FLIGHT_EXAMPLE = "{\"carryOnLuggage\": true,\"email\": \"teste@example.com\",\"fName\": \"teste um\",\"fareClass\": \"first\",\"invoiceId\": 1,\"maxLuggageWeight\": \"22\",\"phone\": \"910410860\",\"price\": 100,\"seatNumber\": \"2B\"}";
     private final String UPDATE_EXAMPLE1 = "{\"paymentStatus\": \"PENDING\", \"paymentDate\": \"2025-01-01T00:00:00\"}";
     @Autowired
@@ -43,8 +43,6 @@ class InvoiceControllerTest {
     @Autowired
     private FlightTicketTestRepository flightTicketTestRepository;
     @Autowired
-    private FareClassTestRepository fareClassTestRepository;
-    @Autowired
     private HotelReservationTestRepository hotelReservationTestRepository;
 
     @BeforeAll
@@ -57,7 +55,7 @@ class InvoiceControllerTest {
     void setUp() throws Exception {
         String userJson = "{\"email\": \"teste@example.com\",\"password\": \"C@$9gmL?\",\"userName\": \"userTeste\",\"dateOfBirth\": \"2000-01-01\",\"phoneNumber\": \"937313732\"}";
         List<String> paymentStatusJson = List.of("{\"statusName\": \"PENDING\"}", "{\"statusName\": \"PAID\"}", "{\"statusName\": \"NOT_REQUESTED\"}");
-        String fareClassJson = "{\"className\": \"first\"}";
+
         mockMvc.perform(post("/api/v1/users/")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(userJson));
@@ -66,9 +64,6 @@ class InvoiceControllerTest {
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(json));
         }
-        mockMvc.perform(post("/api/v1/fare_classes/")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(fareClassJson));
     }
 
     @AfterEach
@@ -77,8 +72,6 @@ class InvoiceControllerTest {
         hotelReservationTestRepository.resetAutoIncrement();
         flightTicketTestRepository.deleteAll();
         flightTicketTestRepository.resetAutoIncrement();
-        fareClassTestRepository.deleteAll();
-        fareClassTestRepository.resetAutoIncrement();
         invoiceTestRepository.deleteAll();
         invoiceTestRepository.resetAutoIncrement();
         paymentStatusTestRepository.deleteAll();
@@ -90,19 +83,22 @@ class InvoiceControllerTest {
 
     @Test
     @DisplayName("Test get all and expect status 200 and a list of invoices")
-    void getAll() throws Exception {
+    void getAllPaged() throws Exception {
         // GIVEN
-        mockMvc.perform(post(BASE_URL)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(EXAMPLE1));
-        mockMvc.perform(post(BASE_URL)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(EXAMPLE1));
+        for (int i = 0; i < 30; i++) {
+            mockMvc.perform(post(BASE_URL)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(EXAMPLE1));
+        }
         // WHEN
-        mockMvc.perform(get(BASE_URL))
+        mockMvc.perform(get(BASE_URL + "?page=0"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$", hasSize(2)));
+                .andExpect(jsonPath("$.content", hasSize(20)));
+        mockMvc.perform(get(BASE_URL + "?page=1"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.content", hasSize(10)));
     }
 
     @Test
@@ -113,6 +109,7 @@ class InvoiceControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$", hasSize(0)));
+
     }
 
     @Test

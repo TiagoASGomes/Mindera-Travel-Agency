@@ -21,7 +21,7 @@ services:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://my-db:5432/travel_agency
       - SPRING_DATASOURCE_USERNAME=user
       - SPRING_DATASOURCE_PASSWORD=secret
-      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+      - SPRING_PROFILES_ACTIVE=dev
     ports:
       - 8080:8080
     restart: on-failure

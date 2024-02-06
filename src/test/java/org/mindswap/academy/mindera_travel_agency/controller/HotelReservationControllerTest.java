@@ -4,12 +4,17 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.junit.jupiter.api.*;
 import org.mindswap.academy.mindera_travel_agency.aspect.AgencyError;
+import org.mindswap.academy.mindera_travel_agency.dto.external.ExternalReservationCreateDto;
 import org.mindswap.academy.mindera_travel_agency.dto.hotel.HotelReservationGetDto;
 import org.mindswap.academy.mindera_travel_agency.dto.rooms.RoomInfoGetDto;
 import org.mindswap.academy.mindera_travel_agency.repository.*;
+import org.mindswap.academy.mindera_travel_agency.service.interfaces.ExternalService;
+import org.mockito.ArgumentMatchers;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
@@ -31,8 +36,8 @@ class HotelReservationControllerTest {
     //TODO 2 rooms with same externalId same hotel
     private static ObjectMapper objectMapper;
     private final String BASE_URL = "/api/v1/reservations/";
-    private final String EXAMPLE1 = "{\"invoiceId\": 1,\"checkInDate\": \"2025-01-01T12:00:00\",\"checkOutDate\": \"2025-01-05T12:00:00\",\"hotelInfo\": {\"externalId\": 1,\"name\": \"Hotel Teste\",\"address\": \"teste adress\",\"phoneNumber\": \"120312312\",\"rooms\": [{\"externalId\":1,\"pricePerNight\":10,\"roomType\":\"TYPE\",\"roomNumber\":101,\"numberOfBeds\":3},{\"externalId\":2,\"pricePerNight\":15,\"roomType\":\"TYPE2\",\"roomNumber\":102,\"numberOfBeds\":2}]}}";
-    private final String EXAMPLE2 = "{\"invoiceId\": 2,\"checkInDate\": \"2025-01-01T16:00:00\",\"checkOutDate\": \"2025-01-05T16:00:00\",\"hotelInfo\": {\"externalId\": 2,\"name\": \"Hotel Teste dois\",\"address\": \"teste adress dois\",\"phoneNumber\": \"920312312\",\"rooms\": [{\"externalId\":3,\"pricePerNight\":10,\"roomType\":\"TYPE\",\"roomNumber\":103,\"numberOfBeds\":3},{\"externalId\":4,\"pricePerNight\":15,\"roomType\":\"TYPE2\",\"roomNumber\":104,\"numberOfBeds\":2}]}}";
+    private final String EXAMPLE1 = "{\"invoiceId\": 1,\"arrivalDate\": \"2025-01-01\",\"leaveDate\": \"2025-01-05\",\"hotelInfo\": {\"externalId\": 1,\"name\": \"Hotel Teste\",\"location\": \"teste adress\",\"phoneNumber\": \"120312312\",\"rooms\": [{\"externalId\":1,\"pricePerNight\":10,\"roomType\":\"TYPE\",\"roomNumber\":101,\"numberOfBeds\":3},{\"externalId\":2,\"pricePerNight\":15,\"roomType\":\"TYPE2\",\"roomNumber\":102,\"numberOfBeds\":2}]}}";
+    private final String EXAMPLE2 = "{\"invoiceId\": 2,\"arrivalDate\": \"2025-01-01\",\"leaveDate\": \"2025-01-05\",\"hotelInfo\": {\"externalId\": 2,\"name\": \"Hotel Teste dois\",\"location\": \"teste adress dois\",\"phoneNumber\": \"920312312\",\"rooms\": [{\"externalId\":3,\"pricePerNight\":10,\"roomType\":\"TYPE\",\"roomNumber\":103,\"numberOfBeds\":3},{\"externalId\":4,\"pricePerNight\":15,\"roomType\":\"TYPE2\",\"roomNumber\":104,\"numberOfBeds\":2}]}}";
     @Autowired
     private MockMvc mockMvc;
     @Autowired
@@ -45,6 +50,8 @@ class HotelReservationControllerTest {
     private HotelReservationTestRepository hotelReservationTestRepository;
     @Autowired
     private RoomInfoTestRepository roomInfoTestRepository;
+    @MockBean
+    private ExternalService externalService;
 
     @BeforeAll
     static void setUpMapper() {
@@ -71,6 +78,7 @@ class HotelReservationControllerTest {
         mockMvc.perform(post("/api/v1/invoices/")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(invoiceJson));
+        Mockito.when(externalService.createReservation(ArgumentMatchers.any(ExternalReservationCreateDto.class))).thenReturn("1");
     }
 
     @AfterEach
@@ -136,8 +144,8 @@ class HotelReservationControllerTest {
         assertEquals(25, hotelReservationGetDto.pricePerNight());
         assertEquals(4, hotelReservationGetDto.durationOfStay());
         assertEquals(100, hotelReservationGetDto.totalPrice());
-        assertEquals("2025-01-01T12:00", hotelReservationGetDto.checkInDate().toString());
-        assertEquals("2025-01-05T12:00", hotelReservationGetDto.checkOutDate().toString());
+        assertEquals("2025-01-01", hotelReservationGetDto.arrivalDate().toString());
+        assertEquals("2025-01-05", hotelReservationGetDto.leaveDate().toString());
         assertEquals(2, hotelReservationGetDto.rooms().size());
         assertEquals(10, roomInfoGetDto.pricePerNight());
         assertEquals("TYPE", roomInfoGetDto.roomType());
@@ -178,8 +186,8 @@ class HotelReservationControllerTest {
         assertEquals(25, hotelReservationGetDto.pricePerNight());
         assertEquals(4, hotelReservationGetDto.durationOfStay());
         assertEquals(100, hotelReservationGetDto.totalPrice());
-        assertEquals("2025-01-01T12:00", hotelReservationGetDto.checkInDate().toString());
-        assertEquals("2025-01-05T12:00", hotelReservationGetDto.checkOutDate().toString());
+        assertEquals("2025-01-01", hotelReservationGetDto.arrivalDate().toString());
+        assertEquals("2025-01-05", hotelReservationGetDto.leaveDate().toString());
         assertEquals(2, hotelReservationGetDto.rooms().size());
         assertEquals(10, roomInfoGetDto.pricePerNight());
         assertEquals("TYPE", roomInfoGetDto.roomType());
@@ -208,8 +216,8 @@ class HotelReservationControllerTest {
     @DisplayName("Test create with incorrect validation and expect status 400 and error message")
     void createInvalid() throws Exception {
         // GIVEN
-        String json = EXAMPLE1.replace("\"checkInDate\": \"2025-01-01T12:00:00\"", "\"checkInDate\": \"2024-01-01T12:00:00\"")
-                .replace("\"checkOutDate\": \"2025-01-05T12:00:00\"", "\"checkOutDate\": \"2024-01-05T12:00:00\"")
+        String json = EXAMPLE1.replace("\"arrivalDate\": \"2025-01-01\"", "\"arrivalDate\": \"2024-01-01\"")
+                .replace("\"leaveDate\": \"2025-01-05\"", "\"leaveDate\": \"2024-01-05\"")
                 .replace("\"invoiceId\": 1", "\"invoiceId\": 0");
         // WHEN
         String response = mockMvc.perform(post(BASE_URL)
@@ -264,8 +272,8 @@ class HotelReservationControllerTest {
     @DisplayName("Test create with check in date after check out date and expect status 400 and error message")
     void createInvalidCheckInOutDate() throws Exception {
         // GIVEN
-        String json = EXAMPLE1.replace("\"checkInDate\": \"2025-01-01T12:00:00\"", "\"checkInDate\": \"2025-01-05T12:00:00\"")
-                .replace("\"checkOutDate\": \"2025-01-05T12:00:00\"", "\"checkOutDate\": \"2025-01-01T12:00:00\"");
+        String json = EXAMPLE1.replace("\"arrivalDate\": \"2025-01-01\"", "\"arrivalDate\": \"2025-01-05\"")
+                .replace("\"leaveDate\": \"2025-01-05\"", "\"leaveDate\": \"2025-01-01\"");
         // WHEN
         String response = mockMvc.perform(post(BASE_URL)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -282,7 +290,7 @@ class HotelReservationControllerTest {
     @DisplayName("Test update duration and expect status 200 and updated duration and price")
     void updateDuration() throws Exception {
         // GIVEN
-        String json = "{\"checkInDate\": \"2025-01-02T12:00:00\",\"checkOutDate\": \"2025-01-08T12:00:00\"}";
+        String json = "{\"arrivalDate\": \"2025-01-02T12:00:00\",\"leaveDate\": \"2025-01-08T12:00:00\"}";
         mockMvc.perform(post(BASE_URL)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(EXAMPLE1));
@@ -302,8 +310,8 @@ class HotelReservationControllerTest {
         assertEquals(25, hotelReservationGetDto.pricePerNight());
         assertEquals(6, hotelReservationGetDto.durationOfStay());
         assertEquals(150, hotelReservationGetDto.totalPrice());
-        assertEquals("2025-01-02T12:00", hotelReservationGetDto.checkInDate().toString());
-        assertEquals("2025-01-08T12:00", hotelReservationGetDto.checkOutDate().toString());
+        assertEquals("2025-01-02", hotelReservationGetDto.arrivalDate().toString());
+        assertEquals("2025-01-08", hotelReservationGetDto.leaveDate().toString());
         assertEquals(2, hotelReservationGetDto.rooms().size());
     }
 
@@ -311,7 +319,7 @@ class HotelReservationControllerTest {
     @DisplayName("Test update duration with incorrect id and expect status 404 and error message")
     void updateDurationNotFound() throws Exception {
         // GIVEN
-        String json = "{\"checkInDate\": \"2025-01-02T12:00:00\",\"checkOutDate\": \"2025-01-08T12:00:00\"}";
+        String json = "{\"arrivalDate\": \"2025-01-02T12:00:00\",\"leaveDate\": \"2025-01-08T12:00:00\"}";
         // WHEN
         String response = mockMvc.perform(patch(BASE_URL + "1/duration")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -328,7 +336,7 @@ class HotelReservationControllerTest {
     @DisplayName("Test update duration with incorrect validation and expect status 400 and error message")
     void updateDurationInvalid() throws Exception {
         // GIVEN
-        String json = "{\"checkInDate\": \"2024-01-02T12:00:00\",\"checkOutDate\": \"2024-01-08T12:00:00\"}";
+        String json = "{\"arrivalDate\": \"2024-01-02T12:00:00\",\"leaveDate\": \"2024-01-08T12:00:00\"}";
         mockMvc.perform(post(BASE_URL)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(EXAMPLE1));
@@ -348,7 +356,7 @@ class HotelReservationControllerTest {
     @DisplayName("Test update duration with invoice paid and expect status 400 and error message")
     public void updateDurationInvoicePaid() throws Exception {
         // GIVEN
-        String json = "{\"checkInDate\": \"2025-01-02T12:00:00\",\"checkOutDate\": \"2025-01-08T12:00:00\"}";
+        String json = "{\"arrivalDate\": \"2025-01-02T12:00:00\",\"leaveDate\": \"2025-01-08T12:00:00\"}";
         mockMvc.perform(post(BASE_URL)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(EXAMPLE1));
@@ -371,8 +379,9 @@ class HotelReservationControllerTest {
     @Test
     @DisplayName("Test update duration with check in date after check out date and expect status 400 and error message")
     void updateDurationInvalidCheckInOutDate() throws Exception {
+
         // GIVEN
-        String json = "{\"checkInDate\": \"2025-01-08T12:00:00\",\"checkOutDate\": \"2025-01-02T12:00:00\"}";
+        String json = "{\"arrivalDate\": \"2025-01-08\",\"leaveDate\": \"2025-01-02\"}";
         mockMvc.perform(post(BASE_URL)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(EXAMPLE1));
@@ -579,8 +588,8 @@ class HotelReservationControllerTest {
         assertEquals(25, hotelReservationGetDto.pricePerNight());
         assertEquals(4, hotelReservationGetDto.durationOfStay());
         assertEquals(100, hotelReservationGetDto.totalPrice());
-        assertEquals("2025-01-01T16:00", hotelReservationGetDto.checkInDate().toString());
-        assertEquals("2025-01-05T16:00", hotelReservationGetDto.checkOutDate().toString());
+        assertEquals("2025-01-01", hotelReservationGetDto.arrivalDate().toString());
+        assertEquals("2025-01-05", hotelReservationGetDto.leaveDate().toString());
         assertEquals(2, hotelReservationGetDto.rooms().size());
         assertEquals(10, roomInfoGetDto.pricePerNight());
         assertEquals("TYPE", roomInfoGetDto.roomType());
@@ -639,8 +648,8 @@ class HotelReservationControllerTest {
     @DisplayName("Test put request with check in date after check out date and expect status 400 and error message")
     void updateReservationInvalidCheckInOutDate() throws Exception {
         // GIVEN
-        String json = EXAMPLE2.replace("\"checkInDate\": \"2025-01-01T16:00:00\"", "\"checkInDate\": \"2025-01-05T16:00:00\"")
-                .replace("\"checkOutDate\": \"2025-01-05T16:00:00\"", "\"checkOutDate\": \"2025-01-01T16:00:00\"")
+        String json = EXAMPLE2.replace("\"arrivalDate\": \"2025-01-01\"", "\"arrivalDate\": \"2025-01-05\"")
+                .replace("\"leaveDate\": \"2025-01-05\"", "\"leaveDate\": \"2025-01-01\"")
                 .replace("\"invoiceId\": 2", "\"invoiceId\": 1");
         mockMvc.perform(post(BASE_URL)
                 .contentType(MediaType.APPLICATION_JSON)

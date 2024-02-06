@@ -3,10 +3,8 @@ package org.mindswap.academy.mindera_travel_agency.aspect;
 import jakarta.servlet.http.HttpServletRequest;
 import org.mindswap.academy.mindera_travel_agency.exception.User.DuplicateEmailException;
 import org.mindswap.academy.mindera_travel_agency.exception.User.EmailNotFoundException;
+import org.mindswap.academy.mindera_travel_agency.exception.User.PasswordsDidNotMatchException;
 import org.mindswap.academy.mindera_travel_agency.exception.User.UserNotFoundException;
-import org.mindswap.academy.mindera_travel_agency.exception.fare_class.FareClassDuplicateNameException;
-import org.mindswap.academy.mindera_travel_agency.exception.fare_class.FareClassInUseException;
-import org.mindswap.academy.mindera_travel_agency.exception.fare_class.FareClassNotFoundException;
 import org.mindswap.academy.mindera_travel_agency.exception.flight_tickets.FlightTicketDuplicateException;
 import org.mindswap.academy.mindera_travel_agency.exception.flight_tickets.FlightTicketNotFoundException;
 import org.mindswap.academy.mindera_travel_agency.exception.hotel_reservation.CannotChangeInvoiceException;
@@ -36,15 +34,15 @@ public class AgencyExceptionHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(AgencyExceptionHandler.class);
 
-    @ExceptionHandler({FareClassDuplicateNameException.class,
+    @ExceptionHandler({
             FlightTicketDuplicateException.class,
             PaymentCompletedException.class,
             InvalidCheckInOutDateException.class,
             CannotChangeInvoiceException.class,
             StatusNameAlreadyExistsException.class,
             PaymentStatusInUseException.class,
-            FareClassInUseException.class,
-            DuplicateEmailException.class})
+            DuplicateEmailException.class,
+            PasswordsDidNotMatchException.class})
     public ResponseEntity<AgencyError> handleBadRequest(Exception e, HttpServletRequest request) {
         logger.error(e.getMessage());
         return new ResponseEntity<>(
@@ -57,7 +55,7 @@ public class AgencyExceptionHandler {
                         .build(), HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler({FareClassNotFoundException.class,
+    @ExceptionHandler({
             FlightTicketNotFoundException.class,
             HotelReservationNotFoundException.class,
             InvoiceNotFoundException.class,

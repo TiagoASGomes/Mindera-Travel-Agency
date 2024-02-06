@@ -12,11 +12,11 @@ import org.mindswap.academy.mindera_travel_agency.exception.invoice.PaymentCompl
 import org.mindswap.academy.mindera_travel_agency.exception.payment_status.PaymentStatusNotFoundException;
 import org.mindswap.academy.mindera_travel_agency.service.interfaces.InvoiceService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/invoices")
@@ -31,8 +31,8 @@ public class InvoiceController {
     }
 
     @GetMapping("/")
-    public ResponseEntity<List<InvoiceGetDto>> getAll() {
-        return ResponseEntity.ok(invoiceService.getAll());
+    public ResponseEntity<Page<InvoiceGetDto>> getAll(Pageable page) {
+        return ResponseEntity.ok(invoiceService.getAll(page));
     }
 
     @GetMapping("/{id}")

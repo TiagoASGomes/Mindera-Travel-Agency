@@ -26,6 +26,4 @@ public class FlightTicket {
     private boolean carryOnLuggage;
     @ManyToOne
     private Invoice invoice;
-    @ManyToOne(fetch = FetchType.EAGER)
-    private FareClass fareClass;
 }

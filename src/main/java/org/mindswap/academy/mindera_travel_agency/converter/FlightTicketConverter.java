@@ -2,7 +2,6 @@ package org.mindswap.academy.mindera_travel_agency.converter;
 
 import org.mindswap.academy.mindera_travel_agency.dto.flight_ticket.TicketCreateDto;
 import org.mindswap.academy.mindera_travel_agency.dto.flight_ticket.TicketGetDto;
-import org.mindswap.academy.mindera_travel_agency.model.FareClass;
 import org.mindswap.academy.mindera_travel_agency.model.FlightTicket;
 import org.mindswap.academy.mindera_travel_agency.model.Invoice;
 import org.springframework.stereotype.Component;
@@ -30,12 +29,11 @@ public class FlightTicketConverter {
                 flightTicket.getSeatNumber(),
                 flightTicket.getPrice(),
                 flightTicket.getMaxLuggageWeight(),
-                flightTicket.isCarryOnLuggage(),
-                flightTicket.getFareClass().getClassName()
+                flightTicket.isCarryOnLuggage()
         );
     }
 
-    public FlightTicket fromCreateDtoToEntity(TicketCreateDto flightTicket, FareClass fareClass, Invoice invoice) {
+    public FlightTicket fromCreateDtoToEntity(TicketCreateDto flightTicket, Invoice invoice) {
 
         return FlightTicket.builder()
                 .fName(flightTicket.fName())
@@ -45,7 +43,6 @@ public class FlightTicketConverter {
                 .price(flightTicket.price())
                 .maxLuggageWeight(flightTicket.maxLuggageWeight())
                 .carryOnLuggage(flightTicket.carryOnLuggage())
-                .fareClass(fareClass)
                 .invoice(invoice)
                 .build();
     }
