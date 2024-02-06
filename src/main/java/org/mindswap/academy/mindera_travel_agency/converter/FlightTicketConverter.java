@@ -41,7 +41,6 @@ public class FlightTicketConverter {
                 .fName(flightTicket.fName())
                 .email(flightTicket.email())
                 .phone(flightTicket.phone())
-                .seatNumber(flightTicket.seatNumber())
                 .price(flightTicket.price())
                 .maxLuggageWeight(flightTicket.maxLuggageWeight())
                 .carryOnLuggage(flightTicket.carryOnLuggage())

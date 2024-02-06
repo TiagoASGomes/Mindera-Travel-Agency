@@ -12,6 +12,8 @@ import org.mindswap.academy.mindera_travel_agency.exception.invoice.InvoiceNotFo
 import org.mindswap.academy.mindera_travel_agency.exception.invoice.PaymentCompletedException;
 import org.mindswap.academy.mindera_travel_agency.service.interfaces.FlightTicketService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -30,8 +32,8 @@ public class FlightTicketController {
     }
 
     @GetMapping("/")
-    public ResponseEntity<List<TicketGetDto>> getAll() {
-        return ResponseEntity.ok(flightTicketService.getAll());
+    public ResponseEntity<Page<TicketGetDto>> getAll(Pageable page) {
+        return ResponseEntity.ok(flightTicketService.getAll(page));
     }
 
     @GetMapping("/{id}")

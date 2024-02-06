@@ -9,11 +9,13 @@ import org.mindswap.academy.mindera_travel_agency.exception.flight_tickets.Fligh
 import org.mindswap.academy.mindera_travel_agency.exception.flight_tickets.FlightTicketNotFoundException;
 import org.mindswap.academy.mindera_travel_agency.exception.invoice.InvoiceNotFoundException;
 import org.mindswap.academy.mindera_travel_agency.exception.invoice.PaymentCompletedException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
 public interface FlightTicketService {
-    List<TicketGetDto> getAll();
+    Page<TicketGetDto> getAll(Pageable page);
 
     TicketGetDto getById(Long id) throws FlightTicketNotFoundException;
 

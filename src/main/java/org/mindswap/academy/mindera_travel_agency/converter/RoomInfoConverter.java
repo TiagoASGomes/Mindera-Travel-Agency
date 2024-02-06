@@ -17,7 +17,6 @@ public class RoomInfoConverter {
                 .externalId(room.externalId())
                 .pricePerNight(room.pricePerNight())
                 .roomType(room.roomType())
-                .roomNumber(room.roomNumber())
                 .numberOfBeds(room.numberOfBeds())
                 .build();
     }
