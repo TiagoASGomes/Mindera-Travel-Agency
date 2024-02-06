@@ -26,6 +26,7 @@ public class Messages {
     public static final String INVALID_PASSWORD = "Invalid Password";
     public static final String INVALID_USER_NAME = "Invalid user name";
     public static final String INVALID_DATE_OF_BIRTH = "Invalid date of birth";
+    public static final String USER_NOT_FOUND = "No user found with this id";
     public static final String NAME_TAKEN = "Name taken";
     public static final String CANNOT_ALTER_PLANE_TICKET = "Cannot alter paid or pending plane ticket";
     public static final String PENDING_PAYMENT = "PENDING";

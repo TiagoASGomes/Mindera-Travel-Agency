@@ -4,4 +4,5 @@ public record PaymentStatusGetDto(
         Long id,
         String statusName
 ) {
+
 }

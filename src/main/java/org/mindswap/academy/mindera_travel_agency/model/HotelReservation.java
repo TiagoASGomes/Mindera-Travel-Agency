@@ -49,4 +49,6 @@ public class HotelReservation {
         }
         rooms.removeIf(roomInfo -> roomInfo.getExternalId().equals(roomInfoId));
     }
+
+
 }

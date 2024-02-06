@@ -16,4 +16,5 @@ public record HotelReservationDurationDto(
         @NotNull(message = INVALID_DATE)
         LocalDate leaveDate
 ) {
+
 }
