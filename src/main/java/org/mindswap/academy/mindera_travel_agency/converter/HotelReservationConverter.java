@@ -1,9 +1,11 @@
 package org.mindswap.academy.mindera_travel_agency.converter;
 
+import org.mindswap.academy.mindera_travel_agency.dto.external.hotel.ExternalReservationCreateDto;
 import org.mindswap.academy.mindera_travel_agency.dto.hotel.HotelReservationCreateDto;
 import org.mindswap.academy.mindera_travel_agency.dto.hotel.HotelReservationGetDto;
 import org.mindswap.academy.mindera_travel_agency.model.HotelReservation;
 import org.mindswap.academy.mindera_travel_agency.model.Invoice;
+import org.mindswap.academy.mindera_travel_agency.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -26,8 +28,8 @@ public class HotelReservationConverter {
                 hotelReservation.getPricePerNight(),
                 hotelReservation.getDurationOfStay(),
                 hotelReservation.getTotalPrice(),
-                hotelReservation.getCheckInDate(),
-                hotelReservation.getCheckOutDate(),
+                hotelReservation.getArrivalDate(),
+                hotelReservation.getLeaveDate(),
                 roomInfoConverter.fromEntityListToGetDtoList(hotelReservation.getRooms()));
     }
 
@@ -40,17 +42,29 @@ public class HotelReservationConverter {
 
     public HotelReservation fromCreateDtoToEntity(HotelReservationCreateDto dtoReservation, Invoice invoice) {
         return HotelReservation.builder()
-                .checkInDate(dtoReservation.checkInDate())
-                .checkOutDate(dtoReservation.checkOutDate())
-                .hotelName(dtoReservation.hotelInfo().name())
-                .hotelAddress(dtoReservation.hotelInfo().address())
+                .arrivalDate(dtoReservation.arrivalDate())
+                .leaveDate(dtoReservation.leaveDate())
+                .hotelName(dtoReservation.hotelInfo().hotelN())
+                .hotelAddress(dtoReservation.hotelInfo().location())
                 .hotelPhoneNumber(dtoReservation.hotelInfo().phoneNumber())
-                .externalId(dtoReservation.hotelInfo().externalId())
-                .durationOfStay(dtoReservation.checkOutDate().getDayOfMonth() - dtoReservation.checkInDate().getDayOfMonth())
+                .durationOfStay(dtoReservation.leaveDate().getDayOfMonth() - dtoReservation.arrivalDate().getDayOfMonth())
                 .invoice(invoice)
-                .externalId(dtoReservation.hotelInfo().externalId())
                 .build();
     }
 
 
+    public ExternalReservationCreateDto fromEntityToExternalDto(HotelReservation reservation) {
+        User user = reservation.getInvoice().getUser();
+        return new ExternalReservationCreateDto(
+                reservation.getArrivalDate().toString(),
+                reservation.getLeaveDate().toString(),
+                reservation.getHotelName(),
+                user.getFName(),
+                "",
+                Integer.parseInt(user.getPhoneNumber()),
+                123456789,
+                roomInfoConverter.fromEntityListToExternalCreateRoomReservationList(reservation.getRooms())
+        );
+
+    }
 }

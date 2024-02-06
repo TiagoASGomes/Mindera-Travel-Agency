@@ -12,9 +12,8 @@ import org.mindswap.academy.mindera_travel_agency.dto.user.UserGetDto;
 import org.mindswap.academy.mindera_travel_agency.exception.User.DuplicateEmailException;
 import org.mindswap.academy.mindera_travel_agency.model.User;
 import org.mindswap.academy.mindera_travel_agency.repository.UserRepository;
+import org.mindswap.academy.mindera_travel_agency.service.interfaces.ExternalService;
 import org.mindswap.academy.mindera_travel_agency.service.interfaces.UserService;
-import org.mockito.MockedStatic;
-import org.mockito.Mockito;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -30,7 +29,6 @@ import static org.mockito.Mockito.*;
 @ActiveProfiles("test")
 class UserServiceImplTest {
 
-    static MockedStatic<UserConverter> mockedUserConverter = Mockito.mockStatic(UserConverter.class);
     @MockBean
     private UserRepository userRepositoryMock;
     @MockBean
@@ -41,11 +39,13 @@ class UserServiceImplTest {
     private HotelReservationConverter hotelReservationConverterMock;
     @MockBean
     private FlightTicketConverter flightTicketConverterMock;
+    @MockBean
+    private ExternalService externalServiceMock;
     private UserService userService;
 
     @BeforeEach
     void setUp() {
-        userService = new UserServiceImpl(userRepositoryMock, userConverterMock, invoiceConverterMock, flightTicketConverterMock, hotelReservationConverterMock);
+        userService = new UserServiceImpl(userRepositoryMock, userConverterMock, invoiceConverterMock, flightTicketConverterMock, hotelReservationConverterMock, externalServiceMock);
     }
 
     @Test

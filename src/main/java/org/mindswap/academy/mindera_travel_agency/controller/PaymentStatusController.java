@@ -17,7 +17,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/payment_status")
 public class PaymentStatusController {
-    // TODO add post with list of payment status
 
     private final PaymentStatusService paymentStatusService;
 
@@ -45,6 +44,12 @@ public class PaymentStatusController {
     public ResponseEntity<PaymentStatusGetDto> create(@Valid @RequestBody PaymentStatusCreateDto paymentStatus) throws StatusNameAlreadyExistsException {
         return new ResponseEntity<>(paymentStatusService.create(paymentStatus), HttpStatus.CREATED);
     }
+
+    @PostMapping("/List")
+    public ResponseEntity<List<PaymentStatusGetDto>> createList(@Valid @RequestBody List<PaymentStatusCreateDto> paymentStatusList) throws StatusNameAlreadyExistsException {
+        return new ResponseEntity<>(paymentStatusService.createList(paymentStatusList), HttpStatus.CREATED);
+    }
+
 
     @PutMapping("/{id}")
     public ResponseEntity<PaymentStatusGetDto> update(@PathVariable Long id, @Valid @RequestBody PaymentStatusCreateDto paymentStatus) throws PaymentStatusNotFoundException, StatusNameAlreadyExistsException {

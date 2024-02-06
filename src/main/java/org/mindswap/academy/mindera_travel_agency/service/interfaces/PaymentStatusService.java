@@ -24,4 +24,6 @@ public interface PaymentStatusService {
     PaymentStatusGetDto update(Long id, PaymentStatusCreateDto paymentStatus) throws PaymentStatusNotFoundException, StatusNameAlreadyExistsException;
 
     void delete(Long id) throws PaymentStatusNotFoundException, PaymentStatusInUseException;
+
+    List<PaymentStatusGetDto> createList(List<PaymentStatusCreateDto> paymentStatusList) throws StatusNameAlreadyExistsException;
 }

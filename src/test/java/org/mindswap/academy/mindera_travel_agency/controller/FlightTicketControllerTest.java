@@ -6,7 +6,10 @@ import org.junit.jupiter.api.*;
 import org.mindswap.academy.mindera_travel_agency.aspect.AgencyError;
 import org.mindswap.academy.mindera_travel_agency.dto.flight_ticket.TicketGetDto;
 import org.mindswap.academy.mindera_travel_agency.dto.invoice.InvoiceGetDto;
-import org.mindswap.academy.mindera_travel_agency.repository.*;
+import org.mindswap.academy.mindera_travel_agency.repository.FlightTicketTestRepository;
+import org.mindswap.academy.mindera_travel_agency.repository.InvoiceTestRepository;
+import org.mindswap.academy.mindera_travel_agency.repository.PaymentStatusTestRepository;
+import org.mindswap.academy.mindera_travel_agency.repository.UserTestRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -28,16 +31,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class FlightTicketControllerTest {
     private static ObjectMapper objectMapper;
     private final String BASE_URL = "/api/v1/flights/";
-    private final String FLIGHT_TICKET_JSON = "{\"carryOnLuggage\": true,\"email\": \"teste@example.com\",\"fName\": \"teste um\",\"fareClass\": \"first\",\"invoiceId\": 1,\"maxLuggageWeight\": \"22\",\"phone\": \"910410860\",\"price\": 100,\"seatNumber\": \"2B\"}";
-    private final String FLIGHT_TICKET_JSON_2 = "{\"carryOnLuggage\": false,\"email\": \"teste2@example.com\",\"fName\": \"teste dois\",\"fareClass\": \"business\",\"invoiceId\": 1,\"maxLuggageWeight\": \"15\",\"phone\": \"912345678\",\"price\": 75,\"seatNumber\": \"4D\"}";
+    private final String FLIGHT_TICKET_JSON = "{\"carryOnLuggage\": true,\"email\": \"teste@example.com\",\"fName\": \"teste um\",\"invoiceId\": 1,\"maxLuggageWeight\": \"22\",\"phone\": \"910410860\",\"price\": 100,\"seatNumber\": \"2B\"}";
+    private final String FLIGHT_TICKET_JSON_2 = "{\"carryOnLuggage\": false,\"email\": \"teste2@example.com\",\"fName\": \"teste dois\",\"invoiceId\": 1,\"maxLuggageWeight\": \"15\",\"phone\": \"912345678\",\"price\": 75,\"seatNumber\": \"4D\"}";
     @Autowired
     private MockMvc mockMvc;
     @Autowired
     private UserTestRepository userTestRepository;
     @Autowired
     private InvoiceTestRepository invoiceTestRepository;
-    @Autowired
-    private FareClassTestRepository fareClassTestRepository;
     @Autowired
     private PaymentStatusTestRepository paymentStatusTestRepository;
     @Autowired
@@ -53,16 +54,10 @@ class FlightTicketControllerTest {
     void setUp() throws Exception {
         String userJson = "{\"email\": \"teste@example.com\",\"password\": \"C@$9gmL?\",\"userName\": \"userTeste\",\"dateOfBirth\": \"2000-01-01\",\"phoneNumber\": \"937313732\"}";
         String invoiceJson = "{\"userId\":1}";
-        List<String> fareClassJson = List.of("{\"className\": \"first\"}", "{\"className\": \"business\"}", "{\"className\": \"economy\"}");
         List<String> paymentStatusJson = List.of("{\"statusName\": \"PENDING\"}", "{\"statusName\": \"PAID\"}", "{\"statusName\": \"NOT_REQUESTED\"}");
         mockMvc.perform(post("/api/v1/users/")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(userJson));
-        for (String json : fareClassJson) {
-            mockMvc.perform(post("/api/v1/fare_classes/")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(json));
-        }
         for (String json : paymentStatusJson) {
             mockMvc.perform(post("/api/v1/payment_status/")
                     .contentType(MediaType.APPLICATION_JSON)
@@ -77,8 +72,6 @@ class FlightTicketControllerTest {
     void tearDown() {
         flightTicketTestRepository.deleteAll();
         flightTicketTestRepository.resetAutoIncrement();
-        fareClassTestRepository.deleteAll();
-        fareClassTestRepository.resetAutoIncrement();
         invoiceTestRepository.deleteAll();
         invoiceTestRepository.resetAutoIncrement();
         paymentStatusTestRepository.deleteAll();
@@ -183,7 +176,6 @@ class FlightTicketControllerTest {
         assertEquals("2B", ticket.seatNumber());
         assertEquals(100, ticket.price());
         assertEquals(22, ticket.maxLuggageWeight());
-        assertEquals("first", ticket.fareClass());
         assertTrue(ticket.carryOnLuggage());
     }
 
@@ -225,7 +217,6 @@ class FlightTicketControllerTest {
         assertEquals("2B", ticket.seatNumber());
         assertEquals(100, ticket.price());
         assertEquals(22, ticket.maxLuggageWeight());
-        assertEquals("first", ticket.fareClass());
         assertTrue(ticket.carryOnLuggage());
         assertEquals(100, invoice.totalPrice());
     }
@@ -269,7 +260,6 @@ class FlightTicketControllerTest {
         assertTrue(error.getMessage().contains(INVALID_PHONE_NUMBER));
         assertTrue(error.getMessage().contains(INVALID_SEAT_NUMBER));
         assertTrue(error.getMessage().contains(INVALID_PRICE));
-        assertTrue(error.getMessage().contains(INVALID_FARE_CLASS));
         assertTrue(error.getMessage().contains(INVALID_LUGGAGE_WEIGHT));
         assertTrue(error.getMessage().contains(INVALID_INVOICE_ID));
     }
@@ -291,7 +281,6 @@ class FlightTicketControllerTest {
         assertTrue(error.getMessage().contains(INVALID_PHONE_NUMBER));
         assertTrue(error.getMessage().contains(INVALID_SEAT_NUMBER));
         assertTrue(error.getMessage().contains(INVALID_PRICE));
-        assertTrue(error.getMessage().contains(INVALID_FARE_CLASS));
         assertTrue(error.getMessage().contains(INVALID_LUGGAGE_WEIGHT));
         assertTrue(error.getMessage().contains(INVALID_INVOICE_ID));
         assertTrue(error.getMessage().contains(INVALID_CARRY_ON_LUGGAGE));
@@ -311,22 +300,6 @@ class FlightTicketControllerTest {
         AgencyError error = objectMapper.readValue(response, AgencyError.class);
         // THEN
         assertEquals(ID_NOT_FOUND + 2, error.getMessage());
-    }
-
-    @Test
-    @DisplayName("Test create ticket with fare class that does not exist and expect status 404")
-    void createTicketWithFareClassThatDoesNotExist() throws Exception {
-        // GIVEN
-        String json = FLIGHT_TICKET_JSON.replace("\"fareClass\": \"first\"", "\"fareClass\": \"teste\"");
-        // WHEN
-        String response = mockMvc.perform(post(BASE_URL)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(json))
-                .andExpect(status().isNotFound())
-                .andReturn().getResponse().getContentAsString();
-        AgencyError error = objectMapper.readValue(response, AgencyError.class);
-        // THEN
-        assertEquals(NAME_NOT_FOUND + "teste", error.getMessage());
     }
 
 
@@ -352,7 +325,6 @@ class FlightTicketControllerTest {
         assertEquals("4D", ticket.seatNumber());
         assertEquals(75, ticket.price());
         assertEquals(15, ticket.maxLuggageWeight());
-        assertEquals("business", ticket.fareClass());
         assertFalse(ticket.carryOnLuggage());
     }
 
@@ -435,25 +407,6 @@ class FlightTicketControllerTest {
     }
 
     @Test
-    @DisplayName("Test put request with incorrect fare class and expect status 404 and error message")
-    void putRequestWithIncorrectFareClass() throws Exception {
-        // GIVEN
-        String json = FLIGHT_TICKET_JSON.replace("\"fareClass\": \"first\"", "\"fareClass\": \"teste\"");
-        mockMvc.perform(post(BASE_URL)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(FLIGHT_TICKET_JSON));
-        // WHEN
-        String response = mockMvc.perform(put(BASE_URL + "1")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(json))
-                .andExpect(status().isNotFound())
-                .andReturn().getResponse().getContentAsString();
-        AgencyError error = objectMapper.readValue(response, AgencyError.class);
-        // THEN
-        assertEquals(NAME_NOT_FOUND + "teste", error.getMessage());
-    }
-
-    @Test
     @DisplayName("Test patch personalInfo request with correct data and expect status 200 and the ticket")
     void updatePersonalInfo() throws Exception {
         // GIVEN
@@ -476,7 +429,6 @@ class FlightTicketControllerTest {
         assertEquals("2B", ticket.seatNumber());
         assertEquals(100, ticket.price());
         assertEquals(22, ticket.maxLuggageWeight());
-        assertEquals("first", ticket.fareClass());
         assertTrue(ticket.carryOnLuggage());
     }
 
@@ -564,7 +516,7 @@ class FlightTicketControllerTest {
     @DisplayName("Test patch request to update ticket info and expect status 200 and the ticket")
     void updateTicketInfo() throws Exception {
         // GIVEN
-        String json = "{\"ticketNumber\": 2,\"seatNumber\": \"5B\",\"price\": 15,\"fareClass\": \"economy\",\"maxLuggageWeight\": 10,\"carryOnLuggage\": false}";
+        String json = "{\"ticketNumber\": 2,\"seatNumber\": \"5B\",\"price\": 15,\"maxLuggageWeight\": 10,\"carryOnLuggage\": false}";
         mockMvc.perform(post(BASE_URL)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(FLIGHT_TICKET_JSON));
@@ -589,7 +541,6 @@ class FlightTicketControllerTest {
         assertEquals("910410860", ticket.phone());
         assertEquals(15, ticket.price());
         assertEquals(10, ticket.maxLuggageWeight());
-        assertEquals("economy", ticket.fareClass());
         assertFalse(ticket.carryOnLuggage());
         assertEquals(15, invoice.totalPrice());
     }
@@ -598,7 +549,7 @@ class FlightTicketControllerTest {
     @DisplayName("Test patch request to update 1 ticket info with 2 tickets in db and expect invoice price updated")
     void updateTicketInfoWithTwoTickets() throws Exception {
         // GIVEN
-        String json = "{\"ticketNumber\": 2,\"seatNumber\": \"5B\",\"price\": 15,\"fareClass\": \"economy\",\"maxLuggageWeight\": 10,\"carryOnLuggage\": false}";
+        String json = "{\"ticketNumber\": 2,\"seatNumber\": \"5B\",\"price\": 15,\"maxLuggageWeight\": 10,\"carryOnLuggage\": false}";
         mockMvc.perform(post(BASE_URL)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(FLIGHT_TICKET_JSON));
@@ -622,7 +573,7 @@ class FlightTicketControllerTest {
     @DisplayName("Test patch request to update ticket info with no ticket in db and expect status 404")
     void updateTicketInfoWithNoTicketInDb() throws Exception {
         // GIVEN
-        String json = "{\"ticketNumber\": 2,\"seatNumber\": \"5B\",\"price\": 15,\"fareClass\": \"economy\",\"maxLuggageWeight\": 10,\"carryOnLuggage\": false}";
+        String json = "{\"ticketNumber\": 2,\"seatNumber\": \"5B\",\"price\": 15,\"maxLuggageWeight\": 10,\"carryOnLuggage\": false}";
         // WHEN
         String response = mockMvc.perform(patch(BASE_URL + "1/ticket_info")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -638,7 +589,7 @@ class FlightTicketControllerTest {
     @DisplayName("Test patch request to update ticket info with duplicate ticket number and expect status 400")
     void updateTicketInfoWithDuplicateTicketNumber() throws Exception {
         // GIVEN
-        String json = "{\"ticketNumber\": 2,\"seatNumber\": \"5B\",\"price\": 15,\"fareClass\": \"economy\",\"maxLuggageWeight\": 10,\"carryOnLuggage\": false}";
+        String json = "{\"ticketNumber\": 2,\"seatNumber\": \"5B\",\"price\": 15,\"maxLuggageWeight\": 10,\"carryOnLuggage\": false}";
         mockMvc.perform(post(BASE_URL)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(FLIGHT_TICKET_JSON));
@@ -663,7 +614,7 @@ class FlightTicketControllerTest {
     @DisplayName("Test patch request to update ticket info with invoice paid and expect status 400 and error message")
     void updateTicketInfoWithInvoicePaid() throws Exception {
         // GIVEN
-        String json = "{\"ticketNumber\": 2,\"seatNumber\": \"5B\",\"price\": 15,\"fareClass\": \"economy\",\"maxLuggageWeight\": 10,\"carryOnLuggage\": false}";
+        String json = "{\"ticketNumber\": 2,\"seatNumber\": \"5B\",\"price\": 15,\"maxLuggageWeight\": 10,\"carryOnLuggage\": false}";
         mockMvc.perform(post(BASE_URL)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(FLIGHT_TICKET_JSON));
@@ -679,25 +630,6 @@ class FlightTicketControllerTest {
         AgencyError error = objectMapper.readValue(response, AgencyError.class);
         // THEN
         assertEquals(CANNOT_ALTER_PLANE_TICKET, error.getMessage());
-    }
-
-    @Test
-    @DisplayName("Test patch request to update ticket info with incorrect fare class and expect status 404 and error message")
-    void updateTicketInfoWithIncorrectFareClass() throws Exception {
-        // GIVEN
-        String json = "{\"ticketNumber\": 2,\"seatNumber\": \"5B\",\"price\": 15,\"fareClass\": \"teste\",\"maxLuggageWeight\": 10,\"carryOnLuggage\": false}";
-        mockMvc.perform(post(BASE_URL)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(FLIGHT_TICKET_JSON));
-        // WHEN
-        String response = mockMvc.perform(patch(BASE_URL + "1/ticket_info")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(json))
-                .andExpect(status().isNotFound())
-                .andReturn().getResponse().getContentAsString();
-        AgencyError error = objectMapper.readValue(response, AgencyError.class);
-        // THEN
-        assertEquals(NAME_NOT_FOUND + "teste", error.getMessage());
     }
 
     @Test

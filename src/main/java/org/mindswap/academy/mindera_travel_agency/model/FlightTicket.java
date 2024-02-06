@@ -20,12 +20,12 @@ public class FlightTicket {
     private String phone;
     @Column(unique = true)
     private Long ticketNumber;
+    private Long priceId;
+    private Long flightId;
     private String seatNumber;
     private int price;
     private int maxLuggageWeight;
     private boolean carryOnLuggage;
     @ManyToOne
     private Invoice invoice;
-    @ManyToOne(fetch = FetchType.EAGER)
-    private FareClass fareClass;
 }

@@ -1,6 +1,7 @@
 package org.mindswap.academy.mindera_travel_agency.converter;
 
-import org.mindswap.academy.mindera_travel_agency.dto.external.ExternalRoomInfoDto;
+import org.mindswap.academy.mindera_travel_agency.dto.external.hotel.ExternalCreateRoomReservation;
+import org.mindswap.academy.mindera_travel_agency.dto.external.hotel.ExternalRoomInfoDto;
 import org.mindswap.academy.mindera_travel_agency.dto.rooms.RoomInfoGetDto;
 import org.mindswap.academy.mindera_travel_agency.model.RoomInfo;
 import org.springframework.stereotype.Component;
@@ -14,8 +15,7 @@ import java.util.stream.Collectors;
 public class RoomInfoConverter {
     public RoomInfo fromExternalDtoToEntity(ExternalRoomInfoDto room) {
         return RoomInfo.builder()
-                .externalId(room.externalId())
-                .pricePerNight(room.pricePerNight())
+                .pricePerNight(room.roomPrice())
                 .roomType(room.roomType())
                 .numberOfBeds(room.numberOfBeds())
                 .build();
@@ -42,5 +42,17 @@ public class RoomInfoConverter {
         return externalRoomInfoDtos.stream()
                 .map(this::fromExternalDtoToEntity)
                 .collect(Collectors.toSet());
+    }
+
+    public List<ExternalCreateRoomReservation> fromEntityListToExternalCreateRoomReservationList(Set<RoomInfo> rooms) {
+        return rooms.stream()
+                .map(this::fromEntityToExternalCreateRoomReservation)
+                .toList();
+    }
+
+    public ExternalCreateRoomReservation fromEntityToExternalCreateRoomReservation(RoomInfo room) {
+        return new ExternalCreateRoomReservation(
+                room.getRoomType()
+        );
     }
 }

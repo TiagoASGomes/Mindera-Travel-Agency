@@ -3,7 +3,7 @@ package org.mindswap.academy.mindera_travel_agency.model;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -25,8 +25,8 @@ public class HotelReservation {
     private int pricePerNight;
     private int durationOfStay;
     private int totalPrice;
-    private LocalDateTime checkInDate;
-    private LocalDateTime checkOutDate;
+    private LocalDate arrivalDate;
+    private LocalDate leaveDate;
     @OneToMany(mappedBy = "hotelReservation",
             fetch = FetchType.EAGER,
             cascade = CascadeType.ALL)
@@ -47,6 +47,6 @@ public class HotelReservation {
         if (rooms == null) {
             return;
         }
-        rooms.removeIf(roomInfo -> roomInfo.getExternalId().equals(roomInfoId));
+        rooms.removeIf(roomInfo -> roomInfo.getRoomNumber() == roomInfoId);
     }
 }

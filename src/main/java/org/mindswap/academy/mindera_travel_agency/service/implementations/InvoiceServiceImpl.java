@@ -1,23 +1,30 @@
 package org.mindswap.academy.mindera_travel_agency.service.implementations;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.mashape.unirest.http.exceptions.UnirestException;
 import org.mindswap.academy.mindera_travel_agency.converter.InvoiceConverter;
 import org.mindswap.academy.mindera_travel_agency.dto.invoice.InvoiceCreateDto;
 import org.mindswap.academy.mindera_travel_agency.dto.invoice.InvoiceGetDto;
 import org.mindswap.academy.mindera_travel_agency.dto.invoice.InvoiceUpdateDto;
 import org.mindswap.academy.mindera_travel_agency.exception.User.UserNotFoundException;
+import org.mindswap.academy.mindera_travel_agency.exception.invoice.InvoiceNotCompleteException;
 import org.mindswap.academy.mindera_travel_agency.exception.invoice.InvoiceNotFoundException;
 import org.mindswap.academy.mindera_travel_agency.exception.invoice.PaymentCompletedException;
 import org.mindswap.academy.mindera_travel_agency.exception.payment_status.PaymentStatusNotFoundException;
 import org.mindswap.academy.mindera_travel_agency.model.FlightTicket;
+import org.mindswap.academy.mindera_travel_agency.model.HotelReservation;
 import org.mindswap.academy.mindera_travel_agency.model.Invoice;
 import org.mindswap.academy.mindera_travel_agency.repository.InvoiceRepository;
+import org.mindswap.academy.mindera_travel_agency.service.interfaces.ExternalService;
 import org.mindswap.academy.mindera_travel_agency.service.interfaces.InvoiceService;
 import org.mindswap.academy.mindera_travel_agency.service.interfaces.PaymentStatusService;
 import org.mindswap.academy.mindera_travel_agency.service.interfaces.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import java.util.Set;
 
 import static org.mindswap.academy.mindera_travel_agency.util.Messages.*;
 
@@ -28,18 +35,21 @@ public class InvoiceServiceImpl implements InvoiceService {
     private final InvoiceConverter invoiceConverter;
     private final PaymentStatusService paymentStatusService;
     private final UserService userService;
+    private final ExternalService externalService;
 
     @Autowired
-    public InvoiceServiceImpl(InvoiceRepository invoiceRepository, InvoiceConverter invoiceConverter, PaymentStatusService paymentStatusService, UserService userService) {
+    public InvoiceServiceImpl(InvoiceRepository invoiceRepository, InvoiceConverter invoiceConverter, PaymentStatusService paymentStatusService, UserService userService, ExternalService externalService) {
         this.invoiceRepository = invoiceRepository;
         this.invoiceConverter = invoiceConverter;
         this.paymentStatusService = paymentStatusService;
         this.userService = userService;
+        this.externalService = externalService;
     }
 
     @Override
-    public List<InvoiceGetDto> getAll() {
-        return invoiceConverter.fromEntityListToGetDtoList(invoiceRepository.findAll());
+    public Page<InvoiceGetDto> getAll(Pageable page) {
+        Page<Invoice> result = invoiceRepository.findAll(page);
+        return result.map(invoiceConverter::fromEntityToGetDto);
     }
 
     @Override
@@ -66,7 +76,7 @@ public class InvoiceServiceImpl implements InvoiceService {
     @Override
     public InvoiceGetDto update(Long id, InvoiceUpdateDto invoiceDto) throws InvoiceNotFoundException, PaymentStatusNotFoundException, PaymentCompletedException {
         Invoice invoice = findById(id);
-        checkIfCanUpdate(invoice, invoiceDto);
+        checkIfCanUpdate(invoice);
         if (invoiceDto.paymentDate() != null) {
             invoice.setPaymentDate(invoiceDto.paymentDate());
         }
@@ -76,7 +86,7 @@ public class InvoiceServiceImpl implements InvoiceService {
         return invoiceConverter.fromEntityToGetDto(invoiceRepository.save(invoice));
     }
 
-    private void checkIfCanUpdate(Invoice invoice, InvoiceUpdateDto invoiceDto) throws PaymentCompletedException {
+    private void checkIfCanUpdate(Invoice invoice) throws PaymentCompletedException {
         if (invoice.getPaymentStatus().getStatusName().equals(PAID_PAYMENT)) {
             throw new PaymentCompletedException(CANNOT_UPDATE_INVOICE);
         }
@@ -87,6 +97,21 @@ public class InvoiceServiceImpl implements InvoiceService {
         Invoice invoice = findById(id);
         invoice.setTotalPrice(calculatePrice(invoice));
         invoiceRepository.save(invoice);
+    }
+
+    @Override
+    public InvoiceGetDto finalize(Long id) throws InvoiceNotFoundException, PaymentCompletedException, InvoiceNotCompleteException, PaymentStatusNotFoundException, UnirestException, JsonProcessingException {
+        Invoice invoice = findById(id);
+        checkIfCanUpdate(invoice);
+        HotelReservation hotelReservation = invoice.getHotelReservation();
+        Set<FlightTicket> flightTickets = invoice.getFlightTickets();
+        if (hotelReservation == null || flightTickets == null || flightTickets.isEmpty()) {
+            throw new InvoiceNotCompleteException(INVOICE_NOT_COMPLETE);
+        }
+//        externalService.createFlightTickets(flightTickets);
+        externalService.createReservation(hotelReservation);
+        invoice.setPaymentStatus(paymentStatusService.findByName(PENDING_PAYMENT));
+        return invoiceConverter.fromEntityToGetDto(invoiceRepository.save(invoice));
     }
 
     private int calculatePrice(Invoice invoice) {
