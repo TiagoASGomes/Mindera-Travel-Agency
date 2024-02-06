@@ -2,7 +2,7 @@ package org.mindswap.academy.mindera_travel_agency.dto.hotel;
 
 import org.mindswap.academy.mindera_travel_agency.dto.rooms.RoomInfoGetDto;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 
 public record HotelReservationGetDto(
@@ -13,8 +13,8 @@ public record HotelReservationGetDto(
         int pricePerNight,
         int durationOfStay,
         int totalPrice,
-        LocalDateTime checkInDate,
-        LocalDateTime checkOutDate,
+        LocalDate arrivalDate,
+        LocalDate leaveDate,
         List<RoomInfoGetDto> rooms
 ) {
 }

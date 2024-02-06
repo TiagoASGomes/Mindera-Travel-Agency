@@ -1,5 +1,6 @@
 package org.mindswap.academy.mindera_travel_agency.service.implementations;
 
+import com.mashape.unirest.http.exceptions.UnirestException;
 import org.mindswap.academy.mindera_travel_agency.converter.FlightTicketConverter;
 import org.mindswap.academy.mindera_travel_agency.converter.HotelReservationConverter;
 import org.mindswap.academy.mindera_travel_agency.converter.InvoiceConverter;
@@ -132,8 +133,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<ExternalHotelInfoDto> getAvailableHotels() {
-        return null;
+    public String getAvailableHotels() throws UnirestException {
+        return externalService.getAvailableHotels();
     }
 
     @Override

@@ -1,5 +1,6 @@
 package org.mindswap.academy.mindera_travel_agency.service.interfaces;
 
+import com.mashape.unirest.http.exceptions.UnirestException;
 import org.mindswap.academy.mindera_travel_agency.dto.external.ExternalHotelInfoDto;
 import org.mindswap.academy.mindera_travel_agency.dto.flight_ticket.TicketGetDto;
 import org.mindswap.academy.mindera_travel_agency.dto.hotel.HotelReservationGetDto;
@@ -39,7 +40,7 @@ public interface UserService {
 
     UserGetDto getByEmail(String email) throws UserNotFoundException;
 
-    List<ExternalHotelInfoDto> getAvailableHotels();
+    String getAvailableHotels() throws UnirestException;
 
     List<ExternalHotelInfoDto> getAvailableFlights();
 

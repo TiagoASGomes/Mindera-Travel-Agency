@@ -1,5 +1,7 @@
 package org.mindswap.academy.mindera_travel_agency.service.implementations;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.mashape.unirest.http.exceptions.UnirestException;
 import org.mindswap.academy.mindera_travel_agency.converter.HotelReservationConverter;
 import org.mindswap.academy.mindera_travel_agency.converter.RoomInfoConverter;
 import org.mindswap.academy.mindera_travel_agency.dto.external.ExternalRoomInfoDto;
@@ -16,14 +18,13 @@ import org.mindswap.academy.mindera_travel_agency.model.HotelReservation;
 import org.mindswap.academy.mindera_travel_agency.model.Invoice;
 import org.mindswap.academy.mindera_travel_agency.model.RoomInfo;
 import org.mindswap.academy.mindera_travel_agency.repository.HotelReservationRepository;
-import org.mindswap.academy.mindera_travel_agency.service.interfaces.ExternalService;
 import org.mindswap.academy.mindera_travel_agency.service.interfaces.HotelReservationService;
 import org.mindswap.academy.mindera_travel_agency.service.interfaces.InvoiceService;
 import org.mindswap.academy.mindera_travel_agency.service.interfaces.RoomInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
 
@@ -31,23 +32,20 @@ import static org.mindswap.academy.mindera_travel_agency.util.Messages.*;
 
 @Service
 public class HotelReservationServiceImpl implements HotelReservationService {
-    //TODO Nao deixar msm quartos na msm reserva
 
     private final HotelReservationRepository hRRepository;
     private final HotelReservationConverter hRConverter;
     private final RoomInfoService roomInfoService;
     private final RoomInfoConverter roomInfoConverter;
     private final InvoiceService invoiceService;
-    private final ExternalService externalService;
 
     @Autowired
-    public HotelReservationServiceImpl(HotelReservationRepository hRRepository, HotelReservationConverter hRConverter, RoomInfoService roomInfoService, RoomInfoConverter roomInfoConverter, InvoiceService invoiceService, ExternalService externalService) {
+    public HotelReservationServiceImpl(HotelReservationRepository hRRepository, HotelReservationConverter hRConverter, RoomInfoService roomInfoService, RoomInfoConverter roomInfoConverter, InvoiceService invoiceService) {
         this.hRRepository = hRRepository;
         this.hRConverter = hRConverter;
         this.roomInfoService = roomInfoService;
         this.roomInfoConverter = roomInfoConverter;
         this.invoiceService = invoiceService;
-        this.externalService = externalService;
     }
 
     @Override
@@ -61,7 +59,7 @@ public class HotelReservationServiceImpl implements HotelReservationService {
     }
 
     @Override
-    public HotelReservationGetDto create(HotelReservationCreateDto dtoReservation) throws InvoiceNotFoundException, HotelReservationNotFoundException, PaymentCompletedException, InvalidCheckInOutDateException {
+    public HotelReservationGetDto create(HotelReservationCreateDto dtoReservation) throws InvoiceNotFoundException, HotelReservationNotFoundException, PaymentCompletedException, InvalidCheckInOutDateException, UnirestException, JsonProcessingException {
         Invoice invoice = invoiceService.findById(dtoReservation.invoiceId());
         verifyIfInvoicePaid(invoice);
         checkIfCheckInDateIsBeforeCheckOutDate(dtoReservation.arrivalDate(), dtoReservation.leaveDate());
@@ -106,12 +104,12 @@ public class HotelReservationServiceImpl implements HotelReservationService {
 
     @Override
     public HotelReservationGetDto updateDuration(Long id, HotelReservationDurationDto dtoReservation) throws HotelReservationNotFoundException, PaymentCompletedException, InvoiceNotFoundException, InvalidCheckInOutDateException {
-        checkIfCheckInDateIsBeforeCheckOutDate(dtoReservation.checkInDate(), dtoReservation.checkOutDate());
+        checkIfCheckInDateIsBeforeCheckOutDate(dtoReservation.arrivalDate(), dtoReservation.leaveDate());
         HotelReservation dbReservation = findById(id);
         verifyIfInvoicePaid(dbReservation.getInvoice());
-        dbReservation.setArrivalDate(dtoReservation.checkInDate());
-        dbReservation.setLeaveDate(dtoReservation.checkOutDate());
-        dbReservation.setDurationOfStay(dtoReservation.checkOutDate().getDayOfMonth() - dtoReservation.checkInDate().getDayOfMonth());
+        dbReservation.setArrivalDate(dtoReservation.arrivalDate());
+        dbReservation.setLeaveDate(dtoReservation.leaveDate());
+        dbReservation.setDurationOfStay(dtoReservation.leaveDate().getDayOfMonth() - dtoReservation.arrivalDate().getDayOfMonth());
         dbReservation.setTotalPrice(dbReservation.getPricePerNight() * dbReservation.getDurationOfStay());
         HotelReservationGetDto reservation = hRConverter.fromEntityToGetDto(hRRepository.save(dbReservation));
         invoiceService.updatePrice(dbReservation.getInvoice().getId());
@@ -172,7 +170,7 @@ public class HotelReservationServiceImpl implements HotelReservationService {
                 .reduce(0, Integer::sum);
     }
 
-    private void checkIfCheckInDateIsBeforeCheckOutDate(LocalDateTime checkIn, LocalDateTime checkOut) throws InvalidCheckInOutDateException {
+    private void checkIfCheckInDateIsBeforeCheckOutDate(LocalDate checkIn, LocalDate checkOut) throws InvalidCheckInOutDateException {
         if (checkIn.isAfter(checkOut)) {
             throw new InvalidCheckInOutDateException(INVALID_CHECK_IN_OUT_DATE);
         }

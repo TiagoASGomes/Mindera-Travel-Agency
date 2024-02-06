@@ -1,9 +1,12 @@
 package org.mindswap.academy.mindera_travel_agency.converter;
 
+import org.mindswap.academy.mindera_travel_agency.dto.external.ExternalReservationCreateDto;
 import org.mindswap.academy.mindera_travel_agency.dto.hotel.HotelReservationCreateDto;
 import org.mindswap.academy.mindera_travel_agency.dto.hotel.HotelReservationGetDto;
 import org.mindswap.academy.mindera_travel_agency.model.HotelReservation;
 import org.mindswap.academy.mindera_travel_agency.model.Invoice;
+import org.mindswap.academy.mindera_travel_agency.model.RoomInfo;
+import org.mindswap.academy.mindera_travel_agency.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -43,14 +46,22 @@ public class HotelReservationConverter {
                 .arrivalDate(dtoReservation.arrivalDate())
                 .leaveDate(dtoReservation.leaveDate())
                 .hotelName(dtoReservation.hotelInfo().name())
-                .hotelAddress(dtoReservation.hotelInfo().address())
+                .hotelAddress(dtoReservation.hotelInfo().location())
                 .hotelPhoneNumber(dtoReservation.hotelInfo().phoneNumber())
-                .externalId(dtoReservation.hotelInfo().externalId())
                 .durationOfStay(dtoReservation.leaveDate().getDayOfMonth() - dtoReservation.arrivalDate().getDayOfMonth())
                 .invoice(invoice)
-                .externalId(dtoReservation.hotelInfo().externalId())
                 .build();
     }
 
 
+    public ExternalReservationCreateDto fromEntityToExternalDto(HotelReservation reservation) {
+        User user = reservation.getInvoice().getUser();
+        return new ExternalReservationCreateDto(
+                reservation.getArrivalDate().toString(),
+                reservation.getLeaveDate().toString(),
+                reservation.getHotelName(),
+                reservation.getRooms().stream().map(RoomInfo::getRoomType).toList(),
+                user.getFName(),
+                user.getPhoneNumber());
+    }
 }

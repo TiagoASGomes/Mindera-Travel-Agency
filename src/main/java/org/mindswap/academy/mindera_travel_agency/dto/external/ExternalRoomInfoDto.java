@@ -4,7 +4,6 @@ public record ExternalRoomInfoDto(
         Long externalId,
         int pricePerNight,
         String roomType,
-        int roomNumber,
         int numberOfBeds
 ) {
 }

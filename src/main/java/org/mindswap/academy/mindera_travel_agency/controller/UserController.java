@@ -1,5 +1,6 @@
 package org.mindswap.academy.mindera_travel_agency.controller;
 
+import com.mashape.unirest.http.exceptions.UnirestException;
 import jakarta.validation.Valid;
 import org.mindswap.academy.mindera_travel_agency.dto.external.ExternalHotelInfoDto;
 import org.mindswap.academy.mindera_travel_agency.dto.flight_ticket.TicketGetDto;
@@ -68,7 +69,7 @@ public class UserController {
 
     //TODO chamar external apis adicionar filtros e sort
     @GetMapping("/hotels/{location}/{arrivalDate}/{leaveDate}")
-    public ResponseEntity<List<ExternalHotelInfoDto>> getAvailableHotels(@PathVariable String location, @PathVariable String arrivalDate, @PathVariable String leaveDate) {
+    public ResponseEntity<String> getAvailableHotels(@PathVariable(required = false) String location, @PathVariable(required = false) String arrivalDate, @PathVariable(required = false) String leaveDate) throws UnirestException {
         return ResponseEntity.ok(userService.getAvailableHotels());
     }
 
