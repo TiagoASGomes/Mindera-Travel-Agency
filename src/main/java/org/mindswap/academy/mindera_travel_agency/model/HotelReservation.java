@@ -50,4 +50,6 @@ public class HotelReservation {
         }
         rooms.removeIf(roomInfo -> Objects.equals(roomInfo.getId(), roomId));
     }
+
+
 }

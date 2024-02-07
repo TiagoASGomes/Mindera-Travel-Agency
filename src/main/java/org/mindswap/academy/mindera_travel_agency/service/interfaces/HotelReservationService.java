@@ -32,4 +32,6 @@ public interface HotelReservationService {
     void delete(Long id) throws HotelReservationNotFoundException, PaymentCompletedException;
 
     HotelReservation findById(Long id) throws HotelReservationNotFoundException;
+
+
 }
