@@ -1,13 +1,11 @@
 package org.mindswap.academy.mindera_travel_agency.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.mashape.unirest.http.exceptions.UnirestException;
 import jakarta.validation.Valid;
 import org.mindswap.academy.mindera_travel_agency.dto.external.hotel.ExternalRoomInfoDto;
 import org.mindswap.academy.mindera_travel_agency.dto.hotel.HotelReservationCreateDto;
 import org.mindswap.academy.mindera_travel_agency.dto.hotel.HotelReservationDurationDto;
 import org.mindswap.academy.mindera_travel_agency.dto.hotel.HotelReservationGetDto;
-import org.mindswap.academy.mindera_travel_agency.exception.hotel_reservation.CannotChangeInvoiceException;
+import org.mindswap.academy.mindera_travel_agency.exception.hotel_reservation.CannotUpdateToDifferentInvoiceException;
 import org.mindswap.academy.mindera_travel_agency.exception.hotel_reservation.HotelReservationNotFoundException;
 import org.mindswap.academy.mindera_travel_agency.exception.hotel_reservation.InvalidCheckInOutDateException;
 import org.mindswap.academy.mindera_travel_agency.exception.hotel_reservation.RoomNotFoundException;
@@ -15,17 +13,16 @@ import org.mindswap.academy.mindera_travel_agency.exception.invoice.InvoiceNotFo
 import org.mindswap.academy.mindera_travel_agency.exception.invoice.PaymentCompletedException;
 import org.mindswap.academy.mindera_travel_agency.service.interfaces.HotelReservationService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
-@RequestMapping("/api/v1/reservations")
+@RequestMapping("/api/v1/hotel_reservations")
 public class HotelReservationController {
 
-    //TODO add external service
     private final HotelReservationService hotelReservationService;
 
     @Autowired
@@ -34,8 +31,8 @@ public class HotelReservationController {
     }
 
     @GetMapping("/")
-    public ResponseEntity<List<HotelReservationGetDto>> getAll() {
-        return ResponseEntity.ok(hotelReservationService.getAll());
+    public ResponseEntity<Page<HotelReservationGetDto>> getAll(Pageable page) {
+        return ResponseEntity.ok(hotelReservationService.getAll(page));
     }
 
     @GetMapping("/{id}")
@@ -44,33 +41,33 @@ public class HotelReservationController {
     }
 
     @PostMapping("/")
-    public ResponseEntity<HotelReservationGetDto> create(@Valid @RequestBody HotelReservationCreateDto hotelReservation) throws InvoiceNotFoundException, HotelReservationNotFoundException, PaymentCompletedException, InvalidCheckInOutDateException, UnirestException, JsonProcessingException {
+    public ResponseEntity<HotelReservationGetDto> create(@Valid @RequestBody HotelReservationCreateDto hotelReservation) throws HotelReservationNotFoundException, InvalidCheckInOutDateException, InvoiceNotFoundException {
         return new ResponseEntity<>(hotelReservationService.create(hotelReservation), HttpStatus.CREATED);
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<HotelReservationGetDto> updateReservation(@PathVariable Long id, @Valid @RequestBody HotelReservationCreateDto hotelReservation) throws HotelReservationNotFoundException, CannotUpdateToDifferentInvoiceException, InvalidCheckInOutDateException, InvoiceNotFoundException, PaymentCompletedException {
+        return ResponseEntity.ok(hotelReservationService.updateReservation(id, hotelReservation));
+    }
+
     @PatchMapping("/{id}/duration")
-    public ResponseEntity<HotelReservationGetDto> updateDuration(@PathVariable Long id, @Valid @RequestBody HotelReservationDurationDto hotelReservation) throws HotelReservationNotFoundException, PaymentCompletedException, InvoiceNotFoundException, InvalidCheckInOutDateException {
+    public ResponseEntity<HotelReservationGetDto> updateDuration(@PathVariable Long id, @Valid @RequestBody HotelReservationDurationDto hotelReservation) throws HotelReservationNotFoundException, InvalidCheckInOutDateException, InvoiceNotFoundException, PaymentCompletedException {
         return ResponseEntity.ok(hotelReservationService.updateDuration(id, hotelReservation));
     }
 
     @PatchMapping("/{id}/rooms/add")
-    public ResponseEntity<HotelReservationGetDto> addRoom(@PathVariable Long id, @Valid @RequestBody ExternalRoomInfoDto room) throws HotelReservationNotFoundException, PaymentCompletedException, InvoiceNotFoundException {
+    public ResponseEntity<HotelReservationGetDto> addRoom(@PathVariable Long id, @Valid @RequestBody ExternalRoomInfoDto room) throws HotelReservationNotFoundException, InvoiceNotFoundException, PaymentCompletedException {
         return ResponseEntity.ok(hotelReservationService.addRoom(id, room));
     }
 
-    @PatchMapping("/{id}/rooms/remove")
-    public ResponseEntity<HotelReservationGetDto> removeRoom(@PathVariable Long id, @Valid @RequestBody ExternalRoomInfoDto room) throws HotelReservationNotFoundException, PaymentCompletedException, InvoiceNotFoundException, RoomNotFoundException {
-        return ResponseEntity.ok(hotelReservationService.removeRoom(id, room));
-    }
-
-    @PutMapping("/{id}")
-    public ResponseEntity<HotelReservationGetDto> updateReservation(@PathVariable Long id, @Valid @RequestBody HotelReservationCreateDto hotelReservation) throws HotelReservationNotFoundException, InvoiceNotFoundException, PaymentCompletedException, InvalidCheckInOutDateException, CannotChangeInvoiceException {
-        return ResponseEntity.ok(hotelReservationService.updateReservation(id, hotelReservation));
+    @PatchMapping("/{id}/rooms/{roomId}/remove")
+    public ResponseEntity<HotelReservationGetDto> removeRoom(@PathVariable Long id, @PathVariable Long roomId) throws HotelReservationNotFoundException, RoomNotFoundException, InvoiceNotFoundException, PaymentCompletedException {
+        return ResponseEntity.ok(hotelReservationService.removeRoom(id, roomId));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) throws HotelReservationNotFoundException, PaymentCompletedException {
         hotelReservationService.delete(id);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        return ResponseEntity.ok().build();
     }
 }

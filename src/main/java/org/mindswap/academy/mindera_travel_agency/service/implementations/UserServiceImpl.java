@@ -26,6 +26,8 @@ import org.mindswap.academy.mindera_travel_agency.repository.UserRepository;
 import org.mindswap.academy.mindera_travel_agency.service.interfaces.ExternalService;
 import org.mindswap.academy.mindera_travel_agency.service.interfaces.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -58,59 +60,39 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
-    public UserGetDto add(UserCreateDto user) throws DuplicateEmailException {
-        checkDuplicateEmail(0, user.email());
-        User newUser = userConverter.fromUserCreateDtoToModel(user);
-        return userConverter.fromUserModelToGetDto(userRepository.save(newUser));
+    public Page<UserGetDto> getAll(Pageable page) {
+        Page<User> users = userRepository.findAll(page);
+        return users.map(userConverter::fromUserModelToGetDto);
     }
 
     @Override
-    public List<UserGetDto> getAll() {
-        return userConverter.fromUserModelListToGetDto(userRepository.findAll());
-    }
-
-
-    @Override
-    public UserGetDto put(long id, UserCreateDto user) throws UserNotFoundException, DuplicateEmailException {
-        findById(id);
-        checkDuplicateEmail(id, user.email());
-        User newUser = userConverter.fromUserCreateDtoToModel(user);
-        newUser.setId(id);
-        return userConverter.fromUserModelToGetDto(userRepository.save(newUser));
-    }
-
-    private void checkDuplicateEmail(long id, String email) throws DuplicateEmailException {
-        Optional<User> userOptional = userRepository.findByEmail(email);
-        if (userOptional.isPresent() && userOptional.get().getId() != id) {
-            throw new DuplicateEmailException(DUPLICATE_EMAIL);
-        }
+    public Page<UserGetDto> getAllActive(Pageable page) {
+        Page<User> users = userRepository.findAllActive(page);
+        return users.map(userConverter::fromUserModelToGetDto);
     }
 
     @Override
-    public User findById(long id) throws UserNotFoundException {
-        return userRepository.findById(id).orElseThrow(() -> new UserNotFoundException(ID_NOT_FOUND + id));
-    }
-
-
-    @Override
-    public void delete(long id) throws UserNotFoundException {
-        User user = findById(id);
-        user.setDeleted(true);
-        userRepository.save(user);
-    }
-
-    @Override
-    public UserGetDto getById(long id) throws UserNotFoundException {
+    @Cacheable("userCache")
+    public UserGetDto getById(Long id) throws UserNotFoundException {
         return userConverter.fromUserModelToGetDto(findById(id));
     }
 
     @Override
+    @Cacheable("userCache")
+    public UserGetDto getByEmail(String email) throws UserNotFoundException {
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new UserNotFoundException(EMAIL_NOT_FOUND + email));
+        return userConverter.fromUserModelToGetDto(user);
+    }
+
+    @Override
+    @Cacheable("reservationsCache")
     public List<InvoiceGetDto> getAllInvoices(Long id) throws UserNotFoundException {
         User user = findById(id);
         return invoiceConverter.fromEntityListToGetDtoList(user.getInvoices());
     }
 
     @Override
+    @Cacheable("reservationsCache")
     public List<HotelReservationGetDto> getAllReservations(Long id) throws UserNotFoundException {
         User user = findById(id);
         List<HotelReservation> userReservations = user.getInvoices().stream()
@@ -121,6 +103,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Cacheable("reservationsCache")
     public List<TicketGetDto> getAllTickets(Long id) throws UserNotFoundException {
         User user = findById(id);
         List<FlightTicket> userTickets = new ArrayList<>();
@@ -130,25 +113,34 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserGetDto getByEmail(String email) throws UserNotFoundException {
-        User user = userRepository.findByEmail(email).orElseThrow(() -> new UserNotFoundException(EMAIL_NOT_FOUND + email));
-        return userConverter.fromUserModelToGetDto(user);
+    @Cacheable("reservationsCache")
+    public List<ExternalHotelInfoDto> getAvailableHotels(String location, String arrivalDate, Pageable page) throws UnirestException, JsonProcessingException {
+        return externalService.getAvailableHotels(location, arrivalDate, page.getPageNumber());
     }
 
     @Override
-    public List<ExternalHotelInfoDto> getAvailableHotels(String location, String arrivalDate, String leaveDate, Pageable page) throws UnirestException, JsonProcessingException {
-        return externalService.getAvailableHotels(page.getPageNumber());
-    }
-
-    @Override
+    @Cacheable("reservationsCache")
     public List<ExternalFlightInfoDto> getAvailableFlights(String source, String destination, String arrivalDate, Pageable page) throws UnirestException, JsonProcessingException {
-        return externalService.getFlights(page.getPageNumber());
+        return externalService.getFlights(source, destination, arrivalDate, page.getPageNumber());
     }
 
     @Override
-    public List<UserGetDto> getAllActive() {
-        return userConverter.fromUserModelListToGetDto(userRepository.findAllActive());
+    public UserGetDto add(UserCreateDto user) throws DuplicateEmailException {
+        checkDuplicateEmail(0L, user.email());
+        User newUser = userConverter.fromUserCreateDtoToModel(user);
+        return userConverter.fromUserModelToGetDto(userRepository.save(newUser));
     }
+
+
+    @Override
+    public UserGetDto put(Long id, UserCreateDto user) throws UserNotFoundException, DuplicateEmailException {
+        findById(id);
+        checkDuplicateEmail(id, user.email());
+        User newUser = userConverter.fromUserCreateDtoToModel(user);
+        newUser.setId(id);
+        return userConverter.fromUserModelToGetDto(userRepository.save(newUser));
+    }
+
 
     @Override
     public UserGetDto update(Long id, UserUpdateDto userDto) throws UserNotFoundException, DuplicateEmailException {
@@ -175,6 +167,23 @@ public class UserServiceImpl implements UserService {
         dbUser.setPassword(user.newPassword());
         return userConverter.fromUserModelToGetDto(userRepository.save(dbUser));
     }
+    
+    @Override
+    public void delete(Long id) throws UserNotFoundException {
+        User user = findById(id);
+        user.setDeleted(true);
+        userRepository.save(user);
+    }
 
+    @Override
+    public User findById(Long id) throws UserNotFoundException {
+        return userRepository.findById(id).orElseThrow(() -> new UserNotFoundException(USER_ID_NOT_FOUND + id));
+    }
 
+    private void checkDuplicateEmail(Long id, String email) throws DuplicateEmailException {
+        Optional<User> userOptional = userRepository.findByEmail(email);
+        if (userOptional.isPresent() && userOptional.get().getId() != id) {
+            throw new DuplicateEmailException(DUPLICATE_EMAIL);
+        }
+    }
 }

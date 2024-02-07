@@ -5,7 +5,6 @@ import org.mindswap.academy.mindera_travel_agency.dto.flight_ticket.TicketCreate
 import org.mindswap.academy.mindera_travel_agency.dto.flight_ticket.TicketGetDto;
 import org.mindswap.academy.mindera_travel_agency.dto.flight_ticket.TicketUpdatePersonalInfo;
 import org.mindswap.academy.mindera_travel_agency.dto.flight_ticket.TicketUpdateTicketDto;
-import org.mindswap.academy.mindera_travel_agency.exception.flight_tickets.FlightTicketDuplicateException;
 import org.mindswap.academy.mindera_travel_agency.exception.flight_tickets.FlightTicketNotFoundException;
 import org.mindswap.academy.mindera_travel_agency.exception.flight_tickets.MaxFlightPerInvoiceException;
 import org.mindswap.academy.mindera_travel_agency.exception.invoice.InvoiceNotFoundException;
@@ -16,7 +15,6 @@ import org.mindswap.academy.mindera_travel_agency.repository.FlightTicketReposit
 import org.mindswap.academy.mindera_travel_agency.service.interfaces.FlightTicketService;
 import org.mindswap.academy.mindera_travel_agency.service.interfaces.InvoiceService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -58,7 +56,7 @@ public class FlightTicketServiceImpl implements FlightTicketService {
     }
 
     @Override
-    public TicketGetDto create(TicketCreateDto flightTicket) throws FlightTicketDuplicateException, InvoiceNotFoundException, MaxFlightPerInvoiceException, PaymentCompletedException {
+    public TicketGetDto create(TicketCreateDto flightTicket) throws InvoiceNotFoundException, MaxFlightPerInvoiceException, PaymentCompletedException {
         Invoice invoice = invoiceService.findById(flightTicket.invoiceId());
         verifyIfInvoicePaid(invoice);
         checkIfInvoiceAtFlightLimit(invoice);
@@ -111,7 +109,6 @@ public class FlightTicketServiceImpl implements FlightTicketService {
     }
 
     @Override
-    @Cacheable(value = "flightCache")
     public FlightTicket findById(Long id) throws FlightTicketNotFoundException {
         return flightTicketRepository.findById(id).orElseThrow(() -> new FlightTicketNotFoundException(FLIGHT_TICKET_ID_NOT_FOUND + id));
     }

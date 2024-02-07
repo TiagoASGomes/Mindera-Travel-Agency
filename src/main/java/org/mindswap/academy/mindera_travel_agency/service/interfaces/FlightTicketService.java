@@ -4,7 +4,6 @@ import org.mindswap.academy.mindera_travel_agency.dto.flight_ticket.TicketCreate
 import org.mindswap.academy.mindera_travel_agency.dto.flight_ticket.TicketGetDto;
 import org.mindswap.academy.mindera_travel_agency.dto.flight_ticket.TicketUpdatePersonalInfo;
 import org.mindswap.academy.mindera_travel_agency.dto.flight_ticket.TicketUpdateTicketDto;
-import org.mindswap.academy.mindera_travel_agency.exception.flight_tickets.FlightTicketDuplicateException;
 import org.mindswap.academy.mindera_travel_agency.exception.flight_tickets.FlightTicketNotFoundException;
 import org.mindswap.academy.mindera_travel_agency.exception.flight_tickets.MaxFlightPerInvoiceException;
 import org.mindswap.academy.mindera_travel_agency.exception.invoice.InvoiceNotFoundException;
@@ -22,7 +21,7 @@ public interface FlightTicketService {
 
     TicketGetDto getById(Long id) throws FlightTicketNotFoundException;
 
-    TicketGetDto create(TicketCreateDto flightTicket) throws FlightTicketDuplicateException, InvoiceNotFoundException, MaxFlightPerInvoiceException, PaymentCompletedException;
+    TicketGetDto create(TicketCreateDto flightTicket) throws InvoiceNotFoundException, MaxFlightPerInvoiceException, PaymentCompletedException;
 
     TicketGetDto updateTotal(Long id, TicketCreateDto flightTicket) throws InvoiceNotFoundException, FlightTicketNotFoundException, PaymentCompletedException;
 

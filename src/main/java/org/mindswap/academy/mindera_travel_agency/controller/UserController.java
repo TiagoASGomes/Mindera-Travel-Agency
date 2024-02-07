@@ -17,6 +17,7 @@ import org.mindswap.academy.mindera_travel_agency.exception.User.PasswordsDidNot
 import org.mindswap.academy.mindera_travel_agency.exception.User.UserNotFoundException;
 import org.mindswap.academy.mindera_travel_agency.service.interfaces.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -35,14 +36,13 @@ public class UserController {
     }
 
     @GetMapping("/")
-    public ResponseEntity<List<UserGetDto>> getAll() {
-        //TODO paginar
-        return ResponseEntity.ok(userService.getAll());
+    public ResponseEntity<Page<UserGetDto>> getAll(Pageable page) {
+        return ResponseEntity.ok(userService.getAll(page));
     }
 
     @GetMapping("/active")
-    public ResponseEntity<List<UserGetDto>> getAllActive() {
-        return ResponseEntity.ok(userService.getAllActive());
+    public ResponseEntity<Page<UserGetDto>> getAllActive(Pageable page) {
+        return ResponseEntity.ok(userService.getAllActive(page));
     }
 
     @GetMapping("/{id}")
@@ -70,10 +70,9 @@ public class UserController {
         return ResponseEntity.ok(userService.getAllTickets(id));
     }
 
-    //TODO chamar external apis adicionar filtros e sort
-    @GetMapping("/hotels/{location}/{arrivalDate}/{leaveDate}")
-    public ResponseEntity<List<ExternalHotelInfoDto>> getAvailableHotels(@PathVariable(required = false) String location, @PathVariable(required = false) String arrivalDate, @PathVariable(required = false) String leaveDate, Pageable page) throws UnirestException, JsonProcessingException {
-        return ResponseEntity.ok(userService.getAvailableHotels(location, arrivalDate, leaveDate, page));
+    @GetMapping("/hotels/{location}/{arrivalDate}")
+    public ResponseEntity<List<ExternalHotelInfoDto>> getAvailableHotels(@PathVariable String location, @PathVariable(required = false) String arrivalDate, Pageable page) throws UnirestException, JsonProcessingException {
+        return ResponseEntity.ok(userService.getAvailableHotels(location, arrivalDate, page));
     }
 
     @GetMapping("/flights/{source}/{destination}/{arrivalDate}")
@@ -104,6 +103,6 @@ public class UserController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) throws UserNotFoundException {
         userService.delete(id);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        return ResponseEntity.ok().build();
     }
 }

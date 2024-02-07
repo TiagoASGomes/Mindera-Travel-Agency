@@ -1,9 +1,12 @@
 package org.mindswap.academy.mindera_travel_agency.service.interfaces;
 
+import org.mindswap.academy.mindera_travel_agency.exception.hotel_reservation.RoomNotFoundException;
 import org.mindswap.academy.mindera_travel_agency.model.RoomInfo;
 
 public interface RoomInfoService {
     void create(RoomInfo roomInfo);
 
-    void delete(Long id, Long hotelId);
+    void delete(Long id);
+
+    void existsById(Long id) throws RoomNotFoundException;
 }

@@ -25,7 +25,7 @@ public class CacheConfig {
         return (builder) -> builder
                 .withCacheConfiguration("userCache",
                         RedisCacheConfiguration.defaultCacheConfig().entryTtl(Duration.ofMinutes(10)))
-                .withCacheConfiguration("flightCache",
-                        RedisCacheConfiguration.defaultCacheConfig().entryTtl(Duration.ofSeconds(60)));
+                .withCacheConfiguration("reservationsCache",
+                        RedisCacheConfiguration.defaultCacheConfig().entryTtl(Duration.ofSeconds(120)));
     }
 }

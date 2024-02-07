@@ -8,7 +8,7 @@ import org.mindswap.academy.mindera_travel_agency.exception.User.UserNotFoundExc
 import org.mindswap.academy.mindera_travel_agency.exception.flight_tickets.FlightTicketDuplicateException;
 import org.mindswap.academy.mindera_travel_agency.exception.flight_tickets.FlightTicketNotFoundException;
 import org.mindswap.academy.mindera_travel_agency.exception.flight_tickets.MaxFlightPerInvoiceException;
-import org.mindswap.academy.mindera_travel_agency.exception.hotel_reservation.CannotChangeInvoiceException;
+import org.mindswap.academy.mindera_travel_agency.exception.hotel_reservation.CannotUpdateToDifferentInvoiceException;
 import org.mindswap.academy.mindera_travel_agency.exception.hotel_reservation.HotelReservationNotFoundException;
 import org.mindswap.academy.mindera_travel_agency.exception.hotel_reservation.InvalidCheckInOutDateException;
 import org.mindswap.academy.mindera_travel_agency.exception.hotel_reservation.RoomNotFoundException;
@@ -40,7 +40,7 @@ public class AgencyExceptionHandler {
             FlightTicketDuplicateException.class,
             PaymentCompletedException.class,
             InvalidCheckInOutDateException.class,
-            CannotChangeInvoiceException.class,
+            CannotUpdateToDifferentInvoiceException.class,
             StatusNameAlreadyExistsException.class,
             PaymentStatusInUseException.class,
             DuplicateEmailException.class,

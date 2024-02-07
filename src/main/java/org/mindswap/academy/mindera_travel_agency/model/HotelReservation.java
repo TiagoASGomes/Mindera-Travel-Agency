@@ -5,6 +5,7 @@ import lombok.*;
 
 import java.time.LocalDate;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 @Entity
@@ -21,7 +22,7 @@ public class HotelReservation {
     private Long externalId;
     private String hotelName;
     private String hotelAddress;
-    private int hotelPhoneNumber;
+    private String hotelPhoneNumber;
     private int pricePerNight;
     private int durationOfStay;
     private int totalPrice;
@@ -43,10 +44,10 @@ public class HotelReservation {
 
     }
 
-    public void removeRoom(Long roomInfoId) {
+    public void removeRoom(Long roomId) {
         if (rooms == null) {
             return;
         }
-        rooms.removeIf(roomInfo -> roomInfo.getRoomNumber() == roomInfoId);
+        rooms.removeIf(roomInfo -> Objects.equals(roomInfo.getId(), roomId));
     }
 }

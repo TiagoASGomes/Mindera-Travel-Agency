@@ -5,7 +5,6 @@ import org.mindswap.academy.mindera_travel_agency.dto.flight_ticket.TicketCreate
 import org.mindswap.academy.mindera_travel_agency.dto.flight_ticket.TicketGetDto;
 import org.mindswap.academy.mindera_travel_agency.dto.flight_ticket.TicketUpdatePersonalInfo;
 import org.mindswap.academy.mindera_travel_agency.dto.flight_ticket.TicketUpdateTicketDto;
-import org.mindswap.academy.mindera_travel_agency.exception.flight_tickets.FlightTicketDuplicateException;
 import org.mindswap.academy.mindera_travel_agency.exception.flight_tickets.FlightTicketNotFoundException;
 import org.mindswap.academy.mindera_travel_agency.exception.flight_tickets.MaxFlightPerInvoiceException;
 import org.mindswap.academy.mindera_travel_agency.exception.invoice.InvoiceNotFoundException;
@@ -47,7 +46,7 @@ public class FlightTicketController {
     }
 
     @PostMapping("/")
-    public ResponseEntity<TicketGetDto> create(@Valid @RequestBody TicketCreateDto flightTicket) throws FlightTicketDuplicateException, InvoiceNotFoundException, MaxFlightPerInvoiceException, PaymentCompletedException {
+    public ResponseEntity<TicketGetDto> create(@Valid @RequestBody TicketCreateDto flightTicket) throws InvoiceNotFoundException, MaxFlightPerInvoiceException, PaymentCompletedException {
         return new ResponseEntity<>(flightTicketService.create(flightTicket), HttpStatus.CREATED);
     }
 

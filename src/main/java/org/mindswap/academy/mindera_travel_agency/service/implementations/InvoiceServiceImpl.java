@@ -65,15 +65,6 @@ public class InvoiceServiceImpl implements InvoiceService {
     }
 
     @Override
-    public void delete(Long id) throws InvoiceNotFoundException, PaymentCompletedException {
-        Invoice invoice = findById(id);
-        if (invoice.getPaymentStatus().getStatusName().equals(PAID_PAYMENT) || invoice.getPaymentStatus().getStatusName().equals(PENDING_PAYMENT)) {
-            throw new PaymentCompletedException(CANNOT_DELETE_INVOICE);
-        }
-        invoiceRepository.deleteById(id);
-    }
-
-    @Override
     public InvoiceGetDto update(Long id, InvoiceUpdateDto invoiceDto) throws InvoiceNotFoundException, PaymentStatusNotFoundException, PaymentCompletedException {
         Invoice invoice = findById(id);
         checkIfCanUpdate(invoice);
@@ -86,10 +77,33 @@ public class InvoiceServiceImpl implements InvoiceService {
         return invoiceConverter.fromEntityToGetDto(invoiceRepository.save(invoice));
     }
 
-    private void checkIfCanUpdate(Invoice invoice) throws PaymentCompletedException {
-        if (invoice.getPaymentStatus().getStatusName().equals(PAID_PAYMENT)) {
-            throw new PaymentCompletedException(CANNOT_UPDATE_INVOICE);
+    @Override
+    public InvoiceGetDto finalizeInvoice(Long id) throws InvoiceNotFoundException, PaymentCompletedException, InvoiceNotCompleteException, UnirestException, JsonProcessingException, PaymentStatusNotFoundException {
+        Invoice invoice = findById(id);
+        checkIfCanUpdate(invoice);
+        HotelReservation hotelReservation = invoice.getHotelReservation();
+        Set<FlightTicket> flightTickets = invoice.getFlightTickets();
+        if (hotelReservation == null || flightTickets == null || flightTickets.isEmpty()) {
+            throw new InvoiceNotCompleteException(INVOICE_NOT_COMPLETE);
         }
+        externalService.createFlightTickets(flightTickets);
+        externalService.createReservation(hotelReservation);
+        invoice.setPaymentStatus(paymentStatusService.findByName(PENDING_PAYMENT));
+        return invoiceConverter.fromEntityToGetDto(invoiceRepository.save(invoice));
+    }
+
+    @Override
+    public void delete(Long id) throws InvoiceNotFoundException, PaymentCompletedException {
+        Invoice invoice = findById(id);
+        if (invoice.getPaymentStatus().getStatusName().equals(PAID_PAYMENT) || invoice.getPaymentStatus().getStatusName().equals(PENDING_PAYMENT)) {
+            throw new PaymentCompletedException(CANNOT_DELETE_INVOICE);
+        }
+        invoiceRepository.deleteById(id);
+    }
+
+    @Override
+    public Invoice findById(Long id) throws InvoiceNotFoundException {
+        return invoiceRepository.findById(id).orElseThrow(() -> new InvoiceNotFoundException(INVOICE_ID_NOT_FOUND + id));
     }
 
     @Override
@@ -99,40 +113,23 @@ public class InvoiceServiceImpl implements InvoiceService {
         invoiceRepository.save(invoice);
     }
 
-    @Override
-    public InvoiceGetDto finalize(Long id) throws InvoiceNotFoundException, PaymentCompletedException, InvoiceNotCompleteException, PaymentStatusNotFoundException, UnirestException, JsonProcessingException {
-        Invoice invoice = findById(id);
-        checkIfCanUpdate(invoice);
-        HotelReservation hotelReservation = invoice.getHotelReservation();
-        Set<FlightTicket> flightTickets = invoice.getFlightTickets();
-        if (hotelReservation == null || flightTickets == null || flightTickets.isEmpty()) {
-            throw new InvoiceNotCompleteException(INVOICE_NOT_COMPLETE);
+    private void checkIfCanUpdate(Invoice invoice) throws PaymentCompletedException {
+        if (invoice.getPaymentStatus().getStatusName().equals(PAID_PAYMENT)) {
+            throw new PaymentCompletedException(CANNOT_UPDATE_INVOICE);
         }
-//        externalService.createFlightTickets(flightTickets);
-        externalService.createReservation(hotelReservation);
-        invoice.setPaymentStatus(paymentStatusService.findByName(PENDING_PAYMENT));
-        return invoiceConverter.fromEntityToGetDto(invoiceRepository.save(invoice));
     }
 
     private int calculatePrice(Invoice invoice) {
-        if (invoice.getHotelReservation() == null && invoice.getFlightTickets() == null) {
-            return 0;
-        }
-        if (invoice.getHotelReservation() == null) {
-            return invoice.getFlightTickets().stream()
+        int sum = 0;
+
+        if (invoice.getFlightTickets() != null) {
+            sum += invoice.getFlightTickets().stream()
                     .mapToInt(FlightTicket::getPrice)
                     .sum();
         }
-        if (invoice.getFlightTickets() == null || invoice.getFlightTickets().isEmpty()) {
-            return invoice.getHotelReservation().getTotalPrice();
+        if (invoice.getHotelReservation() != null) {
+            sum += invoice.getHotelReservation().getTotalPrice();
         }
-        return invoice.getFlightTickets().stream()
-                .mapToInt(FlightTicket::getPrice)
-                .sum() + invoice.getHotelReservation().getTotalPrice();
-    }
-
-    @Override
-    public Invoice findById(Long id) throws InvoiceNotFoundException {
-        return invoiceRepository.findById(id).orElseThrow(() -> new InvoiceNotFoundException(ID_NOT_FOUND + id));
+        return sum;
     }
 }

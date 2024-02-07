@@ -14,11 +14,11 @@ import java.util.List;
 import java.util.Set;
 
 public interface ExternalService {
-    List<ExternalHotelInfoDto> getAvailableHotels(int pageNumber) throws UnirestException, JsonProcessingException;
+    List<ExternalHotelInfoDto> getAvailableHotels(String location, String arrivalDate, int pageNumber) throws UnirestException, JsonProcessingException;
 
     ExternalReservationInfoDto createReservation(HotelReservation hotelReservation) throws UnirestException, JsonProcessingException;
 
     List<ExternalBookingInfoDto> createFlightTickets(Set<FlightTicket> flightTickets) throws UnirestException, JsonProcessingException, InvoiceNotFoundException;
 
-    List<ExternalFlightInfoDto> getFlights(int page) throws UnirestException, JsonProcessingException;
+    List<ExternalFlightInfoDto> getFlights(String source, String destination, String arrivalDate, int page) throws UnirestException, JsonProcessingException;
 }
