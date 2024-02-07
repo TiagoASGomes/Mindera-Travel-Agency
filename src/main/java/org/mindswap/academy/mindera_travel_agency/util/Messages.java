@@ -6,7 +6,7 @@ public class Messages {
     public static final String INVALID_DATE = "Invalid date";
     public static final String INVALID_HOTEL_INFO = "Hotel info cannot be null";
     public static final String INVALID_ID = "Invalid id";
-    public static final String INVALID_PAYMENT_STATUS = "Invalid payment status";
+    public static final String INVALID_PAYMENT_STATUS = "Invalid payment status, payment status can only contain upper case letters and underscores";
     public static final String INVALID_FARE_CLASS = "Invalid fare class, fare class can only contain upper case letters and spaces";
     public static final String CANNOT_DELETE_INVOICE = "Cannot delete paid or pending invoice";
     public static final String CANNOT_ALTER_HOTEL_RESERVATION = "Cannot alter hotel reservation with paid or pending invoice";
@@ -19,7 +19,7 @@ public class Messages {
     public static final String INVALID_LUGGAGE_WEIGHT = "Invalid luggage weight, luggage weight must be between 0 and 100 kg";
     public static final String INVALID_CARRY_ON_LUGGAGE = "Invalid carry on luggage";
     public static final String INVALID_INVOICE_ID = "Invalid invoice id, invoice id must be greater than 0";
-    public static final String EMAIL_NOT_FOUND = "No entity found with this email";
+    public static final String EMAIL_NOT_FOUND = "No user found with email: ";
     public static final String INVALID_PASSWORD = "Invalid Password";
     public static final String INVALID_USER_NAME = "Invalid user name";
     public static final String INVALID_DATE_OF_BIRTH = "Invalid date of birth";
@@ -30,9 +30,9 @@ public class Messages {
     public static final String INVALID_CHECK_IN_OUT_DATE = "Check in date must be before check out date";
     public static final String ROOM_NOT_FOUND = "No room found with id: ";
     public static final String INVALID_INVOICE = "Cannot change invoice.";
-    public static final String CANNOT_UPDATE_INVOICE = "Cannot update invoice.";
+    public static final String CANNOT_UPDATE_INVOICE = "Cannot update paid invoice.";
     public static final String PAYMENT_STATUS_DUPLICATE = "Payment status name already exists";
-    public static final String PAYMENT_STATUS_IN_USE = "Payment status is in use";
+    public static final String PAYMENT_STATUS_IN_USE = "Cannot delete payment status in use";
     public static final String DUPLICATE_EMAIL = "Email already exists";
     public static final String PASSWORDS_DID_NOT_MATCH = "Old password does not match password in database";
     public static final String INVOICE_NOT_COMPLETE = "Please finish planning your trip";
@@ -44,4 +44,11 @@ public class Messages {
     public static final String CANNOT_CHANGE_INVOICE = "Cannot change reservation to a different invoice";
     public static final String INVALID_ARRIVAL_DATE = "Invalid arrival date, arrival date must be in the future or present";
     public static final String INVALID_LEAVE_DATE = "Invalid leave date, leave date must be in the future";
+    public static final String INVOICE_ID_NOT_FOUND = "No invoice found with id: ";
+    public static final String INVALID_USER_ID = "Invalid user id, user id must be greater than 0";
+    public static final String INVALID_PAYMENT_DATE = "Invalid payment date, payment date must be in the future or present";
+    public static final String STATUS_NAME_NOT_FOUND = "No payment status found with name: ";
+    public static final String STATUS_ID_NOT_FOUND = "No payment status found with id: ";
+    public static final String USER_ID_NOT_FOUND = "No user found with id: ";
+
 }

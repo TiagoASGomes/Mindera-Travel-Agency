@@ -37,9 +37,10 @@ public class ExternalServiceImpl implements ExternalService {
         this.fTConverter = fTConverter;
     }
 
-    public List<ExternalHotelInfoDto> getAvailableHotels(int page) throws UnirestException, JsonProcessingException {
+    public List<ExternalHotelInfoDto> getAvailableHotels(String location, String arrivalDate, int pageNumber) throws UnirestException, JsonProcessingException {
         Unirest.setTimeouts(0, 0);
-        HttpResponse<String> response = Unirest.get("http://localhost:9000/api/v1/hotel?page=" + page)
+        //TODO add location filters and such
+        HttpResponse<String> response = Unirest.get("http://localhost:9000/api/v1/hotel?page=" + pageNumber)
                 .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
                 .asString();
         if (response.getStatus() == 200) {
@@ -83,10 +84,10 @@ public class ExternalServiceImpl implements ExternalService {
     }
 
     @Override
-    public List<ExternalFlightInfoDto> getFlights(int page) throws UnirestException, JsonProcessingException {
+    public List<ExternalFlightInfoDto> getFlights(String source, String destination, String arrivalDate, int page) throws UnirestException, JsonProcessingException {
         objectMapper.registerModule(new JavaTimeModule());
         Unirest.setTimeouts(0, 0);
-        HttpResponse<String> response = Unirest.get("http://localhost:8081/api/v1/flights?page=" + page)
+        HttpResponse<String> response = Unirest.get("http://localhost:8081/api/v1/flights/" + source + "?page=" + page)
                 .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
                 .asString();
         if (response.getStatus() == 200) {

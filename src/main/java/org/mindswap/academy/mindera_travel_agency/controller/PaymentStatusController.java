@@ -59,6 +59,6 @@ public class PaymentStatusController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) throws PaymentStatusNotFoundException, PaymentStatusInUseException {
         paymentStatusService.delete(id);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok().build();
     }
 }

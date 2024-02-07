@@ -15,25 +15,20 @@ import org.mindswap.academy.mindera_travel_agency.exception.User.DuplicateEmailE
 import org.mindswap.academy.mindera_travel_agency.exception.User.PasswordsDidNotMatchException;
 import org.mindswap.academy.mindera_travel_agency.exception.User.UserNotFoundException;
 import org.mindswap.academy.mindera_travel_agency.model.User;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
 public interface UserService {
 
-    UserGetDto add(UserCreateDto user) throws DuplicateEmailException;
+    Page<UserGetDto> getAll(Pageable page);
 
-    List<UserGetDto> getAll();
+    Page<UserGetDto> getAllActive(Pageable page);
 
-//    UserGetDto update(long id, UserCreateDto user) throws UserNotFoundException, DuplicateEmailException;
+    UserGetDto getById(Long id) throws UserNotFoundException;
 
-    UserGetDto put(long id, UserCreateDto user) throws UserNotFoundException, DuplicateEmailException;
-
-    User findById(long id) throws UserNotFoundException;
-
-    void delete(long id) throws UserNotFoundException;
-
-    UserGetDto getById(long id) throws UserNotFoundException;
+    UserGetDto getByEmail(String email) throws UserNotFoundException;
 
     List<InvoiceGetDto> getAllInvoices(Long id) throws UserNotFoundException;
 
@@ -41,15 +36,19 @@ public interface UserService {
 
     List<TicketGetDto> getAllTickets(Long id) throws UserNotFoundException;
 
-    UserGetDto getByEmail(String email) throws UserNotFoundException;
-
-    List<ExternalHotelInfoDto> getAvailableHotels(String location, String arrivalDate, String leaveDate, Pageable page) throws UnirestException, JsonProcessingException;
+    List<ExternalHotelInfoDto> getAvailableHotels(String location, String arrivalDate, Pageable page) throws UnirestException, JsonProcessingException;
 
     List<ExternalFlightInfoDto> getAvailableFlights(String source, String destination, String arrivalDate, Pageable page) throws UnirestException, JsonProcessingException;
 
-    List<UserGetDto> getAllActive();
+    UserGetDto add(UserCreateDto user) throws DuplicateEmailException;
+
+    UserGetDto put(Long id, UserCreateDto user) throws UserNotFoundException, DuplicateEmailException;
 
     UserGetDto update(Long id, UserUpdateDto user) throws UserNotFoundException, DuplicateEmailException;
 
     UserGetDto updatePassword(Long id, UserUpdatePasswordDto user) throws UserNotFoundException, PasswordsDidNotMatchException;
+
+    void delete(Long id) throws UserNotFoundException;
+
+    User findById(Long id) throws UserNotFoundException;
 }

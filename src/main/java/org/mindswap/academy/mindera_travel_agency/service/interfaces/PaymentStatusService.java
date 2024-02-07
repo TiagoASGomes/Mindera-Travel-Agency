@@ -11,8 +11,6 @@ import java.util.List;
 
 public interface PaymentStatusService {
 
-    PaymentStatus findByName(String name) throws PaymentStatusNotFoundException;
-
     List<PaymentStatusGetDto> getAll();
 
     PaymentStatusGetDto getById(Long id) throws PaymentStatusNotFoundException;
@@ -21,9 +19,13 @@ public interface PaymentStatusService {
 
     PaymentStatusGetDto create(PaymentStatusCreateDto paymentStatus) throws StatusNameAlreadyExistsException;
 
+    List<PaymentStatusGetDto> createList(List<PaymentStatusCreateDto> paymentStatusList) throws StatusNameAlreadyExistsException;
+
     PaymentStatusGetDto update(Long id, PaymentStatusCreateDto paymentStatus) throws PaymentStatusNotFoundException, StatusNameAlreadyExistsException;
 
     void delete(Long id) throws PaymentStatusNotFoundException, PaymentStatusInUseException;
 
-    List<PaymentStatusGetDto> createList(List<PaymentStatusCreateDto> paymentStatusList) throws StatusNameAlreadyExistsException;
+    PaymentStatus findById(Long id) throws PaymentStatusNotFoundException;
+
+    PaymentStatus findByName(String name) throws PaymentStatusNotFoundException;
 }

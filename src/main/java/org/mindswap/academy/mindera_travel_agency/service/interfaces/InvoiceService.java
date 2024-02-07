@@ -16,19 +16,19 @@ import org.springframework.data.domain.Pageable;
 
 
 public interface InvoiceService {
-    Invoice findById(Long id) throws InvoiceNotFoundException;
-
     Page<InvoiceGetDto> getAll(Pageable page);
 
     InvoiceGetDto getById(Long id) throws InvoiceNotFoundException;
 
     InvoiceGetDto create(InvoiceCreateDto invoice) throws UserNotFoundException, PaymentStatusNotFoundException;
 
-    void delete(Long id) throws InvoiceNotFoundException, PaymentCompletedException;
-
     InvoiceGetDto update(Long id, InvoiceUpdateDto invoice) throws InvoiceNotFoundException, PaymentStatusNotFoundException, PaymentCompletedException;
 
-    void updatePrice(Long id) throws InvoiceNotFoundException;
+    InvoiceGetDto finalizeInvoice(Long id) throws InvoiceNotFoundException, PaymentCompletedException, InvoiceNotCompleteException, PaymentStatusNotFoundException, UnirestException, JsonProcessingException;
 
-    InvoiceGetDto finalize(Long id) throws InvoiceNotFoundException, PaymentCompletedException, InvoiceNotCompleteException, PaymentStatusNotFoundException, UnirestException, JsonProcessingException;
+    void delete(Long id) throws InvoiceNotFoundException, PaymentCompletedException;
+
+    Invoice findById(Long id) throws InvoiceNotFoundException;
+
+    void updatePrice(Long id) throws InvoiceNotFoundException;
 }

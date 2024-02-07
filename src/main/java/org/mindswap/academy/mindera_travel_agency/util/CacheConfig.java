@@ -26,6 +26,6 @@ public class CacheConfig {
                 .withCacheConfiguration("userCache",
                         RedisCacheConfiguration.defaultCacheConfig().entryTtl(Duration.ofMinutes(10)))
                 .withCacheConfiguration("reservationsCache",
-                        RedisCacheConfiguration.defaultCacheConfig().entryTtl(Duration.ofSeconds(60)));
+                        RedisCacheConfiguration.defaultCacheConfig().entryTtl(Duration.ofSeconds(120)));
     }
 }
