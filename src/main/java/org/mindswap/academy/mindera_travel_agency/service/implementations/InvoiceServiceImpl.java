@@ -31,6 +31,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import static org.mindswap.academy.mindera_travel_agency.util.Messages.*;
@@ -161,12 +162,12 @@ public class InvoiceServiceImpl implements InvoiceService {
     }
 
     private void updateTicket(List<ExternalBookingInfoDto> flightTickets, FlightTicket ticket) {
-        ExternalBookingInfoDto externalTicket = flightTickets.stream()
+        Optional<ExternalBookingInfoDto> externalTicket = flightTickets.stream()
                 .filter(flightTicket -> flightTicket.flight().id().equals(ticket.getFlightId()))
-                .findFirst().orElse(null);
-        if (externalTicket != null) {
-            ticket.setTicketNumber(externalTicket.id());
-            ticket.setSeatNumber(externalTicket.seatNumber());
+                .findFirst();
+        if (externalTicket.isPresent()) {
+            ticket.setTicketNumber(externalTicket.get().id());
+            ticket.setSeatNumber(externalTicket.get().seatNumber());
             flightRep.save(ticket);
         }
     }
