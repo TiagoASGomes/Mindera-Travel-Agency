@@ -4,7 +4,7 @@ import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
-import org.mindswap.academy.mindera_travel_agency.dto.external.ExternalHotelInfoDto;
+import org.mindswap.academy.mindera_travel_agency.dto.external.hotel.ExternalHotelInfoDto;
 
 import java.time.LocalDate;
 

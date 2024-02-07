@@ -8,27 +8,23 @@ public class Messages {
     public static final String INVALID_HOTEL_INFO = "Invalid hotel info";
     public static final String INVALID_ID = "Invalid id";
     public static final String INVALID_PAYMENT_STATUS = "Invalid payment status";
-    public static final String INVALID_FARE_CLASS = "Invalid fare class";
+    public static final String INVALID_FARE_CLASS = "Invalid fare class, fare class can only contain upper case letters and spaces";
     public static final String CANNOT_DELETE_INVOICE = "Cannot delete paid or pending invoice";
     public static final String CANNOT_ALTER_HOTEL_RESERVATION = "Cannot alter paid or pending hotel reservation";
     public static final String DUPLICATE_FLIGHT_TICKET_NUMBER = "Ticket number already exists";
-    public static final String INVALID_TICKET_NUMBER = "Invalid ticket number";
-    public static final String INVALID_NAME = "Invalid name";
+    public static final String INVALID_NAME = "Invalid name, name must be 2 words or longer and can only contain upper and lower case letters and spaces";
     public static final String INVALID_EMAIL = "Invalid email";
     public static final String INVALID_PHONE_NUMBER = "Invalid phone number";
     public static final String INVALID_SEAT_NUMBER = "Invalid seat number";
-    public static final String INVALID_PRICE = "Invalid price";
-    public static final String INVALID_LUGGAGE_WEIGHT = "Invalid luggage weight";
+    public static final String INVALID_PRICE = "Invalid price, price must be greater than 0";
+    public static final String INVALID_LUGGAGE_WEIGHT = "Invalid luggage weight, luggage weight must be between 0 and 100 kg";
     public static final String INVALID_CARRY_ON_LUGGAGE = "Invalid carry on luggage";
-    public static final String INVALID_INVOICE_ID = "Invalid invoice id";
+    public static final String INVALID_INVOICE_ID = "Invalid invoice id, invoice id must be greater than 0";
     public static final String EMAIL_NOT_FOUND = "No entity found with this email";
-    public static final String EMAIL_ALREADY_EXISTS = "Email already exists";
     public static final String INVALID_PASSWORD = "Invalid Password";
     public static final String INVALID_USER_NAME = "Invalid user name";
     public static final String INVALID_DATE_OF_BIRTH = "Invalid date of birth";
-    public static final String USER_NOT_FOUND = "No user found with this id";
-    public static final String NAME_TAKEN = "Name taken";
-    public static final String CANNOT_ALTER_PLANE_TICKET = "Cannot alter paid or pending plane ticket";
+    public static final String CANNOT_ALTER_PLANE_TICKET = "Cannot alter plane ticket with paid or pending invoice";
     public static final String PENDING_PAYMENT = "PENDING";
     public static final String PAID_PAYMENT = "PAID";
     public static final String NOT_REQUESTED_PAYMENT = "NOT_REQUESTED";
@@ -38,8 +34,11 @@ public class Messages {
     public static final String CANNOT_UPDATE_INVOICE = "Cannot update invoice.";
     public static final String PAYMENT_STATUS_DUPLICATE = "Payment status name already exists";
     public static final String PAYMENT_STATUS_IN_USE = "Payment status is in use";
-    public static final String FARE_CLASS_IN_USE = "Fare class is in use";
     public static final String DUPLICATE_EMAIL = "Email already exists";
     public static final String PASSWORDS_DID_NOT_MATCH = "Old password does not match password in database";
-
+    public static final String INVOICE_NOT_COMPLETE = "Please finish planning your trip";
+    public static final String INVALID_FLIGHT_ID = "Invalid flight id, flight id must greater than 0";
+    public static final String INVALID_PRICE_ID = "Invalid price id, price id must be greater than 0";
+    public static final String INVOICE_FLIGHT_LIMIT_REACHED = "Max number of flights per invoice reached at 50 flights";
+    public static final String FLIGHT_TICKET_ID_NOT_FOUND = "No flight ticket found with id: ";
 }

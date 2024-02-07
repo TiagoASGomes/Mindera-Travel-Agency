@@ -1,8 +1,10 @@
 package org.mindswap.academy.mindera_travel_agency.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import jakarta.validation.Valid;
-import org.mindswap.academy.mindera_travel_agency.dto.external.ExternalHotelInfoDto;
+import org.mindswap.academy.mindera_travel_agency.dto.external.flight.ExternalFlightInfoDto;
+import org.mindswap.academy.mindera_travel_agency.dto.external.hotel.ExternalHotelInfoDto;
 import org.mindswap.academy.mindera_travel_agency.dto.flight_ticket.TicketGetDto;
 import org.mindswap.academy.mindera_travel_agency.dto.hotel.HotelReservationGetDto;
 import org.mindswap.academy.mindera_travel_agency.dto.invoice.InvoiceGetDto;
@@ -15,6 +17,7 @@ import org.mindswap.academy.mindera_travel_agency.exception.User.PasswordsDidNot
 import org.mindswap.academy.mindera_travel_agency.exception.User.UserNotFoundException;
 import org.mindswap.academy.mindera_travel_agency.service.interfaces.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -69,13 +72,13 @@ public class UserController {
 
     //TODO chamar external apis adicionar filtros e sort
     @GetMapping("/hotels/{location}/{arrivalDate}/{leaveDate}")
-    public ResponseEntity<String> getAvailableHotels(@PathVariable(required = false) String location, @PathVariable(required = false) String arrivalDate, @PathVariable(required = false) String leaveDate) throws UnirestException {
-        return ResponseEntity.ok(userService.getAvailableHotels());
+    public ResponseEntity<List<ExternalHotelInfoDto>> getAvailableHotels(@PathVariable(required = false) String location, @PathVariable(required = false) String arrivalDate, @PathVariable(required = false) String leaveDate, Pageable page) throws UnirestException, JsonProcessingException {
+        return ResponseEntity.ok(userService.getAvailableHotels(location, arrivalDate, leaveDate, page));
     }
 
-    @GetMapping("/flights/{source}/{destination}/{arrivalDate}/")
-    public ResponseEntity<List<ExternalHotelInfoDto>> getAvailableFlights(@PathVariable String source, @PathVariable String destination, @PathVariable String arrivalDate) {
-        return ResponseEntity.ok(userService.getAvailableFlights());
+    @GetMapping("/flights/{source}/{destination}/{arrivalDate}")
+    public ResponseEntity<List<ExternalFlightInfoDto>> getAvailableFlights(@PathVariable String source, @PathVariable String destination, @PathVariable String arrivalDate, Pageable page) throws UnirestException, JsonProcessingException {
+        return ResponseEntity.ok(userService.getAvailableFlights(source, destination, arrivalDate, page));
     }
 
     @PostMapping("/")

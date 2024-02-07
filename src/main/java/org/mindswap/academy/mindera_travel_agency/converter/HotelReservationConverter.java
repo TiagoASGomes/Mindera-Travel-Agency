@@ -1,11 +1,10 @@
 package org.mindswap.academy.mindera_travel_agency.converter;
 
-import org.mindswap.academy.mindera_travel_agency.dto.external.ExternalReservationCreateDto;
+import org.mindswap.academy.mindera_travel_agency.dto.external.hotel.ExternalReservationCreateDto;
 import org.mindswap.academy.mindera_travel_agency.dto.hotel.HotelReservationCreateDto;
 import org.mindswap.academy.mindera_travel_agency.dto.hotel.HotelReservationGetDto;
 import org.mindswap.academy.mindera_travel_agency.model.HotelReservation;
 import org.mindswap.academy.mindera_travel_agency.model.Invoice;
-import org.mindswap.academy.mindera_travel_agency.model.RoomInfo;
 import org.mindswap.academy.mindera_travel_agency.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -45,7 +44,7 @@ public class HotelReservationConverter {
         return HotelReservation.builder()
                 .arrivalDate(dtoReservation.arrivalDate())
                 .leaveDate(dtoReservation.leaveDate())
-                .hotelName(dtoReservation.hotelInfo().name())
+                .hotelName(dtoReservation.hotelInfo().hotelN())
                 .hotelAddress(dtoReservation.hotelInfo().location())
                 .hotelPhoneNumber(dtoReservation.hotelInfo().phoneNumber())
                 .durationOfStay(dtoReservation.leaveDate().getDayOfMonth() - dtoReservation.arrivalDate().getDayOfMonth())
@@ -60,8 +59,12 @@ public class HotelReservationConverter {
                 reservation.getArrivalDate().toString(),
                 reservation.getLeaveDate().toString(),
                 reservation.getHotelName(),
-                reservation.getRooms().stream().map(RoomInfo::getRoomType).toList(),
                 user.getFName(),
-                user.getPhoneNumber());
+                "",
+                Integer.parseInt(user.getPhoneNumber()),
+                123456789,
+                roomInfoConverter.fromEntityListToExternalCreateRoomReservationList(reservation.getRooms())
+        );
+
     }
 }

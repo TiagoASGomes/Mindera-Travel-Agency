@@ -18,19 +18,25 @@ public record TicketCreateDto(
         @Pattern(regexp = "^((\\+351|00351|351)?) ?(9[3621])\\d{7}$", message = INVALID_PHONE_NUMBER)
         String phone,
         @NotNull(message = INVALID_FARE_CLASS)
-        @Pattern(regexp = "^[A-Z ]$", message = INVALID_FARE_CLASS)
-        String FareClass,
+        @Pattern(regexp = "^[A-Z ]+$", message = INVALID_FARE_CLASS)
+        String fareClass,
         @NotNull(message = INVALID_PRICE)
         @Min(value = 0, message = INVALID_PRICE)
         Integer price,
         @NotNull(message = INVALID_LUGGAGE_WEIGHT)
         @Min(value = 0, message = INVALID_LUGGAGE_WEIGHT)
-        @Max(value = 30, message = INVALID_LUGGAGE_WEIGHT)
+        @Max(value = 100, message = INVALID_LUGGAGE_WEIGHT)
         Integer maxLuggageWeight,
         @NotNull(message = INVALID_CARRY_ON_LUGGAGE)
         Boolean carryOnLuggage,
         @NotNull(message = INVALID_INVOICE_ID)
         @Min(value = 1, message = INVALID_INVOICE_ID)
-        Long invoiceId
+        Long invoiceId,
+        @NotNull(message = INVALID_FLIGHT_ID)
+        @Min(value = 1, message = INVALID_FLIGHT_ID)
+        Long flightId,
+        @NotNull(message = INVALID_PRICE_ID)
+        @Min(value = 1, message = INVALID_PRICE_ID)
+        Long priceId
 ) {
 }

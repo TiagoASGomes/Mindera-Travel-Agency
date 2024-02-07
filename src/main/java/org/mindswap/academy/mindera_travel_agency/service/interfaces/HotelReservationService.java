@@ -2,7 +2,7 @@ package org.mindswap.academy.mindera_travel_agency.service.interfaces;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.mashape.unirest.http.exceptions.UnirestException;
-import org.mindswap.academy.mindera_travel_agency.dto.external.ExternalRoomInfoDto;
+import org.mindswap.academy.mindera_travel_agency.dto.external.hotel.ExternalRoomInfoDto;
 import org.mindswap.academy.mindera_travel_agency.dto.hotel.HotelReservationCreateDto;
 import org.mindswap.academy.mindera_travel_agency.dto.hotel.HotelReservationDurationDto;
 import org.mindswap.academy.mindera_travel_agency.dto.hotel.HotelReservationGetDto;
@@ -34,6 +34,4 @@ public interface HotelReservationService {
     void delete(Long id) throws HotelReservationNotFoundException, PaymentCompletedException;
 
     HotelReservation findById(Long id) throws HotelReservationNotFoundException;
-
-
 }

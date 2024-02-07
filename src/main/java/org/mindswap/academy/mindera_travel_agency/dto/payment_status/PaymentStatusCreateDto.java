@@ -8,6 +8,4 @@ public record PaymentStatusCreateDto(
         @Pattern(regexp = "^[A-Z_]+$", message = INVALID_PAYMENT_STATUS)
         String statusName
 ) {
-
-
 }

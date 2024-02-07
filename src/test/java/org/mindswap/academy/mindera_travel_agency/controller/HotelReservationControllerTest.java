@@ -4,13 +4,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.junit.jupiter.api.*;
 import org.mindswap.academy.mindera_travel_agency.aspect.AgencyError;
-import org.mindswap.academy.mindera_travel_agency.dto.external.ExternalReservationCreateDto;
 import org.mindswap.academy.mindera_travel_agency.dto.hotel.HotelReservationGetDto;
 import org.mindswap.academy.mindera_travel_agency.dto.rooms.RoomInfoGetDto;
 import org.mindswap.academy.mindera_travel_agency.repository.*;
 import org.mindswap.academy.mindera_travel_agency.service.interfaces.ExternalService;
-import org.mockito.ArgumentMatchers;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -78,7 +75,6 @@ class HotelReservationControllerTest {
         mockMvc.perform(post("/api/v1/invoices/")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(invoiceJson));
-        Mockito.when(externalService.createReservation(ArgumentMatchers.any(ExternalReservationCreateDto.class))).thenReturn("1");
     }
 
     @AfterEach
