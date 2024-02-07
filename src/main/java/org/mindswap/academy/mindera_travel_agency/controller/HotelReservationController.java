@@ -5,10 +5,7 @@ import org.mindswap.academy.mindera_travel_agency.dto.external.hotel.ExternalRoo
 import org.mindswap.academy.mindera_travel_agency.dto.hotel.HotelReservationCreateDto;
 import org.mindswap.academy.mindera_travel_agency.dto.hotel.HotelReservationDurationDto;
 import org.mindswap.academy.mindera_travel_agency.dto.hotel.HotelReservationGetDto;
-import org.mindswap.academy.mindera_travel_agency.exception.hotel_reservation.CannotUpdateToDifferentInvoiceException;
-import org.mindswap.academy.mindera_travel_agency.exception.hotel_reservation.HotelReservationNotFoundException;
-import org.mindswap.academy.mindera_travel_agency.exception.hotel_reservation.InvalidCheckInOutDateException;
-import org.mindswap.academy.mindera_travel_agency.exception.hotel_reservation.RoomNotFoundException;
+import org.mindswap.academy.mindera_travel_agency.exception.hotel_reservation.*;
 import org.mindswap.academy.mindera_travel_agency.exception.invoice.InvoiceNotFoundException;
 import org.mindswap.academy.mindera_travel_agency.exception.invoice.PaymentCompletedException;
 import org.mindswap.academy.mindera_travel_agency.service.interfaces.HotelReservationService;
@@ -41,7 +38,7 @@ public class HotelReservationController {
     }
 
     @PostMapping("/")
-    public ResponseEntity<HotelReservationGetDto> create(@Valid @RequestBody HotelReservationCreateDto hotelReservation) throws HotelReservationNotFoundException, InvalidCheckInOutDateException, InvoiceNotFoundException {
+    public ResponseEntity<HotelReservationGetDto> create(@Valid @RequestBody HotelReservationCreateDto hotelReservation) throws HotelReservationNotFoundException, InvalidCheckInOutDateException, InvoiceNotFoundException, ReservationAlreadyExistsException {
         return new ResponseEntity<>(hotelReservationService.create(hotelReservation), HttpStatus.CREATED);
     }
 

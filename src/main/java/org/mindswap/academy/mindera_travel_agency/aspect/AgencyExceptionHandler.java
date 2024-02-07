@@ -4,10 +4,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.mindswap.academy.mindera_travel_agency.exception.flight_tickets.FlightTicketDuplicateException;
 import org.mindswap.academy.mindera_travel_agency.exception.flight_tickets.FlightTicketNotFoundException;
 import org.mindswap.academy.mindera_travel_agency.exception.flight_tickets.MaxFlightPerInvoiceException;
-import org.mindswap.academy.mindera_travel_agency.exception.hotel_reservation.CannotUpdateToDifferentInvoiceException;
-import org.mindswap.academy.mindera_travel_agency.exception.hotel_reservation.HotelReservationNotFoundException;
-import org.mindswap.academy.mindera_travel_agency.exception.hotel_reservation.InvalidCheckInOutDateException;
-import org.mindswap.academy.mindera_travel_agency.exception.hotel_reservation.RoomNotFoundException;
+import org.mindswap.academy.mindera_travel_agency.exception.hotel_reservation.*;
 import org.mindswap.academy.mindera_travel_agency.exception.invoice.InvoiceNotCompleteException;
 import org.mindswap.academy.mindera_travel_agency.exception.invoice.InvoiceNotFoundException;
 import org.mindswap.academy.mindera_travel_agency.exception.invoice.PaymentCompletedException;
@@ -46,7 +43,8 @@ public class AgencyExceptionHandler {
             DuplicateEmailException.class,
             PasswordsDidNotMatchException.class,
             InvoiceNotCompleteException.class,
-            MaxFlightPerInvoiceException.class})
+            MaxFlightPerInvoiceException.class,
+            ReservationAlreadyExistsException.class})
     public ResponseEntity<AgencyError> handleBadRequest(Exception e, HttpServletRequest request) {
         logger.error(e.getMessage());
         return new ResponseEntity<>(

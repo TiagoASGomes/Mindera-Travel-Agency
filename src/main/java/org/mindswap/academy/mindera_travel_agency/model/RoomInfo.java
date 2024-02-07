@@ -19,6 +19,6 @@ public class RoomInfo {
     private int roomNumber;
     private int numberOfBeds;
     private int pricePerNight;
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     private HotelReservation hotelReservation;
 }

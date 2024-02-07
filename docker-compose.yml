@@ -27,5 +27,11 @@ services:
     restart: on-failure
     links:
       - my-db
+  redis:
+    image: redis:7.2.4-alpine
+    container_name: redis
+    ports:
+      - 6379:6379
+    restart: unless-stopped
 volumes:
   postgres-data:

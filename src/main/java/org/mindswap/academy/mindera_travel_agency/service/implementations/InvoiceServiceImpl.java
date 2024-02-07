@@ -100,8 +100,10 @@ public class InvoiceServiceImpl implements InvoiceService {
         if (hotelReservation == null || flightTickets == null || flightTickets.isEmpty()) {
             throw new InvoiceNotCompleteException(INVOICE_NOT_COMPLETE);
         }
-        updateFlights(extSer.createFlightTickets(flightTickets), invoice);
-        updateHotel(extSer.createReservation(hotelReservation), invoice);
+        List<ExternalBookingInfoDto> flightInfo = extSer.createFlightTickets(flightTickets);
+        ExternalReservationInfoDto reservationInfo = extSer.createReservation(hotelReservation);
+        updateFlights(flightInfo, invoice);
+        updateHotel(reservationInfo, invoice);
         invoice.setPaymentStatus(paymentSer.findByName(PENDING_PAYMENT));
         return inCon.fromEntityToGetDto(inRep.save(invoice));
     }
@@ -122,9 +124,16 @@ public class InvoiceServiceImpl implements InvoiceService {
     }
 
     @Override
-    public void updateHotelPrice(Long id) throws InvoiceNotFoundException {
+    public void updateHotelPrice(Long id, int hotelPrice) throws InvoiceNotFoundException {
         Invoice invoice = findById(id);
-        invoice.setTotalPrice(calculatePrice(invoice));
+        if (invoice.getFlightTickets() == null || invoice.getFlightTickets().isEmpty()) {
+            invoice.setTotalPrice(hotelPrice);
+        } else {
+            int flightPrice = invoice.getFlightTickets().stream()
+                    .mapToInt(FlightTicket::getPrice)
+                    .sum();
+            invoice.setTotalPrice(hotelPrice + flightPrice);
+        }
         inRep.save(invoice);
     }
 
@@ -148,26 +157,15 @@ public class InvoiceServiceImpl implements InvoiceService {
         }
     }
 
-    private int calculatePrice(Invoice invoice) {
-        int sum = 0;
-
-        if (invoice.getFlightTickets() != null) {
-            sum += invoice.getFlightTickets().stream()
-                    .mapToInt(FlightTicket::getPrice)
-                    .sum();
-        }
-        if (invoice.getHotelReservation() != null) {
-            sum += invoice.getHotelReservation().getTotalPrice();
-        }
-        return sum;
-    }
 
     private void updateHotel(ExternalReservationInfoDto reservation, Invoice invoice) {
         HotelReservation hotelReservation = invoice.getHotelReservation();
-        hotelReservation.getRooms().forEach(room -> roomRep.deleteById(room.getId()));
         Set<RoomInfo> rooms = roomCon.fromExternalDtoListToEntityList(reservation.roomReservations());
+        Set<RoomInfo> oldRooms = hotelReservation.getRooms();
+        hotelReservation.setRooms(rooms);
+        oldRooms.forEach(room -> roomRep.deleteById(room.getId()));
         rooms.forEach(room -> room.setHotelReservation(hotelReservation));
-        roomRep.saveAll(rooms);
+        rooms.forEach(roomRep::save);
     }
 
     private void updateFlights(List<ExternalBookingInfoDto> flightTickets, Invoice invoice) {

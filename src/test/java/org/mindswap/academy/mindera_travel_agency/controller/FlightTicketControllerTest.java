@@ -10,12 +10,15 @@ import org.mindswap.academy.mindera_travel_agency.repository.FlightTicketTestRep
 import org.mindswap.academy.mindera_travel_agency.repository.InvoiceTestRepository;
 import org.mindswap.academy.mindera_travel_agency.repository.PaymentStatusTestRepository;
 import org.mindswap.academy.mindera_travel_agency.repository.UserTestRepository;
-import org.mindswap.academy.mindera_travel_agency.util.CacheConfig;
+import org.mindswap.academy.mindera_travel_agency.util.RedisConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
+import org.springframework.boot.autoconfigure.cache.CacheAutoConfiguration;
+import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
@@ -28,10 +31,13 @@ import static org.mindswap.academy.mindera_travel_agency.util.Messages.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@ImportAutoConfiguration(classes = {CacheConfig.class})
+@Import(RedisConfig.class)
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
+@ImportAutoConfiguration(classes = {
+        CacheAutoConfiguration.class,
+        RedisAutoConfiguration.class})
 @EnableCaching
 class FlightTicketControllerTest {
     private static ObjectMapper objectMapper;

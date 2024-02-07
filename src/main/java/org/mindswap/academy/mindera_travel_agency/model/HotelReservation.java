@@ -28,7 +28,6 @@ public class HotelReservation {
     private LocalDate arrivalDate;
     private LocalDate leaveDate;
     @OneToMany(mappedBy = "hotelReservation",
-            fetch = FetchType.EAGER,
             cascade = CascadeType.ALL)
     private Set<RoomInfo> rooms;
     @OneToOne(cascade = CascadeType.REMOVE)

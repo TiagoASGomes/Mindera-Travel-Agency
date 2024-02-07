@@ -33,7 +33,7 @@ public interface InvoiceService {
 
     Invoice findById(Long id) throws InvoiceNotFoundException;
 
-    void updateHotelPrice(Long id) throws InvoiceNotFoundException;
+    void updateHotelPrice(Long id, int hotelPrice) throws InvoiceNotFoundException;
 
     void updateFlightPrices(List<FlightTicket> invoiceFlights, Long id) throws InvoiceNotFoundException;
 }

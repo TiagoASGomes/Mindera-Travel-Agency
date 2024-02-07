@@ -7,6 +7,8 @@ import org.mindswap.academy.mindera_travel_agency.service.interfaces.RoomInfoSer
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 import static org.mindswap.academy.mindera_travel_agency.util.Messages.ROOM_NOT_FOUND;
 
 @Service
@@ -21,7 +23,9 @@ public class RoomInfoServiceImpl implements RoomInfoService {
 
     @Override
     public void delete(Long id) {
-        roomInfoRepository.deleteById(id);
+        Optional<RoomInfo> room = roomInfoRepository.findById(id);
+        room.ifPresent(roomInfo -> roomInfoRepository.delete(roomInfo));
+//        roomInfoRepository.deleteById(id);
     }
 
     @Override

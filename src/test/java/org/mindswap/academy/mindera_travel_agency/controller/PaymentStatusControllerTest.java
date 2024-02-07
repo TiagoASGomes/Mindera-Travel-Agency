@@ -8,9 +8,15 @@ import org.mindswap.academy.mindera_travel_agency.aspect.AgencyError;
 import org.mindswap.academy.mindera_travel_agency.dto.payment_status.PaymentStatusGetDto;
 import org.mindswap.academy.mindera_travel_agency.repository.InvoiceTestRepository;
 import org.mindswap.academy.mindera_travel_agency.repository.PaymentStatusTestRepository;
+import org.mindswap.academy.mindera_travel_agency.util.RedisConfig;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
+import org.springframework.boot.autoconfigure.cache.CacheAutoConfiguration;
+import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
@@ -24,9 +30,14 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@Import(RedisConfig.class)
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
+@ImportAutoConfiguration(classes = {
+        CacheAutoConfiguration.class,
+        RedisAutoConfiguration.class})
+@EnableCaching
 class PaymentStatusControllerTest {
     private final String BASE_URL = "/api/v1/payment_status/";
     private final ObjectMapper objectMapper = new ObjectMapper();
@@ -101,7 +112,7 @@ class PaymentStatusControllerTest {
                 .andReturn().getResponse().getContentAsString();
         AgencyError agencyError = objectMapper.readValue(response, AgencyError.class);
         // THEN
-        assertEquals(ID_NOT_FOUND + 1, agencyError.getMessage());
+        assertEquals(STATUS_ID_NOT_FOUND + 1, agencyError.getMessage());
     }
 
     @Test
@@ -127,12 +138,12 @@ class PaymentStatusControllerTest {
     @DisplayName("Test get by name with invalid name expect status 404")
     void getByNameWithInvalidName() throws Exception {
         // WHEN
-        String response = mockMvc.perform(get(BASE_URL + "name/PAID"))
+        String response = mockMvc.perform(get(BASE_URL + "name/TESTE"))
                 .andExpect(status().isNotFound())
                 .andReturn().getResponse().getContentAsString();
         AgencyError agencyError = objectMapper.readValue(response, AgencyError.class);
         // THEN
-        assertEquals(NAME_NOT_FOUND + "PAID", agencyError.getMessage());
+        assertEquals(STATUS_NAME_NOT_FOUND + "TESTE", agencyError.getMessage());
     }
 
     @Test
@@ -280,7 +291,7 @@ class PaymentStatusControllerTest {
                 .content(json));
         // WHEN
         mockMvc.perform(delete(BASE_URL + "1"))
-                .andExpect(status().isNoContent());
+                .andExpect(status().isOk());
 
         assertEquals(0, paymentStatusTestRepository.count());
     }
@@ -294,7 +305,7 @@ class PaymentStatusControllerTest {
                 .andReturn().getResponse().getContentAsString();
         AgencyError agencyError = objectMapper.readValue(response, AgencyError.class);
         // THEN
-        assertEquals(ID_NOT_FOUND + 1, agencyError.getMessage());
+        assertEquals(STATUS_ID_NOT_FOUND + 1, agencyError.getMessage());
     }
 
     @Test
@@ -305,7 +316,7 @@ class PaymentStatusControllerTest {
         mockMvc.perform(post(BASE_URL)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(statusJson));
-        String userJson = "{\"email\": \"teste@example.com\",\"password\": \"C@$9gmL?\",\"userName\": \"userTeste\",\"dateOfBirth\": \"2000-01-01\",\"phoneNumber\": \"937313732\"}";
+        String userJson = "{\"email\": \"teste@example.com\",\"password\": \"zxlmn!!23K?\",\"userName\": \"userTeste\",\"dateOfBirth\": \"2000-01-01\",\"phoneNumber\": \"937313732\",\"vat\": \"123456782\"}";
         mockMvc.perform(post("/api/v1/users/")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(userJson));
