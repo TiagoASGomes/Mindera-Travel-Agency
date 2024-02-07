@@ -25,10 +25,10 @@ import static org.mindswap.academy.mindera_travel_agency.util.Messages.*;
 
 @Service
 public class FlightTicketServiceImpl implements FlightTicketService {
+    private static final int MAX_FLIGHTS_PER_INVOICE = 50;
     private final FlightTicketConverter flightTicketConverter;
     private final FlightTicketRepository flightTicketRepository;
     private final InvoiceService invoiceService;
-    private final int MAX_FLIGHTS_PER_INVOICE = 50;
 
     @Autowired
     public FlightTicketServiceImpl(FlightTicketConverter flightTicketConverter, FlightTicketRepository flightTicketRepository, InvoiceService invoiceService) {

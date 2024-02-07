@@ -9,11 +9,11 @@ import org.mindswap.academy.mindera_travel_agency.dto.external.hotel.ExternalRes
 import org.mindswap.academy.mindera_travel_agency.dto.invoice.InvoiceCreateDto;
 import org.mindswap.academy.mindera_travel_agency.dto.invoice.InvoiceGetDto;
 import org.mindswap.academy.mindera_travel_agency.dto.invoice.InvoiceUpdateDto;
-import org.mindswap.academy.mindera_travel_agency.exception.User.UserNotFoundException;
 import org.mindswap.academy.mindera_travel_agency.exception.invoice.InvoiceNotCompleteException;
 import org.mindswap.academy.mindera_travel_agency.exception.invoice.InvoiceNotFoundException;
 import org.mindswap.academy.mindera_travel_agency.exception.invoice.PaymentCompletedException;
 import org.mindswap.academy.mindera_travel_agency.exception.payment_status.PaymentStatusNotFoundException;
+import org.mindswap.academy.mindera_travel_agency.exception.user.UserNotFoundException;
 import org.mindswap.academy.mindera_travel_agency.model.FlightTicket;
 import org.mindswap.academy.mindera_travel_agency.model.HotelReservation;
 import org.mindswap.academy.mindera_travel_agency.model.Invoice;

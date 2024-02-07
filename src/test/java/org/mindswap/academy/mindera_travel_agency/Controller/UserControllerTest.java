@@ -26,7 +26,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @SpringBootTest
 @ActiveProfiles("test")
-public class UserControllerTest {
+class UserControllerTest {
     private static ObjectMapper objectMapper;
     private final String BASE_URL = "/api/v1/users/";
     private final String USER_JSON = "{\"email\":\"email@example.com\",\"userName\":\"User_test\",\"dateOfBirth\":\"1990-01-01\",\"phoneNumber\":\"912345678\",\"password\":\"zxlmn!!23K\"}";

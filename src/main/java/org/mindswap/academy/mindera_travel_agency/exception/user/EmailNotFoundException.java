@@ -1,4 +1,4 @@
-package org.mindswap.academy.mindera_travel_agency.exception.User;
+package org.mindswap.academy.mindera_travel_agency.exception.user;
 
 import org.mindswap.academy.mindera_travel_agency.exception.TravelAgencyException;
 

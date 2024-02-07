@@ -19,7 +19,7 @@ public record UserCreateDto(
         @Schema(example = "zxlmn!!23K")
         String password,
         @NotNull(message = INVALID_USER_NAME)
-        @Pattern(regexp = "^[A-Za-z_0-9]+$", message = INVALID_USER_NAME)
+        @Pattern(regexp = "^[\\w]+$", message = INVALID_USER_NAME)
         @Schema(example = "User_test")
         String userName,
         @NotNull(message = INVALID_DATE_OF_BIRTH)

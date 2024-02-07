@@ -7,10 +7,10 @@ import org.mindswap.academy.mindera_travel_agency.converter.InvoiceConverter;
 import org.mindswap.academy.mindera_travel_agency.dto.invoice.InvoiceCreateDto;
 import org.mindswap.academy.mindera_travel_agency.dto.invoice.InvoiceGetDto;
 import org.mindswap.academy.mindera_travel_agency.dto.invoice.InvoiceUpdateDto;
-import org.mindswap.academy.mindera_travel_agency.exception.User.UserNotFoundException;
 import org.mindswap.academy.mindera_travel_agency.exception.invoice.InvoiceNotFoundException;
 import org.mindswap.academy.mindera_travel_agency.exception.invoice.PaymentCompletedException;
 import org.mindswap.academy.mindera_travel_agency.exception.payment_status.PaymentStatusNotFoundException;
+import org.mindswap.academy.mindera_travel_agency.exception.user.UserNotFoundException;
 import org.mindswap.academy.mindera_travel_agency.model.Invoice;
 import org.mindswap.academy.mindera_travel_agency.model.PaymentStatus;
 import org.mindswap.academy.mindera_travel_agency.model.User;
@@ -84,6 +84,7 @@ class InvoiceServiceImplTest {
         InvoiceGetDto result = invoiceService.getById(1L);
         assertEquals(1L, result.id());
     }
+
     @Test
     void testGetInvoiceByIdWithDifferentValidId() throws InvoiceNotFoundException {
         when(invoiceRepository.findById(2L)).thenReturn(Optional.of(invoice));

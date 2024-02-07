@@ -1,10 +1,6 @@
 package org.mindswap.academy.mindera_travel_agency.aspect;
 
 import jakarta.servlet.http.HttpServletRequest;
-import org.mindswap.academy.mindera_travel_agency.exception.User.DuplicateEmailException;
-import org.mindswap.academy.mindera_travel_agency.exception.User.EmailNotFoundException;
-import org.mindswap.academy.mindera_travel_agency.exception.User.PasswordsDidNotMatchException;
-import org.mindswap.academy.mindera_travel_agency.exception.User.UserNotFoundException;
 import org.mindswap.academy.mindera_travel_agency.exception.flight_tickets.FlightTicketDuplicateException;
 import org.mindswap.academy.mindera_travel_agency.exception.flight_tickets.FlightTicketNotFoundException;
 import org.mindswap.academy.mindera_travel_agency.exception.flight_tickets.MaxFlightPerInvoiceException;
@@ -18,6 +14,10 @@ import org.mindswap.academy.mindera_travel_agency.exception.invoice.PaymentCompl
 import org.mindswap.academy.mindera_travel_agency.exception.payment_status.PaymentStatusInUseException;
 import org.mindswap.academy.mindera_travel_agency.exception.payment_status.PaymentStatusNotFoundException;
 import org.mindswap.academy.mindera_travel_agency.exception.payment_status.StatusNameAlreadyExistsException;
+import org.mindswap.academy.mindera_travel_agency.exception.user.DuplicateEmailException;
+import org.mindswap.academy.mindera_travel_agency.exception.user.EmailNotFoundException;
+import org.mindswap.academy.mindera_travel_agency.exception.user.PasswordsDidNotMatchException;
+import org.mindswap.academy.mindera_travel_agency.exception.user.UserNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;

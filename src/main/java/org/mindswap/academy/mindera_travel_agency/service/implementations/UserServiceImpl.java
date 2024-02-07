@@ -15,9 +15,9 @@ import org.mindswap.academy.mindera_travel_agency.dto.user.UserCreateDto;
 import org.mindswap.academy.mindera_travel_agency.dto.user.UserGetDto;
 import org.mindswap.academy.mindera_travel_agency.dto.user.UserUpdateDto;
 import org.mindswap.academy.mindera_travel_agency.dto.user.UserUpdatePasswordDto;
-import org.mindswap.academy.mindera_travel_agency.exception.User.DuplicateEmailException;
-import org.mindswap.academy.mindera_travel_agency.exception.User.PasswordsDidNotMatchException;
-import org.mindswap.academy.mindera_travel_agency.exception.User.UserNotFoundException;
+import org.mindswap.academy.mindera_travel_agency.exception.user.DuplicateEmailException;
+import org.mindswap.academy.mindera_travel_agency.exception.user.PasswordsDidNotMatchException;
+import org.mindswap.academy.mindera_travel_agency.exception.user.UserNotFoundException;
 import org.mindswap.academy.mindera_travel_agency.model.FlightTicket;
 import org.mindswap.academy.mindera_travel_agency.model.HotelReservation;
 import org.mindswap.academy.mindera_travel_agency.model.Invoice;
@@ -182,7 +182,7 @@ public class UserServiceImpl implements UserService {
 
     private void checkDuplicateEmail(Long id, String email) throws DuplicateEmailException {
         Optional<User> userOptional = userRepository.findByEmail(email);
-        if (userOptional.isPresent() && userOptional.get().getId() != id) {
+        if (userOptional.isPresent() && !userOptional.get().getId().equals(id)) {
             throw new DuplicateEmailException(DUPLICATE_EMAIL);
         }
     }

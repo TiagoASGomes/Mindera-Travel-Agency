@@ -6,11 +6,11 @@ import jakarta.validation.Valid;
 import org.mindswap.academy.mindera_travel_agency.dto.invoice.InvoiceCreateDto;
 import org.mindswap.academy.mindera_travel_agency.dto.invoice.InvoiceGetDto;
 import org.mindswap.academy.mindera_travel_agency.dto.invoice.InvoiceUpdateDto;
-import org.mindswap.academy.mindera_travel_agency.exception.User.UserNotFoundException;
 import org.mindswap.academy.mindera_travel_agency.exception.invoice.InvoiceNotCompleteException;
 import org.mindswap.academy.mindera_travel_agency.exception.invoice.InvoiceNotFoundException;
 import org.mindswap.academy.mindera_travel_agency.exception.invoice.PaymentCompletedException;
 import org.mindswap.academy.mindera_travel_agency.exception.payment_status.PaymentStatusNotFoundException;
+import org.mindswap.academy.mindera_travel_agency.exception.user.UserNotFoundException;
 import org.mindswap.academy.mindera_travel_agency.service.interfaces.InvoiceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -51,7 +51,7 @@ public class InvoiceController {
     }
 
     @PatchMapping("/{id}/finalize")
-    public ResponseEntity<InvoiceGetDto> finalize(@PathVariable Long id) throws InvoiceNotCompleteException, InvoiceNotFoundException, UnirestException, JsonProcessingException, PaymentCompletedException, PaymentStatusNotFoundException {
+    public ResponseEntity<InvoiceGetDto> finalizeInvoice(@PathVariable Long id) throws InvoiceNotCompleteException, InvoiceNotFoundException, UnirestException, JsonProcessingException, PaymentCompletedException, PaymentStatusNotFoundException {
         return ResponseEntity.ok(invoiceService.finalizeInvoice(id));
     }
 
