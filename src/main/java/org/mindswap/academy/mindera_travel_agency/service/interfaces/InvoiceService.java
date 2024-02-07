@@ -10,9 +10,12 @@ import org.mindswap.academy.mindera_travel_agency.exception.invoice.InvoiceNotFo
 import org.mindswap.academy.mindera_travel_agency.exception.invoice.PaymentCompletedException;
 import org.mindswap.academy.mindera_travel_agency.exception.payment_status.PaymentStatusNotFoundException;
 import org.mindswap.academy.mindera_travel_agency.exception.user.UserNotFoundException;
+import org.mindswap.academy.mindera_travel_agency.model.FlightTicket;
 import org.mindswap.academy.mindera_travel_agency.model.Invoice;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+
+import java.util.List;
 
 
 public interface InvoiceService {
@@ -30,5 +33,7 @@ public interface InvoiceService {
 
     Invoice findById(Long id) throws InvoiceNotFoundException;
 
-    void updatePrice(Long id) throws InvoiceNotFoundException;
+    void updateHotelPrice(Long id, int hotelPrice) throws InvoiceNotFoundException;
+
+    void updateFlightPrices(List<FlightTicket> invoiceFlights, Long id) throws InvoiceNotFoundException;
 }

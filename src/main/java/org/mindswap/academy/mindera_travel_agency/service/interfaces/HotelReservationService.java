@@ -4,10 +4,7 @@ import org.mindswap.academy.mindera_travel_agency.dto.external.hotel.ExternalRoo
 import org.mindswap.academy.mindera_travel_agency.dto.hotel.HotelReservationCreateDto;
 import org.mindswap.academy.mindera_travel_agency.dto.hotel.HotelReservationDurationDto;
 import org.mindswap.academy.mindera_travel_agency.dto.hotel.HotelReservationGetDto;
-import org.mindswap.academy.mindera_travel_agency.exception.hotel_reservation.CannotUpdateToDifferentInvoiceException;
-import org.mindswap.academy.mindera_travel_agency.exception.hotel_reservation.HotelReservationNotFoundException;
-import org.mindswap.academy.mindera_travel_agency.exception.hotel_reservation.InvalidCheckInOutDateException;
-import org.mindswap.academy.mindera_travel_agency.exception.hotel_reservation.RoomNotFoundException;
+import org.mindswap.academy.mindera_travel_agency.exception.hotel_reservation.*;
 import org.mindswap.academy.mindera_travel_agency.exception.invoice.InvoiceNotFoundException;
 import org.mindswap.academy.mindera_travel_agency.exception.invoice.PaymentCompletedException;
 import org.mindswap.academy.mindera_travel_agency.model.HotelReservation;
@@ -19,7 +16,7 @@ public interface HotelReservationService {
 
     HotelReservationGetDto getById(Long id) throws HotelReservationNotFoundException;
 
-    HotelReservationGetDto create(HotelReservationCreateDto hotelReservation) throws InvoiceNotFoundException, HotelReservationNotFoundException, InvalidCheckInOutDateException;
+    HotelReservationGetDto create(HotelReservationCreateDto hotelReservation) throws InvoiceNotFoundException, HotelReservationNotFoundException, InvalidCheckInOutDateException, ReservationAlreadyExistsException;
 
     HotelReservationGetDto updateReservation(Long id, HotelReservationCreateDto hotelReservation) throws HotelReservationNotFoundException, CannotUpdateToDifferentInvoiceException, InvoiceNotFoundException, PaymentCompletedException, InvalidCheckInOutDateException;
 

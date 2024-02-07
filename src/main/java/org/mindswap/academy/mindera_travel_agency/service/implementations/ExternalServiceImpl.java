@@ -19,6 +19,7 @@ import org.mindswap.academy.mindera_travel_agency.exception.invoice.InvoiceNotFo
 import org.mindswap.academy.mindera_travel_agency.model.FlightTicket;
 import org.mindswap.academy.mindera_travel_agency.model.HotelReservation;
 import org.mindswap.academy.mindera_travel_agency.service.interfaces.ExternalService;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 
@@ -27,20 +28,23 @@ import java.util.Set;
 
 @Service
 public class ExternalServiceImpl implements ExternalService {
+    private final String HOTEL_API_URL;
+    private final String FLIGHT_API_URL;
+    private final HotelReservationConverter hRConverter;
+    private final FlightTicketConverter fTConverter;
     ObjectMapper objectMapper = new ObjectMapper();
 
-    private HotelReservationConverter hRConverter;
-    private FlightTicketConverter fTConverter;
-
-    public ExternalServiceImpl(HotelReservationConverter hRConverter, FlightTicketConverter fTConverter) {
+    public ExternalServiceImpl(HotelReservationConverter hRConverter, FlightTicketConverter fTConverter, @Value("${hotel.api.base-url}") String hotelApiUrl, @Value("${flight.api.base-url}") String flightApiUrl) {
         this.hRConverter = hRConverter;
         this.fTConverter = fTConverter;
+        this.HOTEL_API_URL = hotelApiUrl;
+        this.FLIGHT_API_URL = flightApiUrl;
     }
 
     public List<ExternalHotelInfoDto> getAvailableHotels(String location, String arrivalDate, int pageNumber) throws UnirestException, JsonProcessingException {
         Unirest.setTimeouts(0, 0);
         //TODO add location filters and such
-        HttpResponse<String> response = Unirest.get("http://localhost:9000/api/v1/hotel?page=" + pageNumber)
+        HttpResponse<String> response = Unirest.get(HOTEL_API_URL + "/api/v1/hotel?page=" + pageNumber)
                 .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
                 .asString();
         if (response.getStatus() == 200) {
@@ -56,7 +60,7 @@ public class ExternalServiceImpl implements ExternalService {
         objectMapper.registerModule(new JavaTimeModule());
         String body = objectMapper.writeValueAsString(externalReservationCreateDto);
         Unirest.setTimeouts(0, 0);
-        HttpResponse<String> response = Unirest.post("http://localhost:9000/api/v1/reservations/" + hotelReservation.getHotelName())
+        HttpResponse<String> response = Unirest.post(HOTEL_API_URL + "/api/v1/reservations/" + hotelReservation.getHotelName().replace(" ", "-"))
                 .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
                 .body(body)
                 .asString();
@@ -72,7 +76,7 @@ public class ExternalServiceImpl implements ExternalService {
         objectMapper.registerModule(new JavaTimeModule());
         String json = objectMapper.writeValueAsString(flights);
         Unirest.setTimeouts(0, 0);
-        HttpResponse<String> response = Unirest.post("http://localhost:8081/api/v1/bookings")
+        HttpResponse<String> response = Unirest.post(FLIGHT_API_URL + "/api/v1/bookings")
                 .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
                 .body(json)
                 .asString();
@@ -87,7 +91,7 @@ public class ExternalServiceImpl implements ExternalService {
     public List<ExternalFlightInfoDto> getFlights(String source, String destination, String arrivalDate, int page) throws UnirestException, JsonProcessingException {
         objectMapper.registerModule(new JavaTimeModule());
         Unirest.setTimeouts(0, 0);
-        HttpResponse<String> response = Unirest.get("http://localhost:8081/api/v1/flights/" + source + "?page=" + page)
+        HttpResponse<String> response = Unirest.get(FLIGHT_API_URL + "/api/v1/flights/" + source + "/" + destination + "/" + arrivalDate + "?page=" + page)
                 .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
                 .asString();
         if (response.getStatus() == 200) {

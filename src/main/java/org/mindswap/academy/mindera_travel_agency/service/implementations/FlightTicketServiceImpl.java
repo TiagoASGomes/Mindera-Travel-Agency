@@ -62,7 +62,8 @@ public class FlightTicketServiceImpl implements FlightTicketService {
         checkIfInvoiceAtFlightLimit(invoice);
         FlightTicket flightTicketToSave = flightTicketConverter.fromCreateDtoToEntity(flightTicket, invoice);
         TicketGetDto ticketGetDto = flightTicketConverter.fromEntityToGetDto(flightTicketRepository.save(flightTicketToSave));
-        invoiceService.updatePrice(invoice.getId());
+        List<FlightTicket> invoiceFlights = flightTicketRepository.findAllByInvoiceId(flightTicket.invoiceId());
+        invoiceService.updateFlightPrices(invoiceFlights, invoice.getId());
         return ticketGetDto;
     }
 
@@ -74,7 +75,8 @@ public class FlightTicketServiceImpl implements FlightTicketService {
         FlightTicket flightTicketToUpdate = flightTicketConverter.fromCreateDtoToEntity(flightTicket, invoice);
         flightTicketToUpdate.setId(id);
         TicketGetDto ticketGetDto = flightTicketConverter.fromEntityToGetDto(flightTicketRepository.save(flightTicketToUpdate));
-        invoiceService.updatePrice(invoice.getId());
+        List<FlightTicket> invoiceFlights = flightTicketRepository.findAllByInvoiceId(flightTicket.invoiceId());
+        invoiceService.updateFlightPrices(invoiceFlights, invoice.getId());
         return ticketGetDto;
     }
 
@@ -97,7 +99,8 @@ public class FlightTicketServiceImpl implements FlightTicketService {
         dbTicket.setMaxLuggageWeight(flightTicket.maxLuggageWeight());
         dbTicket.setCarryOnLuggage(flightTicket.carryOnLuggage());
         TicketGetDto ticketGetDto = flightTicketConverter.fromEntityToGetDto(flightTicketRepository.save(dbTicket));
-        invoiceService.updatePrice(dbTicket.getInvoice().getId());
+        List<FlightTicket> invoiceFlights = flightTicketRepository.findAllByInvoiceId(dbTicket.getInvoice().getId());
+        invoiceService.updateFlightPrices(invoiceFlights, dbTicket.getInvoice().getId());
         return ticketGetDto;
     }
 

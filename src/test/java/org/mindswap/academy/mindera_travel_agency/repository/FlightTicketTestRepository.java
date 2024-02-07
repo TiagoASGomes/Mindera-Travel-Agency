@@ -12,11 +12,11 @@ public interface FlightTicketTestRepository extends FlightTicketRepository {
 
     @Modifying
     @Transactional
-    @Query(value = "ALTER TABLE flights_tickets ALTER COLUMN id RESTART WITH 1", nativeQuery = true)
+    @Query(value = "ALTER TABLE flight_tickets ALTER COLUMN id RESTART WITH 1", nativeQuery = true)
     void resetAutoIncrement();
 
     @Modifying
     @Transactional
-    @Query(value = "DELETE FROM flights_tickets", nativeQuery = true)
+    @Query(value = "DELETE FROM flight_tickets", nativeQuery = true)
     void deleteAll();
 }

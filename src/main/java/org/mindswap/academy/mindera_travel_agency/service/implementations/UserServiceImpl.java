@@ -26,7 +26,6 @@ import org.mindswap.academy.mindera_travel_agency.repository.UserRepository;
 import org.mindswap.academy.mindera_travel_agency.service.interfaces.ExternalService;
 import org.mindswap.academy.mindera_travel_agency.service.interfaces.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -72,27 +71,23 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    @Cacheable("userCache")
     public UserGetDto getById(Long id) throws UserNotFoundException {
         return userConverter.fromUserModelToGetDto(findById(id));
     }
 
     @Override
-    @Cacheable("userCache")
     public UserGetDto getByEmail(String email) throws UserNotFoundException {
         User user = userRepository.findByEmail(email).orElseThrow(() -> new UserNotFoundException(EMAIL_NOT_FOUND + email));
         return userConverter.fromUserModelToGetDto(user);
     }
 
     @Override
-    @Cacheable("reservationsCache")
     public List<InvoiceGetDto> getAllInvoices(Long id) throws UserNotFoundException {
         User user = findById(id);
         return invoiceConverter.fromEntityListToGetDtoList(user.getInvoices());
     }
 
     @Override
-    @Cacheable("reservationsCache")
     public List<HotelReservationGetDto> getAllReservations(Long id) throws UserNotFoundException {
         User user = findById(id);
         List<HotelReservation> userReservations = user.getInvoices().stream()
@@ -103,7 +98,6 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    @Cacheable("reservationsCache")
     public List<TicketGetDto> getAllTickets(Long id) throws UserNotFoundException {
         User user = findById(id);
         List<FlightTicket> userTickets = new ArrayList<>();
@@ -113,13 +107,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    @Cacheable("reservationsCache")
     public List<ExternalHotelInfoDto> getAvailableHotels(String location, String arrivalDate, Pageable page) throws UnirestException, JsonProcessingException {
         return externalService.getAvailableHotels(location, arrivalDate, page.getPageNumber());
     }
 
     @Override
-    @Cacheable("reservationsCache")
     public List<ExternalFlightInfoDto> getAvailableFlights(String source, String destination, String arrivalDate, Pageable page) throws UnirestException, JsonProcessingException {
         return externalService.getFlights(source, destination, arrivalDate, page.getPageNumber());
     }
@@ -154,6 +146,9 @@ public class UserServiceImpl implements UserService {
         }
         if (userDto.phoneNumber() != null) {
             dbUser.setPhoneNumber(userDto.phoneNumber());
+        }
+        if (userDto.vat() != null) {
+            dbUser.setVat(userDto.vat());
         }
         return userConverter.fromUserModelToGetDto(userRepository.save(dbUser));
     }

@@ -19,7 +19,6 @@ public class HotelReservation {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private Long externalId;
     private String hotelName;
     private String hotelAddress;
     private String hotelPhoneNumber;
@@ -29,7 +28,6 @@ public class HotelReservation {
     private LocalDate arrivalDate;
     private LocalDate leaveDate;
     @OneToMany(mappedBy = "hotelReservation",
-            fetch = FetchType.EAGER,
             cascade = CascadeType.ALL)
     private Set<RoomInfo> rooms;
     @OneToOne(cascade = CascadeType.REMOVE)

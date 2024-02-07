@@ -6,10 +6,7 @@ import org.mindswap.academy.mindera_travel_agency.dto.external.hotel.ExternalRoo
 import org.mindswap.academy.mindera_travel_agency.dto.hotel.HotelReservationCreateDto;
 import org.mindswap.academy.mindera_travel_agency.dto.hotel.HotelReservationDurationDto;
 import org.mindswap.academy.mindera_travel_agency.dto.hotel.HotelReservationGetDto;
-import org.mindswap.academy.mindera_travel_agency.exception.hotel_reservation.CannotUpdateToDifferentInvoiceException;
-import org.mindswap.academy.mindera_travel_agency.exception.hotel_reservation.HotelReservationNotFoundException;
-import org.mindswap.academy.mindera_travel_agency.exception.hotel_reservation.InvalidCheckInOutDateException;
-import org.mindswap.academy.mindera_travel_agency.exception.hotel_reservation.RoomNotFoundException;
+import org.mindswap.academy.mindera_travel_agency.exception.hotel_reservation.*;
 import org.mindswap.academy.mindera_travel_agency.exception.invoice.InvoiceNotFoundException;
 import org.mindswap.academy.mindera_travel_agency.exception.invoice.PaymentCompletedException;
 import org.mindswap.academy.mindera_travel_agency.model.HotelReservation;
@@ -59,9 +56,10 @@ public class HotelReservationServiceImpl implements HotelReservationService {
     }
 
     @Override
-    public HotelReservationGetDto create(HotelReservationCreateDto dtoReservation) throws InvoiceNotFoundException, HotelReservationNotFoundException, InvalidCheckInOutDateException {
+    public HotelReservationGetDto create(HotelReservationCreateDto dtoReservation) throws InvoiceNotFoundException, HotelReservationNotFoundException, InvalidCheckInOutDateException, ReservationAlreadyExistsException {
         Invoice invoice = invoiceService.findById(dtoReservation.invoiceId());
         checkIfArrivalBeforeDeparture(dtoReservation.arrivalDate(), dtoReservation.leaveDate());
+        checkIfReservationExists(invoice);
         HotelReservation convertedReservation = hRConverter.fromCreateDtoToEntity(dtoReservation, invoice);
         Set<RoomInfo> roomInfo = roomInfoConverter.fromExternalDtoListToEntityList(dtoReservation.hotelInfo().rooms());
         convertedReservation.setRooms(roomInfo);
@@ -70,7 +68,7 @@ public class HotelReservationServiceImpl implements HotelReservationService {
         HotelReservation savedHotel = hRRepository.save(convertedReservation);
         roomInfo.forEach(room -> room.setHotelReservation(savedHotel));
         roomInfo.forEach(roomInfoService::create);
-        invoiceService.updatePrice(invoice.getId());
+        invoiceService.updateHotelPrice(invoice.getId(), savedHotel.getTotalPrice());
         return hRConverter.fromEntityToGetDto(findById(savedHotel.getId()));
     }
 
@@ -78,21 +76,23 @@ public class HotelReservationServiceImpl implements HotelReservationService {
     public HotelReservationGetDto updateReservation(Long id, HotelReservationCreateDto dtoReservation) throws HotelReservationNotFoundException, CannotUpdateToDifferentInvoiceException, InvoiceNotFoundException, PaymentCompletedException, InvalidCheckInOutDateException {
         Invoice invoice = invoiceService.findById(dtoReservation.invoiceId());
         verifyIfInvoicePaid(invoice);
-        HotelReservation dbReservation = findById(id);
-        checkSameInvoice(dbReservation.getInvoice().getId(), dtoReservation.invoiceId());
         checkIfArrivalBeforeDeparture(dtoReservation.arrivalDate(), dtoReservation.leaveDate());
+        HotelReservation dbReservation = findById(id);
+        Set<RoomInfo> oldRoomInfo = dbReservation.getRooms();
+        dbReservation.setRooms(null);
+        oldRoomInfo.forEach(oldRoom -> roomInfoService.delete(oldRoom.getId()));
+        checkSameInvoice(dbReservation.getInvoice().getId(), dtoReservation.invoiceId());
         HotelReservation convertedReservation = hRConverter.fromCreateDtoToEntity(dtoReservation, invoice);
         Set<RoomInfo> roomInfo = roomInfoConverter.fromExternalDtoListToEntityList(dtoReservation.hotelInfo().rooms());
         convertedReservation.setRooms(roomInfo);
         convertedReservation.setPricePerNight(calculatePrice(convertedReservation));
         convertedReservation.setTotalPrice(convertedReservation.getPricePerNight() * convertedReservation.getDurationOfStay());
         convertedReservation.setId(id);
-        HotelReservation savedHotel = hRRepository.save(convertedReservation);
-        roomInfo.forEach(room -> room.setHotelReservation(savedHotel));
+        hRRepository.save(convertedReservation);
+        roomInfo.forEach(room -> room.setHotelReservation(dbReservation));
         roomInfo.forEach(roomInfoService::create);
-        dbReservation.getRooms().forEach(oldRoom -> roomInfoService.delete(oldRoom.getId()));
-        invoiceService.updatePrice(invoice.getId());
-        return hRConverter.fromEntityToGetDto(findById(id));
+        invoiceService.updateHotelPrice(invoice.getId(), dbReservation.getTotalPrice());
+        return hRConverter.fromEntityToGetDto(dbReservation);
     }
 
     @Override
@@ -105,7 +105,7 @@ public class HotelReservationServiceImpl implements HotelReservationService {
         dbReservation.setDurationOfStay(dtoReservation.leaveDate().getDayOfMonth() - dtoReservation.arrivalDate().getDayOfMonth());
         dbReservation.setTotalPrice(dbReservation.getPricePerNight() * dbReservation.getDurationOfStay());
         HotelReservationGetDto reservation = hRConverter.fromEntityToGetDto(hRRepository.save(dbReservation));
-        invoiceService.updatePrice(dbReservation.getInvoice().getId());
+        invoiceService.updateHotelPrice(dbReservation.getInvoice().getId(), reservation.totalPrice());
         return reservation;
     }
 
@@ -120,7 +120,7 @@ public class HotelReservationServiceImpl implements HotelReservationService {
         HotelReservation savedHotel = hRRepository.save(hotelReservationToUpdate);
         roomInfo.setHotelReservation(savedHotel);
         roomInfoService.create(roomInfo);
-        invoiceService.updatePrice(hotelReservationToUpdate.getInvoice().getId());
+        invoiceService.updateHotelPrice(hotelReservationToUpdate.getInvoice().getId(), savedHotel.getTotalPrice());
         return hRConverter.fromEntityToGetDto(savedHotel);
     }
 
@@ -134,7 +134,7 @@ public class HotelReservationServiceImpl implements HotelReservationService {
         hotelReservationToUpdate.setPricePerNight(calculatePrice(hotelReservationToUpdate));
         hotelReservationToUpdate.setTotalPrice(hotelReservationToUpdate.getPricePerNight() * hotelReservationToUpdate.getDurationOfStay());
         HotelReservationGetDto reservation = hRConverter.fromEntityToGetDto(hRRepository.save(hotelReservationToUpdate));
-        invoiceService.updatePrice(hotelReservationToUpdate.getInvoice().getId());
+        invoiceService.updateHotelPrice(hotelReservationToUpdate.getInvoice().getId(), reservation.totalPrice());
         return reservation;
     }
 
@@ -175,4 +175,10 @@ public class HotelReservationServiceImpl implements HotelReservationService {
         }
     }
 
+
+    private void checkIfReservationExists(Invoice invoice) throws ReservationAlreadyExistsException {
+        if (invoice.getHotelReservation() != null) {
+            throw new ReservationAlreadyExistsException(HOTEL_RESERVATION_ALREADY_EXISTS);
+        }
+    }
 }

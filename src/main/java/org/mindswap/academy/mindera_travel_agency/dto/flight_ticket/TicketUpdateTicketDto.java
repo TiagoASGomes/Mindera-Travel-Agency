@@ -12,7 +12,7 @@ public record TicketUpdateTicketDto(
         @Min(value = 0, message = INVALID_PRICE)
         Integer price,
         @NotNull(message = INVALID_FARE_CLASS)
-        @Pattern(regexp = "^[a-z]+$", message = INVALID_FARE_CLASS)
+        @Pattern(regexp = "^[A-Z]+$", message = INVALID_FARE_CLASS)
         String fareClass,
         @NotNull(message = INVALID_LUGGAGE_WEIGHT)
         @Min(value = 0, message = INVALID_LUGGAGE_WEIGHT)

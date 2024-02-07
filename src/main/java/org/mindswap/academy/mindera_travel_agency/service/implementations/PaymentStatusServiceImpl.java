@@ -10,6 +10,8 @@ import org.mindswap.academy.mindera_travel_agency.model.PaymentStatus;
 import org.mindswap.academy.mindera_travel_agency.repository.PaymentStatusRepository;
 import org.mindswap.academy.mindera_travel_agency.service.interfaces.PaymentStatusService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -41,6 +43,7 @@ public class PaymentStatusServiceImpl implements PaymentStatusService {
     }
 
     @Override
+    @Cacheable(value = "paymentStatus", key = "#name")
     public PaymentStatusGetDto getByName(String name) throws PaymentStatusNotFoundException {
         return paymentStatusConverter.fromEntityToGetDto(findByName(name));
     }
@@ -65,6 +68,7 @@ public class PaymentStatusServiceImpl implements PaymentStatusService {
     }
 
     @Override
+    @CachePut(value = "paymentStatus", key = "#id")
     public PaymentStatusGetDto update(Long id, PaymentStatusCreateDto paymentStatus) throws PaymentStatusNotFoundException, StatusNameAlreadyExistsException {
         Optional<PaymentStatus> duplicate = paymentStatusRepository.findByStatusName(paymentStatus.statusName());
         if (duplicate.isPresent()) {

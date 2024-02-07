@@ -11,6 +11,7 @@ public record ExternalReservationCreateDto(
         String hotelN,
         String fName,
         String phoneNumber,
+        String vat,
         List<ExternalCreateRoomReservation> roomReservations
 ) {
 }

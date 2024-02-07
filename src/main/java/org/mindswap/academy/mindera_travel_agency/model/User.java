@@ -25,6 +25,7 @@ public class User {
     private String password;
     private LocalDate dateOfBirth;
     private String phoneNumber;
+    private String vat;
     private boolean deleted;
     @OneToMany(mappedBy = "user")
     private Set<Invoice> invoices;

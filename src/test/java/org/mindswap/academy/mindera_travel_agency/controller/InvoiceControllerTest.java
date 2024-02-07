@@ -2,36 +2,59 @@ package org.mindswap.academy.mindera_travel_agency.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.github.tomakehurst.wiremock.client.WireMock;
+import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
 import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.mindswap.academy.mindera_travel_agency.aspect.AgencyError;
 import org.mindswap.academy.mindera_travel_agency.dto.invoice.InvoiceGetDto;
 import org.mindswap.academy.mindera_travel_agency.repository.*;
+import org.mindswap.academy.mindera_travel_agency.util.RedisConfig;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
+import org.springframework.boot.autoconfigure.cache.CacheAutoConfiguration;
+import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
 
+import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
+import static com.github.tomakehurst.wiremock.stubbing.Scenario.STARTED;
 import static org.hamcrest.Matchers.hasSize;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mindswap.academy.mindera_travel_agency.util.Messages.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+@Import(RedisConfig.class)
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
+@ImportAutoConfiguration(classes = {
+        CacheAutoConfiguration.class,
+        RedisAutoConfiguration.class})
+@EnableCaching
 class InvoiceControllerTest {
+    @RegisterExtension
+    static WireMockExtension wireMockServer = WireMockExtension.newInstance()
+            .options(wireMockConfig().dynamicPort())
+            .build();
     private static ObjectMapper objectMapper;
     private final String BASE_URL = "/api/v1/invoices/";
     private final String EXAMPLE1 = "{\"userId\": 1}";
-    private final String HOTEL_EXAMPLE = "{\"invoiceId\": 1,\"arrivalDate\": \"2025-01-01T12:00:00\",\"leaveDate\": \"2025-01-05T12:00:00\",\"hotelInfo\": {\"externalId\": 1,\"name\": \"Hotel Teste\",\"location\": \"teste adress\",\"phoneNumber\": \"120312312\",\"rooms\": [{\"externalId\":1,\"pricePerNight\":10,\"roomType\":\"TYPE\",\"roomNumber\":101,\"numberOfBeds\":3},{\"externalId\":2,\"pricePerNight\":15,\"roomType\":\"TYPE2\",\"roomNumber\":102,\"numberOfBeds\":2}]}}";
-    private final String FLIGHT_EXAMPLE = "{\"carryOnLuggage\": true,\"email\": \"teste@example.com\",\"fName\": \"teste um\",\"fareClass\": \"first\",\"invoiceId\": 1,\"maxLuggageWeight\": \"22\",\"phone\": \"910410860\",\"price\": 100,\"seatNumber\": \"2B\"}";
-    private final String UPDATE_EXAMPLE1 = "{\"paymentStatus\": \"PENDING\", \"paymentDate\": \"2025-01-01T00:00:00\"}";
+    private final String HOTEL_EXAMPLE = "{\"arrivalDate\": \"2030-01-01\",\"leaveDate\": \"2030-01-05\",\"invoiceId\": 1,\"hotelInfo\": {\"hotelN\": \"Hotel Teste\",\"location\": \"teste adress\",\"phoneNumber\": 120312312,\"rooms\": [{\"numberOfBeds\": 3,\"roomType\": \"TYPE\",\"roomPrice\": 10},{\"numberOfBeds\": 2,\"roomType\": \"TYPE2\",\"roomPrice\": 15}]}}";
+    private final String FLIGHT_EXAMPLE = "{\"fName\": \"teste um\",\"email\": \"teste@example.com\",\"phone\": \"910410860\",\"fareClass\": \"FIRST\",\"price\": 100,\"maxLuggageWeight\": 22,\"carryOnLuggage\": true,\"duration\": 2.5,\"invoiceId\": 1,\"flightId\": 1,\"priceId\": 1}";
+    private final String UPDATE_EXAMPLE1 = "{\"paymentStatus\": \"PENDING\", \"paymentDate\": \"2030-01-01T00:00:00\"}";
+    private final String hotelApiResponse = "{\"arrival\": \"2030-01-01\",\"departure\": \"2030-01-05\",\"hotelN\": \"Hotel Teste\",\"fName\": \"userTeste\",\"phoneNumber\": \"120312312\",\"vat\": \"123456782\",\"roomReservations\": [{\"numberOfBeds\": 3,\"roomType\": \"TYPE\",\"roomPrice\": 10, \"roomNumber\": 1},{\"numberOfBeds\": 2,\"roomType\": \"TYPE2\",\"roomPrice\": 15, \"roomNumber\": 2}]}";
+    private final String bookingsApiResponse = "[{\"id\": 1,\"fName\": \"teste um\",\"email\": \"teste@example.com\",\"phone\": \"910410860\",\"seatNumber\": \"1A\",\"flight\": {\"id\": 1,\"origin\": \"LIS\",\"destination\": \"OPO\",\"duration\": 2.5,\"dateOfFlight\": \"2030-01-01T00:00:00\",\"availableSeats\": 100,\"plane\": {\"id\": 1,\"peopleCapacity\": 100,\"luggageCapacity\": 100,\"companyOwner\": \"TAP\",\"modelName\": \"A320\"},\"price\": [{\"id\": 1,\"className\": \"FIRST\",\"price\": 100}]},\"price\": {\"id\": 1,\"price\": 100,\"className\": \"FIRST\"}}]";
     @Autowired
     private MockMvc mockMvc;
     @Autowired
@@ -45,6 +68,12 @@ class InvoiceControllerTest {
     @Autowired
     private HotelReservationTestRepository hotelReservationTestRepository;
 
+    @DynamicPropertySource
+    static void configureProperties(DynamicPropertyRegistry registry) {
+        registry.add("hotel.api.base-url", wireMockServer::baseUrl);
+        registry.add("flight.api.base-url", wireMockServer::baseUrl);
+    }
+
     @BeforeAll
     static void beforeAll() {
         objectMapper = new ObjectMapper();
@@ -53,7 +82,7 @@ class InvoiceControllerTest {
 
     @BeforeEach
     void setUp() throws Exception {
-        String userJson = "{\"email\": \"teste@example.com\",\"password\": \"C@$9gmL?\",\"userName\": \"userTeste\",\"dateOfBirth\": \"2000-01-01\",\"phoneNumber\": \"937313732\"}";
+        String userJson = "{\"email\": \"teste@example.com\",\"password\": \"zxlmn!!23K?\",\"userName\": \"userTeste\",\"dateOfBirth\": \"2000-01-01\",\"phoneNumber\": \"937313732\",\"vat\": \"123456782\"}";
         List<String> paymentStatusJson = List.of("{\"statusName\": \"PENDING\"}", "{\"statusName\": \"PAID\"}", "{\"statusName\": \"NOT_REQUESTED\"}");
 
         mockMvc.perform(post("/api/v1/users/")
@@ -108,7 +137,7 @@ class InvoiceControllerTest {
         mockMvc.perform(get(BASE_URL))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$", hasSize(0)));
+                .andExpect(jsonPath("$.content", hasSize(0)));
 
     }
 
@@ -144,7 +173,7 @@ class InvoiceControllerTest {
                 .andReturn().getResponse().getContentAsString();
         AgencyError error = objectMapper.readValue(response, AgencyError.class);
         // THEN
-        assertEquals(ID_NOT_FOUND + 1, error.getMessage());
+        assertEquals(INVOICE_ID_NOT_FOUND + 1, error.getMessage());
     }
 
     @Test
@@ -154,7 +183,7 @@ class InvoiceControllerTest {
         mockMvc.perform(post(BASE_URL)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(EXAMPLE1));
-        mockMvc.perform(post("/api/v1/reservations/")
+        mockMvc.perform(post("/api/v1/hotel_reservations/")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(HOTEL_EXAMPLE));
         mockMvc.perform(post("/api/v1/flights/")
@@ -207,7 +236,7 @@ class InvoiceControllerTest {
                 .andReturn().getResponse().getContentAsString();
         AgencyError error = objectMapper.readValue(response, AgencyError.class);
         // THEN
-        assertEquals(ID_NOT_FOUND + 2, error.getMessage());
+        assertEquals(USER_ID_NOT_FOUND + 2, error.getMessage());
     }
 
     @Test
@@ -228,7 +257,7 @@ class InvoiceControllerTest {
         // THEN
         assertEquals(1L, invoice.id());
         assertEquals("PENDING", invoice.paymentStatus());
-        assertEquals("2025-01-01T00:00", invoice.paymentDate().toString());
+        assertEquals("2030-01-01T00:00", invoice.paymentDate().toString());
         assertEquals(0, invoice.flightTickets().size());
         assertEquals(0, invoice.totalPrice());
         assertNull(invoice.hotelReservation());
@@ -257,6 +286,92 @@ class InvoiceControllerTest {
     }
 
     @Test
+    @DisplayName("Test finalize invoice and expect status 200 and an invoice")
+    void finalizeInvoice() throws Exception {
+        // GIVEN
+        wireMockServer.stubFor(WireMock.post(WireMock.urlMatching("/api/v1/bookings"))
+                .inScenario("finalize invoice")
+                .whenScenarioStateIs(STARTED)
+                .willReturn(WireMock.aResponse()
+                        .withStatus(201)
+                        .withBody(bookingsApiResponse))
+                .willSetStateTo("Flight tickets created"));
+        wireMockServer.stubFor(WireMock.post(WireMock.urlMatching("/api/v1/reservations/Hotel-Teste"))
+                .inScenario("finalize invoice")
+                .whenScenarioStateIs("Flight tickets created")
+                .willReturn(WireMock.aResponse()
+                        .withStatus(201)
+                        .withBody(hotelApiResponse)));
+        mockMvc.perform(post(BASE_URL)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(EXAMPLE1));
+        mockMvc.perform(post("/api/v1/hotel_reservations/")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(HOTEL_EXAMPLE));
+        mockMvc.perform(post("/api/v1/flights/")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(FLIGHT_EXAMPLE));
+
+        // WHEN
+        String response = mockMvc.perform(patch(BASE_URL + "1/finalize"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andReturn().getResponse().getContentAsString();
+        InvoiceGetDto invoice = objectMapper.readValue(response, InvoiceGetDto.class);
+        // THEN
+        assertEquals(1L, invoice.id());
+        assertEquals("PENDING", invoice.paymentStatus());
+        assertEquals(200, invoice.totalPrice());
+        assertEquals(1L, invoice.hotelReservation().id());
+        assertEquals(1, invoice.flightTickets().size());
+        assertEquals("1A", invoice.flightTickets().get(0).seatNumber());
+        assertEquals(1, invoice.flightTickets().get(0).ticketNumber());
+        assertTrue(invoice.hotelReservation().rooms().stream().anyMatch(room -> room.roomNumber() == 1));
+        assertTrue(invoice.hotelReservation().rooms().stream().anyMatch(room -> room.roomNumber() == 2));
+    }
+
+    @Test
+    @DisplayName("Test finalize invoice with missing hotel reservation and expect status 400")
+    void finalizeInvoiceMissingHotelReservation() throws Exception {
+        // GIVEN
+        mockMvc.perform(post(BASE_URL)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(EXAMPLE1));
+        mockMvc.perform(post("/api/v1/flights/")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(FLIGHT_EXAMPLE));
+        // WHEN
+        String response = mockMvc.perform(patch(BASE_URL + "1/finalize"))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andReturn().getResponse().getContentAsString();
+        AgencyError error = objectMapper.readValue(response, AgencyError.class);
+        // THEN
+        assertEquals(INVOICE_NOT_COMPLETE, error.getMessage());
+    }
+
+    @Test
+    @DisplayName("Test finalize invoice with missing flight tickets and expect status 400")
+    void finalizeInvoiceMissingFlightTickets() throws Exception {
+        // GIVEN
+        mockMvc.perform(post(BASE_URL)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(EXAMPLE1));
+        mockMvc.perform(post("/api/v1/hotel_reservations/")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(HOTEL_EXAMPLE));
+        // WHEN
+        String response = mockMvc.perform(patch(BASE_URL + "1/finalize"))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andReturn().getResponse().getContentAsString();
+        AgencyError error = objectMapper.readValue(response, AgencyError.class);
+        // THEN
+        assertEquals(INVOICE_NOT_COMPLETE, error.getMessage());
+    }
+
+
+    @Test
     @DisplayName("Test delete and expect status 204")
     void deleteInvoice() throws Exception {
         // GIVEN
@@ -265,7 +380,7 @@ class InvoiceControllerTest {
                 .content(EXAMPLE1));
         // WHEN
         mockMvc.perform(delete(BASE_URL + 1))
-                .andExpect(status().isNoContent());
+                .andExpect(status().isOk());
     }
 
     @Test
@@ -284,7 +399,7 @@ class InvoiceControllerTest {
 
         // WHEN
         mockMvc.perform(delete(BASE_URL + 1))
-                .andExpect(status().isNoContent());
+                .andExpect(status().isOk());
         // THEN
         assertEquals(0, invoiceTestRepository.count());
         assertEquals(0, hotelReservationTestRepository.count());
