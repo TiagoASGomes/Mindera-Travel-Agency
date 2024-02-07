@@ -91,7 +91,7 @@ public class ExternalServiceImpl implements ExternalService {
     public List<ExternalFlightInfoDto> getFlights(String source, String destination, String arrivalDate, int page) throws UnirestException, JsonProcessingException {
         objectMapper.registerModule(new JavaTimeModule());
         Unirest.setTimeouts(0, 0);
-        HttpResponse<String> response = Unirest.get(FLIGHT_API_URL + "/api/v1/flights/" + source + "?page=" + page)
+        HttpResponse<String> response = Unirest.get(FLIGHT_API_URL + "/api/v1/flights/" + source + "/" + destination + "/" + arrivalDate + "?page=" + page)
                 .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
                 .asString();
         if (response.getStatus() == 200) {
