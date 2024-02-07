@@ -174,4 +174,5 @@ public class HotelReservationServiceImpl implements HotelReservationService {
             throw new CannotUpdateToDifferentInvoiceException(CANNOT_CHANGE_INVOICE);
         }
     }
+
 }

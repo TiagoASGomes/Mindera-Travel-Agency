@@ -32,12 +32,12 @@ public class FlightTicketConverter {
                 flightTicket.getPrice(),
                 flightTicket.getFareClass(),
                 flightTicket.getMaxLuggageWeight(),
-                flightTicket.isCarryOnLuggage()
+                flightTicket.isCarryOnLuggage(),
+                flightTicket.getDuration()
         );
     }
 
     public FlightTicket fromCreateDtoToEntity(TicketCreateDto flightTicket, Invoice invoice) {
-
         return FlightTicket.builder()
                 .fName(flightTicket.fName())
                 .email(flightTicket.email())
@@ -46,6 +46,7 @@ public class FlightTicketConverter {
                 .price(flightTicket.price())
                 .maxLuggageWeight(flightTicket.maxLuggageWeight())
                 .carryOnLuggage(flightTicket.carryOnLuggage())
+                .duration(flightTicket.duration())
                 .invoice(invoice)
                 .priceId(flightTicket.priceId())
                 .flightId(flightTicket.flightId())

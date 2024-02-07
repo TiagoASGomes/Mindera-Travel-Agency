@@ -21,6 +21,7 @@ public class FlightTicket {
     private Long ticketNumber;
     private Long priceId;
     private Long flightId;
+    private float duration;
     private String seatNumber;
     private int price;
     private String fareClass;

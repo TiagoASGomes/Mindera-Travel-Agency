@@ -50,5 +50,9 @@ public class Messages {
     public static final String STATUS_NAME_NOT_FOUND = "No payment status found with name: ";
     public static final String STATUS_ID_NOT_FOUND = "No payment status found with id: ";
     public static final String USER_ID_NOT_FOUND = "No user found with id: ";
+    public static final String INVALID_DURATION = "Invalid duration, duration must be between 0 and 24 hours";
+
+    private Messages() {
+    }
 
 }

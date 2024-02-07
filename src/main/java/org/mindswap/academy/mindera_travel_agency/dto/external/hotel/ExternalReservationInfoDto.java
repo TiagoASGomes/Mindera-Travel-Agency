@@ -9,19 +9,11 @@ import java.util.List;
 public record ExternalReservationInfoDto(
 
         LocalDate arrival,
-
         LocalDate departure,
-
         String hotelN,
-
-        String firstName,
-
-        String lastName,
-
+        String fName,
         String phoneNumber,
-
         String vat,
-
         List<ExternalRoomInfoDto> roomReservations
 ) {
 }

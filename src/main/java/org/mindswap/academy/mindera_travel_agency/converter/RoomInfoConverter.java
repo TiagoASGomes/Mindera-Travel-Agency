@@ -7,6 +7,7 @@ import org.mindswap.academy.mindera_travel_agency.model.RoomInfo;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -18,6 +19,7 @@ public class RoomInfoConverter {
                 .pricePerNight(room.roomPrice())
                 .roomType(room.roomType())
                 .numberOfBeds(room.numberOfBeds())
+                .roomNumber(room.roomNumber())
                 .build();
     }
 
@@ -38,7 +40,7 @@ public class RoomInfoConverter {
         );
     }
 
-    public Set<RoomInfo> fromExternalDtoListToEntityList(Set<ExternalRoomInfoDto> externalRoomInfoDtos) {
+    public Set<RoomInfo> fromExternalDtoListToEntityList(Collection<ExternalRoomInfoDto> externalRoomInfoDtos) {
         return externalRoomInfoDtos.stream()
                 .map(this::fromExternalDtoToEntity)
                 .collect(Collectors.toSet());

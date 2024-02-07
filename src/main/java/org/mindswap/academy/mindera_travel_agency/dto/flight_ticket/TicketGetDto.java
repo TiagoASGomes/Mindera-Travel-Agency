@@ -10,6 +10,7 @@ public record TicketGetDto(
         int price,
         String fareClass,
         int maxLuggageWeight,
-        boolean carryOnLuggage
+        boolean carryOnLuggage,
+        float duration
 ) {
 }

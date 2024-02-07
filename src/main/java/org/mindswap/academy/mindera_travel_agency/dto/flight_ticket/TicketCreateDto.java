@@ -29,6 +29,10 @@ public record TicketCreateDto(
         Integer maxLuggageWeight,
         @NotNull(message = INVALID_CARRY_ON_LUGGAGE)
         Boolean carryOnLuggage,
+        @NotNull(message = INVALID_DURATION)
+        @Min(value = 0, message = INVALID_DURATION)
+        @Max(value = 24, message = INVALID_DURATION)
+        Float duration,
         @NotNull(message = INVALID_INVOICE_ID)
         @Min(value = 1, message = INVALID_INVOICE_ID)
         Long invoiceId,
