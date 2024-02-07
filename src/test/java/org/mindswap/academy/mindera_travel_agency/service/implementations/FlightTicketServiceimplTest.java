@@ -44,7 +44,7 @@ public class FlightTicketServiceimplTest {
     void whenGetAllTickets_thenReturnsOkStatusAndCorrectResponseBody() {
 
         TicketGetDto ticket1 = new TicketGetDto(1L, "John", "john@example.com", "1234567890", 100L, "1A", 100, 20, true);
-        TicketGetDto ticket2 = new TicketGetDto(2L, "Jane", "jane@example.com", "0987654321", 200L, "2B", 200, 30, false);
+        TicketGetDto ticket2 = new TicketGetDto(2L, "Jana", "jane@example.com", "0987654321", 200L, "2B", 200, 30, false);
         List<TicketGetDto> tickets = Arrays.asList(ticket1, ticket2);
 
         when(flightTicketService.getAll()).thenReturn(tickets);
