@@ -105,21 +105,6 @@ public class InvoiceServiceImpl implements InvoiceService {
         return inCon.fromEntityToGetDto(inRep.save(invoice));
     }
 
-    private void updateHotel(ExternalReservationInfoDto reservation, Invoice invoice) {
-        HotelReservation hotelReservation = invoice.getHotelReservation();
-        hotelReservation.getRooms().forEach(room -> roomRep.deleteById(room.getId()));
-        Set<RoomInfo> rooms = roomCon.fromExternalDtoListToEntityList(reservation.roomReservations());
-        rooms.forEach(room -> room.setHotelReservation(hotelReservation));
-        roomRep.saveAll(rooms);
-    }
-
-    private void updateFlights(List<ExternalBookingInfoDto> flightTickets, Invoice invoice) {
-        Set<FlightTicket> tickets = invoice.getFlightTickets();
-        tickets.forEach(tickets -> {
-
-        });
-    }
-
 
     @Override
     public void delete(Long id) throws InvoiceNotFoundException, PaymentCompletedException {
@@ -160,5 +145,29 @@ public class InvoiceServiceImpl implements InvoiceService {
             sum += invoice.getHotelReservation().getTotalPrice();
         }
         return sum;
+    }
+
+    private void updateHotel(ExternalReservationInfoDto reservation, Invoice invoice) {
+        HotelReservation hotelReservation = invoice.getHotelReservation();
+        hotelReservation.getRooms().forEach(room -> roomRep.deleteById(room.getId()));
+        Set<RoomInfo> rooms = roomCon.fromExternalDtoListToEntityList(reservation.roomReservations());
+        rooms.forEach(room -> room.setHotelReservation(hotelReservation));
+        roomRep.saveAll(rooms);
+    }
+
+    private void updateFlights(List<ExternalBookingInfoDto> flightTickets, Invoice invoice) {
+        Set<FlightTicket> tickets = invoice.getFlightTickets();
+        tickets.forEach(ticket -> updateTicket(flightTickets, ticket));
+    }
+
+    private void updateTicket(List<ExternalBookingInfoDto> flightTickets, FlightTicket ticket) {
+        ExternalBookingInfoDto externalTicket = flightTickets.stream()
+                .filter(flightTicket -> flightTicket.flight().id().equals(ticket.getFlightId()))
+                .findFirst().orElse(null);
+        if (externalTicket != null) {
+            ticket.setTicketNumber(externalTicket.id());
+            ticket.setSeatNumber(externalTicket.seatNumber());
+            flightRep.save(ticket);
+        }
     }
 }
