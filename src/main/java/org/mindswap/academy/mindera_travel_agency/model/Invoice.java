@@ -16,7 +16,6 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Invoice {
-    //TODO adicionar descontos paymentMethod, paymentCurrency.
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

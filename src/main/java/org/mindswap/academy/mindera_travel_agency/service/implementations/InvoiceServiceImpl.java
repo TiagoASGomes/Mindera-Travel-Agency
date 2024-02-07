@@ -26,6 +26,9 @@ import org.mindswap.academy.mindera_travel_agency.service.interfaces.InvoiceServ
 import org.mindswap.academy.mindera_travel_agency.service.interfaces.PaymentStatusService;
 import org.mindswap.academy.mindera_travel_agency.service.interfaces.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -67,6 +70,7 @@ public class InvoiceServiceImpl implements InvoiceService {
     }
 
     @Override
+    @Cacheable(value = "invoices", key = "#id")
     public InvoiceGetDto getById(Long id) throws InvoiceNotFoundException {
         return inCon.fromEntityToGetDto(findById(id));
     }
@@ -79,6 +83,7 @@ public class InvoiceServiceImpl implements InvoiceService {
     }
 
     @Override
+    @CachePut(value = "invoices", key = "#id")
     public InvoiceGetDto update(Long id, InvoiceUpdateDto invoiceDto) throws InvoiceNotFoundException, PaymentStatusNotFoundException, PaymentCompletedException {
         Invoice invoice = findById(id);
         checkIfCanUpdate(invoice);
@@ -92,6 +97,7 @@ public class InvoiceServiceImpl implements InvoiceService {
     }
 
     @Override
+    @CachePut(value = "invoices", key = "#id")
     public InvoiceGetDto finalizeInvoice(Long id) throws InvoiceNotFoundException, PaymentCompletedException, InvoiceNotCompleteException, UnirestException, JsonProcessingException, PaymentStatusNotFoundException {
         Invoice invoice = findById(id);
         checkIfCanUpdate(invoice);
@@ -110,6 +116,7 @@ public class InvoiceServiceImpl implements InvoiceService {
 
 
     @Override
+    @CacheEvict(value = "invoices", key = "#id")
     public void delete(Long id) throws InvoiceNotFoundException, PaymentCompletedException {
         Invoice invoice = findById(id);
         if (invoice.getPaymentStatus().getStatusName().equals(PAID_PAYMENT) || invoice.getPaymentStatus().getStatusName().equals(PENDING_PAYMENT)) {
@@ -124,6 +131,7 @@ public class InvoiceServiceImpl implements InvoiceService {
     }
 
     @Override
+    @CachePut(value = "invoices", key = "#id")
     public void updateHotelPrice(Long id, int hotelPrice) throws InvoiceNotFoundException {
         Invoice invoice = findById(id);
         if (invoice.getFlightTickets() == null || invoice.getFlightTickets().isEmpty()) {
@@ -138,6 +146,7 @@ public class InvoiceServiceImpl implements InvoiceService {
     }
 
     @Override
+    @CachePut(value = "invoices", key = "#id")
     public void updateFlightPrices(List<FlightTicket> invoiceFlights, Long id) throws InvoiceNotFoundException {
         int price = invoiceFlights.stream()
                 .mapToInt(FlightTicket::getPrice)

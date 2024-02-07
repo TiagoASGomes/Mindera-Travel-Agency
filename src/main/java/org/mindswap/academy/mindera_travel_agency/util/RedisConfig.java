@@ -28,6 +28,8 @@ public class RedisConfig {
                 .withCacheConfiguration("reservationsCache",
                         RedisCacheConfiguration.defaultCacheConfig().entryTtl(Duration.ofSeconds(120)))
                 .withCacheConfiguration("paymentStatus",
-                        RedisCacheConfiguration.defaultCacheConfig().entryTtl(Duration.ofMinutes(10)));
+                        RedisCacheConfiguration.defaultCacheConfig().entryTtl(Duration.ofMinutes(10)))
+                .withCacheConfiguration("invoices",
+                        RedisCacheConfiguration.defaultCacheConfig().entryTtl(Duration.ofMinutes(5)));
     }
 }

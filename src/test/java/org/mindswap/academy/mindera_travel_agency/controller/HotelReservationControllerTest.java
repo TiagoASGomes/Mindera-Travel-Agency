@@ -30,7 +30,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
 class HotelReservationControllerTest {
-    //TODO 2 rooms with same externalId same hotel
     private static ObjectMapper objectMapper;
     private final String BASE_URL = "/api/v1/hotel_reservations/";
     private final String EXAMPLE1 = "{\"arrivalDate\": \"2030-01-01\",\"leaveDate\": \"2030-01-05\",\"invoiceId\": 1,\"hotelInfo\": {\"hotelN\": \"Hotel Teste\",\"location\": \"teste adress\",\"phoneNumber\": 120312312,\"rooms\": [{\"numberOfBeds\": 3,\"roomType\": \"TYPE\",\"roomPrice\": 10},{\"numberOfBeds\": 2,\"roomType\": \"TYPE2\",\"roomPrice\": 15}]}}";
