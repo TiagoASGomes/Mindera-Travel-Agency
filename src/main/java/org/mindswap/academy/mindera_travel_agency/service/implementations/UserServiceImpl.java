@@ -13,6 +13,7 @@ import org.mindswap.academy.mindera_travel_agency.dto.hotel.HotelReservationGetD
 import org.mindswap.academy.mindera_travel_agency.dto.invoice.InvoiceGetDto;
 import org.mindswap.academy.mindera_travel_agency.dto.user.UserCreateDto;
 import org.mindswap.academy.mindera_travel_agency.dto.user.UserGetDto;
+import org.mindswap.academy.mindera_travel_agency.dto.user.UserUpdateDto;
 import org.mindswap.academy.mindera_travel_agency.dto.user.UserUpdatePasswordDto;
 import org.mindswap.academy.mindera_travel_agency.exception.User.DuplicateEmailException;
 import org.mindswap.academy.mindera_travel_agency.exception.User.PasswordsDidNotMatchException;
@@ -142,7 +143,7 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
-    public UserGetDto update(Long id, UserCreateDto userDto) throws UserNotFoundException, DuplicateEmailException {
+    public UserGetDto update(Long id, UserUpdateDto userDto) throws UserNotFoundException, DuplicateEmailException {
         User dbUser = findById(id);
         if (userDto.email() != null) {
             checkDuplicateEmail(id, userDto.email());
@@ -166,7 +167,7 @@ public class UserServiceImpl implements UserService {
         dbUser.setPassword(user.newPassword());
         return userConverter.fromUserModelToGetDto(userRepository.save(dbUser));
     }
-    
+
     @Override
     public void delete(Long id) throws UserNotFoundException {
         User user = findById(id);
