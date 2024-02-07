@@ -22,7 +22,6 @@ public class HotelReservationConverter {
         if (hotelReservation == null) return null;
         return new HotelReservationGetDto(
                 hotelReservation.getId(),
-                hotelReservation.getExternalId(),
                 hotelReservation.getHotelName(),
                 hotelReservation.getHotelAddress(),
                 hotelReservation.getHotelPhoneNumber(),
@@ -62,6 +61,7 @@ public class HotelReservationConverter {
                 reservation.getHotelName(),
                 user.getFName(),
                 user.getPhoneNumber(),
+                user.getVat(),
                 roomInfoConverter.fromEntityListToExternalCreateRoomReservationList(reservation.getRooms())
         );
 

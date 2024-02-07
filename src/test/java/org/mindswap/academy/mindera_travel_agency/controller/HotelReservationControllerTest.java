@@ -32,9 +32,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class HotelReservationControllerTest {
     //TODO 2 rooms with same externalId same hotel
     private static ObjectMapper objectMapper;
-    private final String BASE_URL = "/api/v1/reservations/";
-    private final String EXAMPLE1 = "{\"invoiceId\": 1,\"arrivalDate\": \"2025-01-01\",\"leaveDate\": \"2025-01-05\",\"hotelInfo\": {\"externalId\": 1,\"name\": \"Hotel Teste\",\"location\": \"teste adress\",\"phoneNumber\": \"120312312\",\"rooms\": [{\"externalId\":1,\"pricePerNight\":10,\"roomType\":\"TYPE\",\"roomNumber\":101,\"numberOfBeds\":3},{\"externalId\":2,\"pricePerNight\":15,\"roomType\":\"TYPE2\",\"roomNumber\":102,\"numberOfBeds\":2}]}}";
-    private final String EXAMPLE2 = "{\"invoiceId\": 2,\"arrivalDate\": \"2025-01-01\",\"leaveDate\": \"2025-01-05\",\"hotelInfo\": {\"externalId\": 2,\"name\": \"Hotel Teste dois\",\"location\": \"teste adress dois\",\"phoneNumber\": \"920312312\",\"rooms\": [{\"externalId\":3,\"pricePerNight\":10,\"roomType\":\"TYPE\",\"roomNumber\":103,\"numberOfBeds\":3},{\"externalId\":4,\"pricePerNight\":15,\"roomType\":\"TYPE2\",\"roomNumber\":104,\"numberOfBeds\":2}]}}";
+    private final String BASE_URL = "/api/v1/hotel_reservations/";
+    private final String EXAMPLE1 = "{\"arrivalDate\": \"2030-01-01\",\"leaveDate\": \"2030-01-05\",\"invoiceId\": 1,\"hotelInfo\": {\"hotelN\": \"Hotel Teste\",\"location\": \"teste adress\",\"phoneNumber\": 120312312,\"rooms\": [{\"numberOfBeds\": 3,\"roomType\": \"TYPE\",\"roomPrice\": 10},{\"numberOfBeds\": 2,\"roomType\": \"TYPE2\",\"roomPrice\": 15}]}}";
+    private final String EXAMPLE2 = "{\"arrivalDate\": \"2039-01-02\",\"leaveDate\": \"2030-01-06\",\"invoiceId\": 2,\"hotelInfo\": {\"hotelN\": \"Hotel Teste dois\",\"location\": \"teste adress dois\",\"phoneNumber\": 920312312,\"rooms\": [{\"numberOfBeds\": 3,\"roomType\": \"TYPE3\",\"roomPrice\": 12},{\"numberOfBeds\": 2,\"roomType\": \"TYPE4\",\"roomPrice\": 13},{\"numberOfBeds\": 3,\"roomType\": \"TYPE\",\"roomPrice\": 10}]}}";
     @Autowired
     private MockMvc mockMvc;
     @Autowired
@@ -58,7 +58,7 @@ class HotelReservationControllerTest {
 
     @BeforeEach
     void setUp() throws Exception {
-        String userJson = "{\"email\": \"teste@example.com\",\"password\": \"C@$9gmL?\",\"userName\": \"userTeste\",\"dateOfBirth\": \"2000-01-01\",\"phoneNumber\": \"937313732\"}";
+        String userJson = "{\"email\": \"teste@example.com\",\"password\": \"zxlmn!!23K?\",\"userName\": \"userTeste\",\"dateOfBirth\": \"2000-01-01\",\"phoneNumber\": \"937313732\",\"vat\": \"123456782\"}";
         String invoiceJson = "{\"userId\":1}";
         List<String> paymentStatusJson = List.of("{\"statusName\": \"PENDING\"}", "{\"statusName\": \"PAID\"}", "{\"statusName\": \"NOT_REQUESTED\"}");
         mockMvc.perform(post("/api/v1/users/")
@@ -98,24 +98,50 @@ class HotelReservationControllerTest {
         mockMvc.perform(post(BASE_URL)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(EXAMPLE1));
+
         mockMvc.perform(post(BASE_URL)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(EXAMPLE2));
         // WHEN
-        mockMvc.perform(get(BASE_URL))
+        mockMvc.perform(get(BASE_URL + "?page=0"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$", hasSize(2)));
+                .andExpect(jsonPath("$.content", hasSize(2)));
     }
 
     @Test
     @DisplayName("Test get all with 0 reservations and expect status 200 and empty list")
     void getAllEmpty() throws Exception {
         // WHEN
-        mockMvc.perform(get(BASE_URL))
+        mockMvc.perform(get(BASE_URL + "?page=0"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$", hasSize(0)));
+                .andExpect(jsonPath("$.content", hasSize(0)));
+    }
+
+    @Test
+    @DisplayName("Test get all multiple pages")
+    void getAllMultiplePages() throws Exception {
+        // GIVEN
+        for (int i = 0; i < 4; i++) {
+            mockMvc.perform(post("/api/v1/invoices/")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content("{\"userId\":1}"));
+        }
+        for (int i = 0; i < 6; i++) {
+            mockMvc.perform(post(BASE_URL)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(EXAMPLE1.replace("\"invoiceId\": 1", "\"invoiceId\": " + (i + 1))));
+        }
+        // WHEN
+        mockMvc.perform(get(BASE_URL + "?page=0&size=5"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.content", hasSize(5)));
+        mockMvc.perform(get(BASE_URL + "?page=1&size=5"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.content", hasSize(1)));
     }
 
     @Test
@@ -131,21 +157,21 @@ class HotelReservationControllerTest {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andReturn().getResponse().getContentAsString();
         HotelReservationGetDto hotelReservationGetDto = objectMapper.readValue(response, HotelReservationGetDto.class);
-        RoomInfoGetDto roomInfoGetDto = hotelReservationGetDto.rooms().stream().filter(room -> room.roomNumber() == 101).findFirst().get();
+        RoomInfoGetDto roomInfoGetDto = hotelReservationGetDto.rooms().stream().filter(room -> room.pricePerNight() == 10).findFirst().get();
         // THEN
         assertEquals(1L, hotelReservationGetDto.id());
         assertEquals("Hotel Teste", hotelReservationGetDto.hotelName());
         assertEquals("teste adress", hotelReservationGetDto.hotelAddress());
-        assertEquals(120312312, hotelReservationGetDto.hotelPhoneNumber());
+        assertEquals("120312312", hotelReservationGetDto.hotelPhoneNumber());
         assertEquals(25, hotelReservationGetDto.pricePerNight());
         assertEquals(4, hotelReservationGetDto.durationOfStay());
         assertEquals(100, hotelReservationGetDto.totalPrice());
-        assertEquals("2025-01-01", hotelReservationGetDto.arrivalDate().toString());
-        assertEquals("2025-01-05", hotelReservationGetDto.leaveDate().toString());
+        assertEquals("2030-01-01", hotelReservationGetDto.arrivalDate().toString());
+        assertEquals("2030-01-05", hotelReservationGetDto.leaveDate().toString());
         assertEquals(2, hotelReservationGetDto.rooms().size());
         assertEquals(10, roomInfoGetDto.pricePerNight());
         assertEquals("TYPE", roomInfoGetDto.roomType());
-        assertEquals(101, roomInfoGetDto.roomNumber());
+        assertEquals(0, roomInfoGetDto.roomNumber());
         assertEquals(3, roomInfoGetDto.numberOfBeds());
     }
 
@@ -159,7 +185,7 @@ class HotelReservationControllerTest {
                 .andReturn().getResponse().getContentAsString();
         AgencyError agencyError = objectMapper.readValue(response, AgencyError.class);
         // THEN
-        assertEquals(ID_NOT_FOUND + 1, agencyError.getMessage());
+        assertEquals(HOTEL_RESERVATION_ID_NOT_FOUND + 1, agencyError.getMessage());
     }
 
     @Test
@@ -173,21 +199,21 @@ class HotelReservationControllerTest {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andReturn().getResponse().getContentAsString();
         HotelReservationGetDto hotelReservationGetDto = objectMapper.readValue(response, HotelReservationGetDto.class);
-        RoomInfoGetDto roomInfoGetDto = hotelReservationGetDto.rooms().stream().filter(room -> room.roomNumber() == 101).findFirst().get();
+        RoomInfoGetDto roomInfoGetDto = hotelReservationGetDto.rooms().stream().filter(room -> room.pricePerNight() == 10).findFirst().get();
         // THEN
         assertEquals(1L, hotelReservationGetDto.id());
         assertEquals("Hotel Teste", hotelReservationGetDto.hotelName());
         assertEquals("teste adress", hotelReservationGetDto.hotelAddress());
-        assertEquals(120312312, hotelReservationGetDto.hotelPhoneNumber());
+        assertEquals("120312312", hotelReservationGetDto.hotelPhoneNumber());
         assertEquals(25, hotelReservationGetDto.pricePerNight());
         assertEquals(4, hotelReservationGetDto.durationOfStay());
         assertEquals(100, hotelReservationGetDto.totalPrice());
-        assertEquals("2025-01-01", hotelReservationGetDto.arrivalDate().toString());
-        assertEquals("2025-01-05", hotelReservationGetDto.leaveDate().toString());
+        assertEquals("2030-01-01", hotelReservationGetDto.arrivalDate().toString());
+        assertEquals("2030-01-05", hotelReservationGetDto.leaveDate().toString());
         assertEquals(2, hotelReservationGetDto.rooms().size());
         assertEquals(10, roomInfoGetDto.pricePerNight());
         assertEquals("TYPE", roomInfoGetDto.roomType());
-        assertEquals(101, roomInfoGetDto.roomNumber());
+        assertEquals(0, roomInfoGetDto.roomNumber());
         assertEquals(3, roomInfoGetDto.numberOfBeds());
     }
 
@@ -205,15 +231,15 @@ class HotelReservationControllerTest {
                 .andReturn().getResponse().getContentAsString();
         AgencyError agencyError = objectMapper.readValue(response, AgencyError.class);
         // THEN
-        assertEquals(ID_NOT_FOUND + 3, agencyError.getMessage());
+        assertEquals(INVOICE_ID_NOT_FOUND + 3, agencyError.getMessage());
     }
 
     @Test
     @DisplayName("Test create with incorrect validation and expect status 400 and error message")
     void createInvalid() throws Exception {
         // GIVEN
-        String json = EXAMPLE1.replace("\"arrivalDate\": \"2025-01-01\"", "\"arrivalDate\": \"2024-01-01\"")
-                .replace("\"leaveDate\": \"2025-01-05\"", "\"leaveDate\": \"2024-01-05\"")
+        String json = EXAMPLE1.replace("\"arrivalDate\": \"2030-01-01\"", "\"arrivalDate\": \"2024-01-01\"")
+                .replace("\"leaveDate\": \"2030-01-05\"", "\"leaveDate\": \"2024-01-06\"")
                 .replace("\"invoiceId\": 1", "\"invoiceId\": 0");
         // WHEN
         String response = mockMvc.perform(post(BASE_URL)
@@ -224,8 +250,9 @@ class HotelReservationControllerTest {
                 .andReturn().getResponse().getContentAsString();
         AgencyError agencyError = objectMapper.readValue(response, AgencyError.class);
         // THEN
-        assertTrue(agencyError.getMessage().contains(INVALID_DATE));
-        assertTrue(agencyError.getMessage().contains(INVALID_ID));
+        assertTrue(agencyError.getMessage().contains(INVALID_ARRIVAL_DATE));
+        assertTrue(agencyError.getMessage().contains(INVALID_LEAVE_DATE));
+        assertTrue(agencyError.getMessage().contains(INVALID_INVOICE_ID));
     }
 
     @Test
@@ -240,9 +267,10 @@ class HotelReservationControllerTest {
                 .andReturn().getResponse().getContentAsString();
         AgencyError agencyError = objectMapper.readValue(response, AgencyError.class);
         // THEN
-        assertTrue(agencyError.getMessage().contains(INVALID_DATE));
+        assertTrue(agencyError.getMessage().contains(INVALID_ARRIVAL_DATE));
+        assertTrue(agencyError.getMessage().contains(INVALID_LEAVE_DATE));
+        assertTrue(agencyError.getMessage().contains(INVALID_INVOICE_ID));
         assertTrue(agencyError.getMessage().contains(INVALID_HOTEL_INFO));
-        assertTrue(agencyError.getMessage().contains(INVALID_ID));
     }
 
     @Test

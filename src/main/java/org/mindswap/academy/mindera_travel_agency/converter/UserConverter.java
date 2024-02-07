@@ -16,6 +16,7 @@ public class UserConverter {
                 .userName(user.userName())
                 .dateOfBirth(user.dateOfBirth())
                 .phoneNumber(user.phoneNumber())
+                .vat(user.vat())
                 .build();
     }
 

@@ -14,7 +14,9 @@ public record UserUpdateDto(
         String userName,
         @Pattern(regexp = "^((\\+351|00351|351)?) ?(9[3621])\\d{7}$", message = INVALID_PHONE_NUMBER)
         @Schema(example = "351 923456789")
-        String phoneNumber
+        String phoneNumber,
+        @Pattern(regexp = " ^[125689]\\d{8}$", message = INVALID_VAT)
+        String vat
 ) {
 
 }

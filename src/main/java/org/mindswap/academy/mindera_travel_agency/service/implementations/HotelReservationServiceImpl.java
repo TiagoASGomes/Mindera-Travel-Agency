@@ -70,7 +70,7 @@ public class HotelReservationServiceImpl implements HotelReservationService {
         HotelReservation savedHotel = hRRepository.save(convertedReservation);
         roomInfo.forEach(room -> room.setHotelReservation(savedHotel));
         roomInfo.forEach(roomInfoService::create);
-        invoiceService.updatePrice(invoice.getId());
+        invoiceService.updateHotelPrice(invoice.getId());
         return hRConverter.fromEntityToGetDto(findById(savedHotel.getId()));
     }
 
@@ -91,7 +91,7 @@ public class HotelReservationServiceImpl implements HotelReservationService {
         roomInfo.forEach(room -> room.setHotelReservation(savedHotel));
         roomInfo.forEach(roomInfoService::create);
         dbReservation.getRooms().forEach(oldRoom -> roomInfoService.delete(oldRoom.getId()));
-        invoiceService.updatePrice(invoice.getId());
+        invoiceService.updateHotelPrice(invoice.getId());
         return hRConverter.fromEntityToGetDto(findById(id));
     }
 
@@ -105,7 +105,7 @@ public class HotelReservationServiceImpl implements HotelReservationService {
         dbReservation.setDurationOfStay(dtoReservation.leaveDate().getDayOfMonth() - dtoReservation.arrivalDate().getDayOfMonth());
         dbReservation.setTotalPrice(dbReservation.getPricePerNight() * dbReservation.getDurationOfStay());
         HotelReservationGetDto reservation = hRConverter.fromEntityToGetDto(hRRepository.save(dbReservation));
-        invoiceService.updatePrice(dbReservation.getInvoice().getId());
+        invoiceService.updateHotelPrice(dbReservation.getInvoice().getId());
         return reservation;
     }
 
@@ -120,7 +120,7 @@ public class HotelReservationServiceImpl implements HotelReservationService {
         HotelReservation savedHotel = hRRepository.save(hotelReservationToUpdate);
         roomInfo.setHotelReservation(savedHotel);
         roomInfoService.create(roomInfo);
-        invoiceService.updatePrice(hotelReservationToUpdate.getInvoice().getId());
+        invoiceService.updateHotelPrice(hotelReservationToUpdate.getInvoice().getId());
         return hRConverter.fromEntityToGetDto(savedHotel);
     }
 
@@ -134,7 +134,7 @@ public class HotelReservationServiceImpl implements HotelReservationService {
         hotelReservationToUpdate.setPricePerNight(calculatePrice(hotelReservationToUpdate));
         hotelReservationToUpdate.setTotalPrice(hotelReservationToUpdate.getPricePerNight() * hotelReservationToUpdate.getDurationOfStay());
         HotelReservationGetDto reservation = hRConverter.fromEntityToGetDto(hRRepository.save(hotelReservationToUpdate));
-        invoiceService.updatePrice(hotelReservationToUpdate.getInvoice().getId());
+        invoiceService.updateHotelPrice(hotelReservationToUpdate.getInvoice().getId());
         return reservation;
     }
 

@@ -122,9 +122,23 @@ public class InvoiceServiceImpl implements InvoiceService {
     }
 
     @Override
-    public void updatePrice(Long id) throws InvoiceNotFoundException {
+    public void updateHotelPrice(Long id) throws InvoiceNotFoundException {
         Invoice invoice = findById(id);
         invoice.setTotalPrice(calculatePrice(invoice));
+        inRep.save(invoice);
+    }
+
+    @Override
+    public void updateFlightPrices(List<FlightTicket> invoiceFlights, Long id) throws InvoiceNotFoundException {
+        int price = invoiceFlights.stream()
+                .mapToInt(FlightTicket::getPrice)
+                .sum();
+        Invoice invoice = findById(id);
+        if (invoice.getHotelReservation() != null) {
+            invoice.setTotalPrice(price + invoice.getHotelReservation().getTotalPrice());
+        } else {
+            invoice.setTotalPrice(price);
+        }
         inRep.save(invoice);
     }
 

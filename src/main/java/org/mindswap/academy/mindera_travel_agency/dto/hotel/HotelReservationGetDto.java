@@ -7,7 +7,6 @@ import java.util.List;
 
 public record HotelReservationGetDto(
         Long id,
-        Long externalId,
         String hotelName,
         String hotelAddress,
         String hotelPhoneNumber,

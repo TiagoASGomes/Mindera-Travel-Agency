@@ -155,6 +155,9 @@ public class UserServiceImpl implements UserService {
         if (userDto.phoneNumber() != null) {
             dbUser.setPhoneNumber(userDto.phoneNumber());
         }
+        if (userDto.vat() != null) {
+            dbUser.setVat(userDto.vat());
+        }
         return userConverter.fromUserModelToGetDto(userRepository.save(dbUser));
     }
 
