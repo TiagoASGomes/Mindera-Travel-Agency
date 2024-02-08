@@ -82,14 +82,13 @@ public interface UserService {
     /**
      * Retrieves available hotels based on location and arrival date.
      *
-     * @param location    the location of the hotel
-     * @param arrivalDate the arrival date
-     * @param page        the pagination information
+     * @param location the location of the hotel
+     * @param page     the pagination information
      * @return a list of ExternalHotelInfoDto objects
      * @throws UnirestException        if an error occurs during the HTTP request
      * @throws JsonProcessingException if an error occurs while processing JSON
      */
-    List<ExternalHotelInfoDto> getAvailableHotels(String location, String arrivalDate, Pageable page) throws UnirestException, JsonProcessingException;
+    List<ExternalHotelInfoDto> getAvailableHotels(String location, Pageable page) throws UnirestException, JsonProcessingException;
 
     /**
      * Retrieves available flights based on source, destination, and arrival date.

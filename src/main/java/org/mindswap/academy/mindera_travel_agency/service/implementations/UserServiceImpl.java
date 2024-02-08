@@ -160,16 +160,15 @@ public class UserServiceImpl implements UserService {
     /**
      * Retrieves a list of available hotels based on the specified location, arrival date, and page information.
      *
-     * @param location    the location of the hotels
-     * @param arrivalDate the arrival date
-     * @param page        the page information for pagination
+     * @param location the location of the hotels
+     * @param page     the page information for pagination
      * @return a list of ExternalHotelInfoDto objects representing the available hotels
      * @throws UnirestException        if an error occurs during the HTTP request
      * @throws JsonProcessingException if an error occurs while processing the JSON response
      */
     @Override
-    public List<ExternalHotelInfoDto> getAvailableHotels(String location, String arrivalDate, Pageable page) throws UnirestException, JsonProcessingException {
-        return externalService.getAvailableHotels(location, arrivalDate, page.getPageNumber());
+    public List<ExternalHotelInfoDto> getAvailableHotels(String location, Pageable page) throws UnirestException, JsonProcessingException {
+        return externalService.getAvailableHotels(location, page.getPageNumber());
     }
 
     /**
