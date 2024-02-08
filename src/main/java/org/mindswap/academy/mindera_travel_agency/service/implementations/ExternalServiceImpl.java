@@ -28,8 +28,8 @@ import java.util.Set;
 
 @Service
 public class ExternalServiceImpl implements ExternalService {
-    private final String HOTEL_API_URL;
-    private final String FLIGHT_API_URL;
+    private final String hotelApiUrl;
+    private final String flightApiUrl;
     private final HotelReservationConverter hRConverter;
     private final FlightTicketConverter fTConverter;
     ObjectMapper objectMapper = new ObjectMapper();
@@ -43,8 +43,8 @@ public class ExternalServiceImpl implements ExternalService {
     public ExternalServiceImpl(HotelReservationConverter hRConverter, FlightTicketConverter fTConverter, @Value("${hotel.api.base-url}") String hotelApiUrl, @Value("${flight.api.base-url}") String flightApiUrl) {
         this.hRConverter = hRConverter;
         this.fTConverter = fTConverter;
-        this.HOTEL_API_URL = hotelApiUrl;
-        this.FLIGHT_API_URL = flightApiUrl;
+        this.hotelApiUrl = hotelApiUrl;
+        this.flightApiUrl = flightApiUrl;
     }
 
     /**
@@ -60,7 +60,7 @@ public class ExternalServiceImpl implements ExternalService {
     public List<ExternalHotelInfoDto> getAvailableHotels(String location, String arrivalDate, int pageNumber) throws UnirestException, JsonProcessingException {
         Unirest.setTimeouts(0, 0);
         //TODO add location filters and such
-        HttpResponse<String> response = Unirest.get(HOTEL_API_URL + "/api/v1/hotel?page=" + pageNumber)
+        HttpResponse<String> response = Unirest.get(hotelApiUrl + "/api/v1/hotel?page=" + pageNumber)
                 .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
                 .asString();
         if (response.getStatus() == 200) {
@@ -84,7 +84,7 @@ public class ExternalServiceImpl implements ExternalService {
         objectMapper.registerModule(new JavaTimeModule());
         String body = objectMapper.writeValueAsString(externalReservationCreateDto);
         Unirest.setTimeouts(0, 0);
-        HttpResponse<String> response = Unirest.post(HOTEL_API_URL + "/api/v1/reservations/" + hotelReservation.getHotelName().replace(" ", "-"))
+        HttpResponse<String> response = Unirest.post(hotelApiUrl + "/api/v1/reservations/" + hotelReservation.getHotelName().replace(" ", "-"))
                 .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
                 .body(body)
                 .asString();
@@ -109,7 +109,7 @@ public class ExternalServiceImpl implements ExternalService {
         objectMapper.registerModule(new JavaTimeModule());
         String json = objectMapper.writeValueAsString(flights);
         Unirest.setTimeouts(0, 0);
-        HttpResponse<String> response = Unirest.post(FLIGHT_API_URL + "/api/v1/bookings")
+        HttpResponse<String> response = Unirest.post(flightApiUrl + "/api/v1/bookings")
                 .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
                 .body(json)
                 .asString();
@@ -137,8 +137,8 @@ public class ExternalServiceImpl implements ExternalService {
         objectMapper.registerModule(new JavaTimeModule());
         date = date.replace(":", "%3A");
         Unirest.setTimeouts(0, 0);
-        String URL = "http://flight-app:8081" + "/api/v1/flights/search/" + source + "/" + destination + "?date=" + date + "&page=" + page + "&price=" + price;
-        HttpResponse<String> response = Unirest.get(URL)
+        String url = flightApiUrl + "/api/v1/flights/search/" + source + "/" + destination + "?date=" + date + "&page=" + page + "&price=" + price;
+        HttpResponse<String> response = Unirest.get(url)
                 .header("Content-Type", "application/json")
                 .asString();
         if (response.getStatus() == 200) {

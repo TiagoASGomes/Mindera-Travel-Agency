@@ -176,7 +176,7 @@ class HotelReservationControllerTest {
 
     @Test
     @DisplayName("Test get by id with incorrect id and expect status 404 and error message")
-    public void getByIdNotFound() throws Exception {
+    void getByIdNotFound() throws Exception {
         // WHEN
         String response = mockMvc.perform(get(BASE_URL + "1"))
                 .andExpect(status().isNotFound())
