@@ -20,5 +20,5 @@ public interface ExternalService {
 
     List<ExternalBookingInfoDto> createFlightTickets(Set<FlightTicket> flightTickets) throws UnirestException, JsonProcessingException, InvoiceNotFoundException;
 
-    List<ExternalFlightInfoDto> getFlights(String source, String destination, String arrivalDate, int page) throws UnirestException, JsonProcessingException;
+    List<ExternalFlightInfoDto> getFlights(String source, String destination, String date, int page, int price) throws UnirestException, JsonProcessingException;
 }

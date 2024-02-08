@@ -330,10 +330,10 @@ class UserControllerTest {
         mockMvc.perform(post("/api/v1/invoices/")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(INVOICE_JSON));
-        mockMvc.perform(post("/api/v1/flight_tickets/")
+        mockMvc.perform(post("/api/v1/flights/")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(FLIGHT_TICKET_JSON));
-        mockMvc.perform(post("/api/v1/flight_tickets/")
+        mockMvc.perform(post("/api/v1/flights/")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(FLIGHT_TICKET_JSON));
 
@@ -347,12 +347,12 @@ class UserControllerTest {
     @DisplayName("Test get external flight info")
     void TestGetExternalFlightInfo() throws Exception {
         List<ExternalFlightInfoDto> externalFlightInfoDtoList = List.of(EXTERNAL_FLIGHT_INFO_DTO);
-        wireMockServer.stubFor(WireMock.get("/api/v1/flights/LIS/OPO/2030-01-01?page=0")
+        wireMockServer.stubFor(WireMock.get("/api/v1/flights/LIS/OPO?date=2020-01-01T12:00&page=0&price=100")
                 .willReturn(WireMock.aResponse()
                         .withStatus(200)
                         .withHeader("Content-Type", "application/json")
                         .withBody(objectMapper.writeValueAsString(externalFlightInfoDtoList))));
-        String response = mockMvc.perform(get(BASE_URL + "/flights/LIS/OPO/2030-01-01?page=0"))
+        String response = mockMvc.perform(get(BASE_URL + "/flights/LIS/OPO?price=100&date=2020-01-01T12:00&page=0"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andReturn().getResponse().getContentAsString();

@@ -38,7 +38,7 @@ public interface UserService {
 
     List<ExternalHotelInfoDto> getAvailableHotels(String location, String arrivalDate, Pageable page) throws UnirestException, JsonProcessingException;
 
-    List<ExternalFlightInfoDto> getAvailableFlights(String source, String destination, String arrivalDate, Pageable page) throws UnirestException, JsonProcessingException;
+    List<ExternalFlightInfoDto> getAvailableFlights(String source, String destination, String date, Pageable page, int price) throws UnirestException, JsonProcessingException;
 
     UserGetDto add(UserCreateDto user) throws DuplicateEmailException;
 

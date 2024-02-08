@@ -75,9 +75,9 @@ public class UserController {
         return ResponseEntity.ok(userService.getAvailableHotels(location, arrivalDate, page));
     }
 
-    @GetMapping("/flights/{source}/{destination}/{arrivalDate}")
-    public ResponseEntity<List<ExternalFlightInfoDto>> getAvailableFlights(@PathVariable String source, @PathVariable String destination, @PathVariable String arrivalDate, Pageable page) throws UnirestException, JsonProcessingException {
-        return ResponseEntity.ok(userService.getAvailableFlights(source, destination, arrivalDate, page));
+    @GetMapping("/flights/{source}/{destination}")
+    public ResponseEntity<List<ExternalFlightInfoDto>> getAvailableFlights(@PathVariable String source, @PathVariable String destination, @RequestParam(defaultValue = "") String date, @RequestParam(defaultValue = "9999") int price, Pageable page) throws UnirestException, JsonProcessingException {
+        return ResponseEntity.ok(userService.getAvailableFlights(source, destination, date, page, price));
     }
 
     @PostMapping("/")

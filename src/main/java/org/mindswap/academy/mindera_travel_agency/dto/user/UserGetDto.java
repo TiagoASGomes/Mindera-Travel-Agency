@@ -2,6 +2,7 @@ package org.mindswap.academy.mindera_travel_agency.dto.user;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 
 public record UserGetDto(
@@ -15,5 +16,5 @@ public record UserGetDto(
         LocalDate dateOfBirth,
         @Schema(example = "351 9********")
         String phoneNumber
-) {
+) implements Serializable {
 }

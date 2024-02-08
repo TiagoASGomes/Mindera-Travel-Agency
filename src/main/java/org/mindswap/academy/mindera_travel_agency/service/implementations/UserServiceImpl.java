@@ -112,8 +112,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<ExternalFlightInfoDto> getAvailableFlights(String source, String destination, String arrivalDate, Pageable page) throws UnirestException, JsonProcessingException {
-        return externalService.getFlights(source, destination, arrivalDate, page.getPageNumber());
+    public List<ExternalFlightInfoDto> getAvailableFlights(String source, String destination, String date, Pageable page, int price) throws UnirestException, JsonProcessingException {
+        return externalService.getFlights(source, destination, date, page.getPageNumber(), price);
     }
 
     @Override

@@ -1,5 +1,7 @@
 package org.mindswap.academy.mindera_travel_agency.dto.flight_ticket;
 
+import java.io.Serializable;
+
 public record TicketGetDto(
         Long id,
         String fName,
@@ -12,5 +14,5 @@ public record TicketGetDto(
         int maxLuggageWeight,
         boolean carryOnLuggage,
         float duration
-) {
+) implements Serializable {
 }
