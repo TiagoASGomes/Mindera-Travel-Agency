@@ -144,9 +144,9 @@ public class InvoiceServiceImpl implements InvoiceService {
             throw new InvoiceNotCompleteException(INVOICE_NOT_COMPLETE);
         }
         List<ExternalBookingInfoDto> flightInfo = extSer.createFlightTickets(flightTickets);
-        ExternalReservationInfoDto reservationInfo = extSer.createReservation(hotelReservation);
+//        ExternalReservationInfoDto reservationInfo = extSer.createReservation(hotelReservation);
         updateFlights(flightInfo, invoice);
-        updateHotel(reservationInfo, invoice);
+//        updateHotel(reservationInfo, invoice);
         invoice.setPaymentStatus(paymentSer.findByName(PENDING_PAYMENT));
         return inCon.fromEntityToGetDto(inRep.save(invoice));
     }

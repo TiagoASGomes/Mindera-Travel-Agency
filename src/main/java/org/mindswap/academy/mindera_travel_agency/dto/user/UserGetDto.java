@@ -6,15 +6,15 @@ import java.io.Serializable;
 import java.time.LocalDate;
 
 public record UserGetDto(
-        @Schema(example = "1")
+        @Schema(example = "1", description = "The user's id")
         Long id,
-        @Schema(example = "Joe")
+        @Schema(example = "Joe", description = "The user's name")
         String userName,
-        @Schema(example = "email@example.com")
+        @Schema(example = "email@example.com", description = "The user's email")
         String email,
-        @Schema(example = "01/01/1900")
+        @Schema(example = "01/01/1900", description = "The user's date of birth")
         LocalDate dateOfBirth,
-        @Schema(example = "351 9********")
+        @Schema(example = "351 912345678", description = "The user's phone number")
         String phoneNumber
 ) implements Serializable {
 }

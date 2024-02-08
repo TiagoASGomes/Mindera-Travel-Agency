@@ -137,7 +137,7 @@ public class ExternalServiceImpl implements ExternalService {
         objectMapper.registerModule(new JavaTimeModule());
         date = date.replace(":", "%3A");
         Unirest.setTimeouts(0, 0);
-        String URL = FLIGHT_API_URL + "/api/v1/flights/search/" + source + "/" + destination + "?date=" + date + "&page=" + page + "&price=" + price;
+        String URL = "http://flight-app:8081" + "/api/v1/flights/search/" + source + "/" + destination + "?date=" + date + "&page=" + page + "&price=" + price;
         HttpResponse<String> response = Unirest.get(URL)
                 .header("Content-Type", "application/json")
                 .asString();
