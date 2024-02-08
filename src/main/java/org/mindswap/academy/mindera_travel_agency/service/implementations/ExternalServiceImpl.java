@@ -15,6 +15,7 @@ import org.mindswap.academy.mindera_travel_agency.dto.external.flight.ExternalFl
 import org.mindswap.academy.mindera_travel_agency.dto.external.hotel.ExternalHotelInfoDto;
 import org.mindswap.academy.mindera_travel_agency.dto.external.hotel.ExternalReservationCreateDto;
 import org.mindswap.academy.mindera_travel_agency.dto.external.hotel.ExternalReservationInfoDto;
+import org.mindswap.academy.mindera_travel_agency.exception.invoice.InvoiceNotCompleteException;
 import org.mindswap.academy.mindera_travel_agency.exception.invoice.InvoiceNotFoundException;
 import org.mindswap.academy.mindera_travel_agency.model.FlightTicket;
 import org.mindswap.academy.mindera_travel_agency.model.HotelReservation;
@@ -50,17 +51,15 @@ public class ExternalServiceImpl implements ExternalService {
     /**
      * Retrieves a list of available hotels based on the specified location, arrival date, and page number.
      *
-     * @param location    the location of the hotels
-     * @param arrivalDate the arrival date
-     * @param pageNumber  the page number for pagination
+     * @param location   the location of the hotels
+     * @param pageNumber the page number for pagination
      * @return a list of ExternalHotelInfoDto objects representing the available hotels
      * @throws UnirestException        if an error occurs while making the HTTP request
      * @throws JsonProcessingException if an error occurs while processing the JSON response
      */
-    public List<ExternalHotelInfoDto> getAvailableHotels(String location, String arrivalDate, int pageNumber) throws UnirestException, JsonProcessingException {
+    public List<ExternalHotelInfoDto> getAvailableHotels(String location, int pageNumber) throws UnirestException, JsonProcessingException {
         Unirest.setTimeouts(0, 0);
-        //TODO add location filters and such
-        HttpResponse<String> response = Unirest.get(hotelApiUrl + "/api/v1/hotel?page=" + pageNumber)
+        HttpResponse<String> response = Unirest.get(hotelApiUrl + "/api/v1/hotel/findByAddress/" + location + "?page=" + pageNumber)
                 .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
                 .asString();
         if (response.getStatus() == 200) {
@@ -79,17 +78,20 @@ public class ExternalServiceImpl implements ExternalService {
      * @throws JsonProcessingException if an error occurs while processing the JSON response
      */
     @Override
-    public ExternalReservationInfoDto createReservation(HotelReservation hotelReservation) throws UnirestException, JsonProcessingException {
+    public ExternalReservationInfoDto createReservation(HotelReservation hotelReservation) throws UnirestException, JsonProcessingException, InvoiceNotCompleteException {
         ExternalReservationCreateDto externalReservationCreateDto = hRConverter.fromEntityToExternalDto(hotelReservation);
         objectMapper.registerModule(new JavaTimeModule());
         String body = objectMapper.writeValueAsString(externalReservationCreateDto);
         Unirest.setTimeouts(0, 0);
-        HttpResponse<String> response = Unirest.post(hotelApiUrl + "/api/v1/reservations/" + hotelReservation.getHotelName().replace(" ", "-"))
+        HttpResponse<String> response = Unirest.post(hotelApiUrl + "/api/v1/reservations/" + hotelReservation.getHotelName())
                 .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
                 .body(body)
                 .asString();
         if (response.getStatus() == 201) {
             return objectMapper.readValue(response.getBody(), ExternalReservationInfoDto.class);
+        }
+        if (response.getStatus() == 400 && response.getBody().contains("Reservation already exists")) {
+            throw new InvoiceNotCompleteException("No availabel rooms");
         }
         throw new UnirestException("Error creating reservation");
     }

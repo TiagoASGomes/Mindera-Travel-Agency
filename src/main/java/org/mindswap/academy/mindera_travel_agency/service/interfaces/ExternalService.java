@@ -6,6 +6,7 @@ import org.mindswap.academy.mindera_travel_agency.dto.external.flight.ExternalBo
 import org.mindswap.academy.mindera_travel_agency.dto.external.flight.ExternalFlightInfoDto;
 import org.mindswap.academy.mindera_travel_agency.dto.external.hotel.ExternalHotelInfoDto;
 import org.mindswap.academy.mindera_travel_agency.dto.external.hotel.ExternalReservationInfoDto;
+import org.mindswap.academy.mindera_travel_agency.exception.invoice.InvoiceNotCompleteException;
 import org.mindswap.academy.mindera_travel_agency.exception.invoice.InvoiceNotFoundException;
 import org.mindswap.academy.mindera_travel_agency.model.FlightTicket;
 import org.mindswap.academy.mindera_travel_agency.model.HotelReservation;
@@ -20,14 +21,13 @@ public interface ExternalService {
     /**
      * Retrieves a list of available hotels based on the specified location, arrival date, and page number.
      *
-     * @param location    the location of the hotels
-     * @param arrivalDate the arrival date
-     * @param pageNumber  the page number for pagination
+     * @param location   the location of the hotels
+     * @param pageNumber the page number for pagination
      * @return a list of available hotels
      * @throws UnirestException        if an error occurs during the HTTP request
      * @throws JsonProcessingException if an error occurs while processing JSON
      */
-    List<ExternalHotelInfoDto> getAvailableHotels(String location, String arrivalDate, int pageNumber) throws UnirestException, JsonProcessingException;
+    List<ExternalHotelInfoDto> getAvailableHotels(String location, int pageNumber) throws UnirestException, JsonProcessingException;
 
     /**
      * Creates a reservation for the specified hotel reservation.
@@ -37,7 +37,7 @@ public interface ExternalService {
      * @throws UnirestException        if an error occurs during the HTTP request
      * @throws JsonProcessingException if an error occurs while processing JSON
      */
-    ExternalReservationInfoDto createReservation(HotelReservation hotelReservation) throws UnirestException, JsonProcessingException;
+    ExternalReservationInfoDto createReservation(HotelReservation hotelReservation) throws UnirestException, JsonProcessingException, InvoiceNotCompleteException;
 
     /**
      * Creates flight tickets for the specified set of flight tickets.

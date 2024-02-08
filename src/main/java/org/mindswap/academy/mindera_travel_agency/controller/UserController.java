@@ -152,9 +152,8 @@ public class UserController {
     /**
      * Retrieves available hotels based on location and arrival date.
      *
-     * @param location    the hotel location
-     * @param arrivalDate the arrival date (optional)
-     * @param page        the page information
+     * @param location the hotel location
+     * @param page     the page information
      * @return the list of available hotels
      * @throws UnirestException        if an error occurs during the HTTP request
      * @throws JsonProcessingException if an error occurs while processing JSON
@@ -164,9 +163,9 @@ public class UserController {
             @ApiResponse(responseCode = "200", description = "Return available hotels by location and arrival date"),
             @ApiResponse(responseCode = "400", description = "Error while processing JSON, or an error occurs during the HTTP request")
     })
-    @GetMapping("/hotels/{location}/{arrivalDate}")
-    public ResponseEntity<List<ExternalHotelInfoDto>> getAvailableHotels(@PathVariable String location, @PathVariable(required = false) String arrivalDate, Pageable page) throws UnirestException, JsonProcessingException {
-        return ResponseEntity.ok(userService.getAvailableHotels(location, arrivalDate, page));
+    @GetMapping("/hotels/{location}")
+    public ResponseEntity<List<ExternalHotelInfoDto>> getAvailableHotels(@PathVariable String location, Pageable page) throws UnirestException, JsonProcessingException {
+        return ResponseEntity.ok(userService.getAvailableHotels(location, page));
     }
 
     /**

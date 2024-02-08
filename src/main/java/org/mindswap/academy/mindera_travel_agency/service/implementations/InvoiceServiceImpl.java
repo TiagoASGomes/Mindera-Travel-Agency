@@ -5,7 +5,6 @@ import com.mashape.unirest.http.exceptions.UnirestException;
 import org.mindswap.academy.mindera_travel_agency.converter.InvoiceConverter;
 import org.mindswap.academy.mindera_travel_agency.converter.RoomInfoConverter;
 import org.mindswap.academy.mindera_travel_agency.dto.external.flight.ExternalBookingInfoDto;
-import org.mindswap.academy.mindera_travel_agency.dto.external.hotel.ExternalReservationInfoDto;
 import org.mindswap.academy.mindera_travel_agency.dto.invoice.InvoiceCreateDto;
 import org.mindswap.academy.mindera_travel_agency.dto.invoice.InvoiceGetDto;
 import org.mindswap.academy.mindera_travel_agency.dto.invoice.InvoiceUpdateDto;
@@ -17,7 +16,6 @@ import org.mindswap.academy.mindera_travel_agency.exception.user.UserNotFoundExc
 import org.mindswap.academy.mindera_travel_agency.model.FlightTicket;
 import org.mindswap.academy.mindera_travel_agency.model.HotelReservation;
 import org.mindswap.academy.mindera_travel_agency.model.Invoice;
-import org.mindswap.academy.mindera_travel_agency.model.RoomInfo;
 import org.mindswap.academy.mindera_travel_agency.repository.FlightTicketRepository;
 import org.mindswap.academy.mindera_travel_agency.repository.InvoiceRepository;
 import org.mindswap.academy.mindera_travel_agency.repository.RoomInfoRepository;
@@ -144,9 +142,8 @@ public class InvoiceServiceImpl implements InvoiceService {
             throw new InvoiceNotCompleteException(INVOICE_NOT_COMPLETE);
         }
         List<ExternalBookingInfoDto> flightInfo = extSer.createFlightTickets(flightTickets);
-        ExternalReservationInfoDto reservationInfo = extSer.createReservation(hotelReservation);
+        extSer.createReservation(hotelReservation);
         updateFlights(flightInfo, invoice);
-        updateHotel(reservationInfo, invoice);
         invoice.setPaymentStatus(paymentSer.findByName(PENDING_PAYMENT));
         return inCon.fromEntityToGetDto(inRep.save(invoice));
     }
@@ -233,21 +230,6 @@ public class InvoiceServiceImpl implements InvoiceService {
         }
     }
 
-    /**
-     * Updates the hotel reservation in an invoice.
-     *
-     * @param reservation The ExternalReservationInfoDto object representing the updated hotel reservation.
-     * @param invoice     The Invoice object to be updated.
-     */
-    private void updateHotel(ExternalReservationInfoDto reservation, Invoice invoice) {
-        HotelReservation hotelReservation = invoice.getHotelReservation();
-        Set<RoomInfo> rooms = roomCon.fromExternalDtoListToEntityList(reservation.roomReservations());
-        Set<RoomInfo> oldRooms = hotelReservation.getRooms();
-        hotelReservation.setRooms(rooms);
-        oldRooms.forEach(room -> roomRep.deleteById(room.getId()));
-        rooms.forEach(room -> room.setHotelReservation(hotelReservation));
-        rooms.forEach(roomRep::save);
-    }
 
     /**
      * Updates the flight tickets in an invoice.

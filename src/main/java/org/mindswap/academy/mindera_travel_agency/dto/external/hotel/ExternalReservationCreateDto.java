@@ -14,7 +14,7 @@ public record ExternalReservationCreateDto(
         @Schema(description = "The hotel name", example = "Hotel Mindera")
         String hotelN,
         @Schema(description = "The user's full name", example = "John Doe")
-        String fName,
+        String fullName,
         @Schema(description = "The user's phone number", example = "+351 912 345 678")
         String phoneNumber,
         @Schema(description = "The user's vat number", example = "123456789")
