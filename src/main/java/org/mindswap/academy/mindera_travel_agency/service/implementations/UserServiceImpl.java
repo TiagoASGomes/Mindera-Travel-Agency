@@ -46,6 +46,11 @@ public class UserServiceImpl implements UserService {
     private final HotelReservationConverter hotelReservationConverter;
     private final ExternalService externalService;
 
+    /**
+     * Implementation of the UserService interface.
+     * This class provides methods to interact with the user repository and perform user-related operations.
+     * It is responsible for managing user data, converting data between different formats, and interacting with external services.
+     */
 
     @Autowired
     public UserServiceImpl(UserRepository userRepository, UserConverter userConverter, InvoiceConverter invoiceConverter, FlightTicketConverter flightTicketConverter, HotelReservationConverter hotelReservationConverter, ExternalService externalService) {
@@ -57,36 +62,75 @@ public class UserServiceImpl implements UserService {
         this.externalService = externalService;
     }
 
-
+    /**
+     * Retrieves all users with pagination.
+     *
+     * @param page the pagination information
+     * @return a page of UserGetDto objects
+     */
     @Override
     public Page<UserGetDto> getAll(Pageable page) {
         Page<User> users = userRepository.findAll(page);
         return users.map(userConverter::fromUserModelToGetDto);
     }
 
+    /**
+     * Retrieves all active users.
+     *
+     * @param page the pageable object for pagination
+     * @return a page of UserGetDto objects representing the active users
+     */
     @Override
     public Page<UserGetDto> getAllActive(Pageable page) {
         Page<User> users = userRepository.findAllActive(page);
         return users.map(userConverter::fromUserModelToGetDto);
     }
 
+    /**
+     * Retrieves a UserGetDto object by its ID.
+     *
+     * @param id the ID of the user
+     * @return the UserGetDto object representing the user
+     * @throws UserNotFoundException if the user with the given ID is not found
+     */
     @Override
     public UserGetDto getById(Long id) throws UserNotFoundException {
         return userConverter.fromUserModelToGetDto(findById(id));
     }
 
+    /**
+     * Retrieves a user by email and returns the corresponding UserGetDto.
+     *
+     * @param email the email of the user to retrieve
+     * @return the UserGetDto object representing the retrieved user
+     * @throws UserNotFoundException if the user with the specified email is not found
+     */
     @Override
     public UserGetDto getByEmail(String email) throws UserNotFoundException {
         User user = userRepository.findByEmail(email).orElseThrow(() -> new UserNotFoundException(EMAIL_NOT_FOUND + email));
         return userConverter.fromUserModelToGetDto(user);
     }
 
+    /**
+     * Retrieves all invoices for a given user.
+     *
+     * @param id the ID of the user
+     * @return a list of InvoiceGetDto objects representing the invoices
+     * @throws UserNotFoundException if the user with the given ID is not found
+     */
     @Override
     public List<InvoiceGetDto> getAllInvoices(Long id) throws UserNotFoundException {
         User user = findById(id);
         return invoiceConverter.fromEntityListToGetDtoList(user.getInvoices());
     }
 
+    /**
+     * Retrieves all hotel reservations for a given user.
+     *
+     * @param id the ID of the user
+     * @return a list of HotelReservationGetDto objects representing the user's reservations
+     * @throws UserNotFoundException if the user with the given ID is not found
+     */
     @Override
     public List<HotelReservationGetDto> getAllReservations(Long id) throws UserNotFoundException {
         User user = findById(id);
@@ -97,6 +141,13 @@ public class UserServiceImpl implements UserService {
         return hotelReservationConverter.fromEntityListToGetDtoList(userReservations);
     }
 
+    /**
+     * Retrieves all tickets associated with a user.
+     *
+     * @param id the ID of the user
+     * @return a list of TicketGetDto objects representing the user's tickets
+     * @throws UserNotFoundException if the user with the given ID is not found
+     */
     @Override
     public List<TicketGetDto> getAllTickets(Long id) throws UserNotFoundException {
         User user = findById(id);
@@ -106,16 +157,44 @@ public class UserServiceImpl implements UserService {
         return flightTicketConverter.fromEntityListToGetDtoList(userTickets);
     }
 
+    /**
+     * Retrieves a list of available hotels based on the specified location, arrival date, and page information.
+     *
+     * @param location    the location of the hotels
+     * @param arrivalDate the arrival date
+     * @param page        the page information for pagination
+     * @return a list of ExternalHotelInfoDto objects representing the available hotels
+     * @throws UnirestException        if an error occurs during the HTTP request
+     * @throws JsonProcessingException if an error occurs while processing the JSON response
+     */
     @Override
     public List<ExternalHotelInfoDto> getAvailableHotels(String location, String arrivalDate, Pageable page) throws UnirestException, JsonProcessingException {
         return externalService.getAvailableHotels(location, arrivalDate, page.getPageNumber());
     }
 
+    /**
+     * Retrieves a list of available flights based on the given source, destination, arrival date, and page information.
+     *
+     * @param source      The source location of the flights.
+     * @param destination The destination location of the flights.
+     * @param date        The arrival date of the flights.
+     * @param page        The page information for pagination.
+     * @return A list of ExternalFlightInfoDto objects representing the available flights.
+     * @throws UnirestException        If an error occurs while making the API request.
+     * @throws JsonProcessingException If an error occurs while processing the JSON response.
+     */
     @Override
     public List<ExternalFlightInfoDto> getAvailableFlights(String source, String destination, String date, Pageable page, int price) throws UnirestException, JsonProcessingException {
         return externalService.getFlights(source, destination, date, page.getPageNumber(), price);
     }
 
+    /**
+     * Adds a new user to the system.
+     *
+     * @param user the user to be added
+     * @return the created user as a UserGetDto object
+     * @throws DuplicateEmailException if the email of the user already exists in the system
+     */
     @Override
     public UserGetDto add(UserCreateDto user) throws DuplicateEmailException {
         checkDuplicateEmail(0L, user.email());
@@ -123,7 +202,15 @@ public class UserServiceImpl implements UserService {
         return userConverter.fromUserModelToGetDto(userRepository.save(newUser));
     }
 
-
+    /**
+     * Updates an existing user with the provided ID and returns the updated user information.
+     *
+     * @param id   The ID of the user to be updated.
+     * @param user The updated user information.
+     * @return The updated user information in the form of a UserGetDto object.
+     * @throws UserNotFoundException   If the user with the provided ID does not exist.
+     * @throws DuplicateEmailException If the updated user's email is already associated with another user.
+     */
     @Override
     public UserGetDto put(Long id, UserCreateDto user) throws UserNotFoundException, DuplicateEmailException {
         findById(id);
@@ -163,6 +250,14 @@ public class UserServiceImpl implements UserService {
         return userConverter.fromUserModelToGetDto(userRepository.save(dbUser));
     }
 
+    /**
+     * Deletes a user with the specified ID.
+     * Marks the user as deleted by setting the 'deleted' flag to true.
+     * Saves the updated user in the repository.
+     *
+     * @param id the ID of the user to be deleted
+     * @throws UserNotFoundException if the user with the specified ID is not found
+     */
     @Override
     public void delete(Long id) throws UserNotFoundException {
         User user = findById(id);
@@ -170,11 +265,26 @@ public class UserServiceImpl implements UserService {
         userRepository.save(user);
     }
 
+    /**
+     * Finds a user by their ID.
+     *
+     * @param id the ID of the user to find
+     * @return the user with the specified ID
+     * @throws UserNotFoundException if no user is found with the given ID
+     */
     @Override
     public User findById(Long id) throws UserNotFoundException {
         return userRepository.findById(id).orElseThrow(() -> new UserNotFoundException(USER_ID_NOT_FOUND + id));
     }
 
+    /**
+     * Checks if the given email is already associated with another user in the system.
+     * Throws a DuplicateEmailException if a duplicate email is found, except when the email belongs to the user with the given id.
+     *
+     * @param id    the id of the user to exclude from the duplicate email check
+     * @param email the email to check for duplicates
+     * @throws DuplicateEmailException if a duplicate email is found
+     */
     private void checkDuplicateEmail(Long id, String email) throws DuplicateEmailException {
         Optional<User> userOptional = userRepository.findByEmail(email);
         if (userOptional.isPresent() && !userOptional.get().getId().equals(id)) {

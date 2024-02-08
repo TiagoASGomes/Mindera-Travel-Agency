@@ -18,6 +18,12 @@ public class HotelReservationConverter {
     @Autowired
     private RoomInfoConverter roomInfoConverter;
 
+    /**
+     * Converts a HotelReservation entity to a HotelReservationGetDto.
+     *
+     * @param hotelReservation The HotelReservation entity to convert.
+     * @return The converted HotelReservationGetDto.
+     */
     public HotelReservationGetDto fromEntityToGetDto(HotelReservation hotelReservation) {
         if (hotelReservation == null) return null;
         return new HotelReservationGetDto(
@@ -33,6 +39,12 @@ public class HotelReservationConverter {
                 roomInfoConverter.fromEntityListToGetDtoList(hotelReservation.getRooms()));
     }
 
+    /**
+     * Converts a list of HotelReservation entities to a list of HotelReservationGetDto.
+     *
+     * @param hotelReservations The list of HotelReservation entities to convert.
+     * @return The converted list of HotelReservationGetDto.
+     */
     public List<HotelReservationGetDto> fromEntityListToGetDtoList(List<HotelReservation> hotelReservations) {
         if (hotelReservations == null) return new ArrayList<>();
         return hotelReservations.stream()
@@ -40,6 +52,13 @@ public class HotelReservationConverter {
                 .toList();
     }
 
+    /**
+     * Converts a HotelReservationCreateDto to a HotelReservation entity.
+     *
+     * @param dtoReservation The HotelReservationCreateDto to convert.
+     * @param invoice        The associated Invoice entity.
+     * @return The converted HotelReservation entity.
+     */
     public HotelReservation fromCreateDtoToEntity(HotelReservationCreateDto dtoReservation, Invoice invoice) {
         return HotelReservation.builder()
                 .arrivalDate(dtoReservation.arrivalDate())
@@ -52,7 +71,12 @@ public class HotelReservationConverter {
                 .build();
     }
 
-
+    /**
+     * Converts a HotelReservation entity to an ExternalReservationCreateDto.
+     *
+     * @param reservation The HotelReservation entity to convert.
+     * @return The converted ExternalReservationCreateDto.
+     */
     public ExternalReservationCreateDto fromEntityToExternalDto(HotelReservation reservation) {
         User user = reservation.getInvoice().getUser();
         return new ExternalReservationCreateDto(

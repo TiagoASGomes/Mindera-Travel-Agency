@@ -13,4 +13,4 @@ WORKDIR /app
 
 COPY --from=build /app/target/Mindera-Travel-Agency-0.0.1-SNAPSHOT.jar .
 
-ENTRYPOINT ["java", "-jar", "Mindera-Travel-Agency-0.0.1-SNAPSHOT.jar"]
+ENTRYPOINT ["java", "-jar", "Mindera-Travel-Agency-0.0.1-SNAPSHOT.jar", "--host", "0.0.0.0"]

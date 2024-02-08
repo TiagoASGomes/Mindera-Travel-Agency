@@ -33,6 +33,16 @@ public class AgencyExceptionHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(AgencyExceptionHandler.class);
 
+    /**
+     * Exception handler for bad requests. It handles various types of exceptions
+     * related to flight tickets, payment, check-in/out dates, invoice, payment status,
+     * user, and hotel reservation. It logs the error message and returns a ResponseEntity
+     * with the appropriate error details.
+     *
+     * @param e       The exception that occurred
+     * @param request The HTTP servlet request
+     * @return A ResponseEntity containing the error details and HTTP status code
+     */
     @ExceptionHandler({
             FlightTicketDuplicateException.class,
             PaymentCompletedException.class,
@@ -57,6 +67,15 @@ public class AgencyExceptionHandler {
                         .build(), HttpStatus.BAD_REQUEST);
     }
 
+    /**
+     * Exception handler for not found errors. It handles various types of exceptions
+     * related to flight tickets, hotel reservation, invoice, payment status, user, and room.
+     * It logs the error message and returns a ResponseEntity with the appropriate error details.
+     *
+     * @param e       The exception that occurred
+     * @param request The HTTP servlet request
+     * @return A ResponseEntity containing the error details and HTTP status code
+     */
     @ExceptionHandler({
             FlightTicketNotFoundException.class,
             HotelReservationNotFoundException.class,
@@ -77,6 +96,15 @@ public class AgencyExceptionHandler {
                         .build(), HttpStatus.NOT_FOUND);
     }
 
+    /**
+     * Exception handler for validation errors. It handles MethodArgumentNotValidException
+     * and extracts the field errors. It logs the error message and returns a ResponseEntity
+     * with the appropriate error details.
+     *
+     * @param ex      The MethodArgumentNotValidException that occurred
+     * @param request The HTTP servlet request
+     * @return A ResponseEntity containing the error details and HTTP status code
+     */
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<AgencyError> handleValidationException(MethodArgumentNotValidException ex, HttpServletRequest request) {
         List<String> errors = ex.getBindingResult().getFieldErrors().stream()

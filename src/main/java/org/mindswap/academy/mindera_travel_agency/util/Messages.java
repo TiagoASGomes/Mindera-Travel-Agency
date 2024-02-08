@@ -1,20 +1,15 @@
 package org.mindswap.academy.mindera_travel_agency.util;
 
 public class Messages {
-    public static final String ID_NOT_FOUND = "No entity found with id: ";
-    public static final String NAME_NOT_FOUND = "No entity found with name: ";
     public static final String INVALID_DATE = "Invalid date";
     public static final String INVALID_HOTEL_INFO = "Hotel info cannot be null";
-    public static final String INVALID_ID = "Invalid id";
     public static final String INVALID_PAYMENT_STATUS = "Invalid payment status, payment status can only contain upper case letters and underscores";
     public static final String INVALID_FARE_CLASS = "Invalid fare class, fare class can only contain upper case letters and spaces";
     public static final String CANNOT_DELETE_INVOICE = "Cannot delete paid or pending invoice";
     public static final String CANNOT_ALTER_HOTEL_RESERVATION = "Cannot alter hotel reservation with paid or pending invoice";
-    public static final String DUPLICATE_FLIGHT_TICKET_NUMBER = "Ticket number already exists";
     public static final String INVALID_NAME = "Invalid name, name must be 2 words or longer and can only contain upper and lower case letters and spaces";
     public static final String INVALID_EMAIL = "Invalid email";
     public static final String INVALID_PHONE_NUMBER = "Invalid phone number";
-    public static final String INVALID_SEAT_NUMBER = "Invalid seat number";
     public static final String INVALID_PRICE = "Invalid price, price must be greater than 0";
     public static final String INVALID_LUGGAGE_WEIGHT = "Invalid luggage weight, luggage weight must be between 0 and 100 kg";
     public static final String INVALID_CARRY_ON_LUGGAGE = "Invalid carry on luggage";
@@ -29,7 +24,6 @@ public class Messages {
     public static final String NOT_REQUESTED_PAYMENT = "NOT_REQUESTED";
     public static final String INVALID_CHECK_IN_OUT_DATE = "Check in date must be before check out date";
     public static final String ROOM_NOT_FOUND = "No room found with id: ";
-    public static final String INVALID_INVOICE = "Cannot change invoice.";
     public static final String CANNOT_UPDATE_INVOICE = "Cannot update paid invoice.";
     public static final String PAYMENT_STATUS_DUPLICATE = "Payment status name already exists";
     public static final String PAYMENT_STATUS_IN_USE = "Cannot delete payment status in use";

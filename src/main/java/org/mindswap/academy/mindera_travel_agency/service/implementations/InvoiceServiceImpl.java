@@ -60,17 +60,38 @@ public class InvoiceServiceImpl implements InvoiceService {
         this.roomCon = roomCon;
     }
 
+    /**
+     * Retrieves all invoices with pagination.
+     *
+     * @param page The page information for pagination.
+     * @return A page of InvoiceGetDto objects.
+     */
     @Override
     public Page<InvoiceGetDto> getAll(Pageable page) {
         Page<Invoice> result = inRep.findAll(page);
         return result.map(inCon::fromEntityToGetDto);
     }
 
+    /**
+     * Retrieves an invoice by its ID.
+     *
+     * @param id The ID of the invoice.
+     * @return The InvoiceGetDto object representing the invoice.
+     * @throws InvoiceNotFoundException If the invoice with the given ID is not found.
+     */
     @Override
     public InvoiceGetDto getById(Long id) throws InvoiceNotFoundException {
         return inCon.fromEntityToGetDto(findById(id));
     }
 
+    /**
+     * Creates a new invoice.
+     *
+     * @param invoiceDto The InvoiceCreateDto object containing the invoice details.
+     * @return The InvoiceGetDto object representing the created invoice.
+     * @throws UserNotFoundException          If the user with the given ID is not found.
+     * @throws PaymentStatusNotFoundException If the payment status is not found.
+     */
     @Override
     public InvoiceGetDto create(InvoiceCreateDto invoiceDto) throws UserNotFoundException, PaymentStatusNotFoundException {
         Invoice invoice = inCon.fromCreateDtoToEntity(userSer.findById(invoiceDto.userId()));
@@ -78,6 +99,16 @@ public class InvoiceServiceImpl implements InvoiceService {
         return inCon.fromEntityToGetDto(inRep.save(invoice));
     }
 
+    /**
+     * Updates an existing invoice.
+     *
+     * @param id         The ID of the invoice to be updated.
+     * @param invoiceDto The InvoiceUpdateDto object containing the updated invoice details.
+     * @return The InvoiceGetDto object representing the updated invoice.
+     * @throws InvoiceNotFoundException       If the invoice with the given ID is not found.
+     * @throws PaymentStatusNotFoundException If the payment status is not found.
+     * @throws PaymentCompletedException      If the payment for the invoice is already completed.
+     */
     @Override
     public InvoiceGetDto update(Long id, InvoiceUpdateDto invoiceDto) throws InvoiceNotFoundException, PaymentStatusNotFoundException, PaymentCompletedException {
         Invoice invoice = findById(id);
@@ -91,6 +122,18 @@ public class InvoiceServiceImpl implements InvoiceService {
         return inCon.fromEntityToGetDto(inRep.save(invoice));
     }
 
+    /**
+     * Finalizes an invoice by updating flight tickets and hotel reservation.
+     *
+     * @param id The ID of the invoice to be finalized.
+     * @return The InvoiceGetDto object representing the finalized invoice.
+     * @throws InvoiceNotFoundException       If the invoice with the given ID is not found.
+     * @throws PaymentCompletedException      If the payment for the invoice is already completed.
+     * @throws InvoiceNotCompleteException    If the invoice is not complete (missing hotel reservation or flight tickets).
+     * @throws UnirestException               If an error occurs during the external API call.
+     * @throws JsonProcessingException        If an error occurs while processing JSON data.
+     * @throws PaymentStatusNotFoundException If the payment status is not found.
+     */
     @Override
     public InvoiceGetDto finalizeInvoice(Long id) throws InvoiceNotFoundException, PaymentCompletedException, InvoiceNotCompleteException, UnirestException, JsonProcessingException, PaymentStatusNotFoundException {
         Invoice invoice = findById(id);
@@ -108,7 +151,13 @@ public class InvoiceServiceImpl implements InvoiceService {
         return inCon.fromEntityToGetDto(inRep.save(invoice));
     }
 
-
+    /**
+     * Deletes an invoice.
+     *
+     * @param id The ID of the invoice to be deleted.
+     * @throws InvoiceNotFoundException  If the invoice with the given ID is not found.
+     * @throws PaymentCompletedException If the payment for the invoice is already completed.
+     */
     @Override
     public void delete(Long id) throws InvoiceNotFoundException, PaymentCompletedException {
         Invoice invoice = findById(id);
@@ -118,11 +167,25 @@ public class InvoiceServiceImpl implements InvoiceService {
         inRep.deleteById(id);
     }
 
+    /**
+     * Finds an invoice by its ID.
+     *
+     * @param id The ID of the invoice.
+     * @return The Invoice object representing the invoice.
+     * @throws InvoiceNotFoundException If the invoice with the given ID is not found.
+     */
     @Override
     public Invoice findById(Long id) throws InvoiceNotFoundException {
         return inRep.findById(id).orElseThrow(() -> new InvoiceNotFoundException(INVOICE_ID_NOT_FOUND + id));
     }
 
+    /**
+     * Updates the total price of a hotel in an invoice.
+     *
+     * @param id         The ID of the invoice
+     * @param hotelPrice The new price of the hotel.
+     * @throws InvoiceNotFoundException If the invoice with the given ID is not found.
+     */
     @Override
     public void updateHotelPrice(Long id, int hotelPrice) throws InvoiceNotFoundException {
         Invoice invoice = findById(id);
@@ -137,6 +200,13 @@ public class InvoiceServiceImpl implements InvoiceService {
         inRep.save(invoice);
     }
 
+    /**
+     * Updates the total price of flight tickets in an invoice.
+     *
+     * @param invoiceFlights The list of FlightTicket objects representing the flight tickets in the invoice.
+     * @param id             The ID of the invoice.
+     * @throws InvoiceNotFoundException If the invoice with the given ID is not found.
+     */
     @Override
     public void updateFlightPrices(List<FlightTicket> invoiceFlights, Long id) throws InvoiceNotFoundException {
         int price = invoiceFlights.stream()
@@ -151,13 +221,24 @@ public class InvoiceServiceImpl implements InvoiceService {
         inRep.save(invoice);
     }
 
+    /**
+     * Checks if an invoice can be updated.
+     *
+     * @param invoice The Invoice object to be checked.
+     * @throws PaymentCompletedException If the payment for the invoice is already completed.
+     */
     private void checkIfCanUpdate(Invoice invoice) throws PaymentCompletedException {
         if (invoice.getPaymentStatus().getStatusName().equals(PAID_PAYMENT)) {
             throw new PaymentCompletedException(CANNOT_UPDATE_INVOICE);
         }
     }
 
-
+    /**
+     * Updates the hotel reservation in an invoice.
+     *
+     * @param reservation The ExternalReservationInfoDto object representing the updated hotel reservation.
+     * @param invoice     The Invoice object to be updated.
+     */
     private void updateHotel(ExternalReservationInfoDto reservation, Invoice invoice) {
         HotelReservation hotelReservation = invoice.getHotelReservation();
         Set<RoomInfo> rooms = roomCon.fromExternalDtoListToEntityList(reservation.roomReservations());
@@ -168,11 +249,23 @@ public class InvoiceServiceImpl implements InvoiceService {
         rooms.forEach(roomRep::save);
     }
 
+    /**
+     * Updates the flight tickets in an invoice.
+     *
+     * @param flightTickets The list of ExternalBookingInfoDto objects representing the updated flight tickets.
+     * @param invoice       The Invoice object to be updated.
+     */
     private void updateFlights(List<ExternalBookingInfoDto> flightTickets, Invoice invoice) {
         Set<FlightTicket> tickets = invoice.getFlightTickets();
         tickets.forEach(ticket -> updateTicket(flightTickets, ticket));
     }
 
+    /**
+     * Updates a flight ticket in an invoice.
+     *
+     * @param flightTickets The list of ExternalBookingInfoDto objects representing the updated flight tickets.
+     * @param ticket        The FlightTicket object to be updated.
+     */
     private void updateTicket(List<ExternalBookingInfoDto> flightTickets, FlightTicket ticket) {
         Optional<ExternalBookingInfoDto> externalTicket = flightTickets.stream()
                 .filter(flightTicket -> flightTicket.flight().id().equals(ticket.getFlightId()))

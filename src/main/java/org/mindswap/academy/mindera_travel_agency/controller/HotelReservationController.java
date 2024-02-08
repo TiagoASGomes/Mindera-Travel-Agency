@@ -16,6 +16,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+/**
+ * The HotelReservationController class handles the HTTP requests related to hotel reservations.
+ */
 @RestController
 @RequestMapping("/api/v1/hotel_reservations")
 public class HotelReservationController {
@@ -27,41 +30,116 @@ public class HotelReservationController {
         this.hotelReservationService = hotelReservationService;
     }
 
+    /**
+     * Retrieves all hotel reservations.
+     *
+     * @param page the pageable object for pagination
+     * @return the ResponseEntity containing the page of HotelReservationGetDto objects
+     */
     @GetMapping("/")
     public ResponseEntity<Page<HotelReservationGetDto>> getAll(Pageable page) {
         return ResponseEntity.ok(hotelReservationService.getAll(page));
     }
 
+    /**
+     * Retrieves a specific hotel reservation by its ID.
+     *
+     * @param id the ID of the hotel reservation
+     * @return the ResponseEntity containing the HotelReservationGetDto object
+     * @throws HotelReservationNotFoundException if the hotel reservation is not found
+     */
     @GetMapping("/{id}")
     public ResponseEntity<HotelReservationGetDto> getById(@PathVariable Long id) throws HotelReservationNotFoundException {
         return ResponseEntity.ok(hotelReservationService.getById(id));
     }
 
+    /**
+     * Creates a new hotel reservation.
+     *
+     * @param hotelReservation the HotelReservationCreateDto object containing the reservation details
+     * @return the ResponseEntity containing the created HotelReservationGetDto object
+     * @throws HotelReservationNotFoundException if the hotel reservation is not found
+     * @throws InvalidCheckInOutDateException    if the check-in or check-out date is invalid
+     * @throws InvoiceNotFoundException          if the invoice is not found
+     * @throws ReservationAlreadyExistsException if a reservation already exists for the given details
+     */
     @PostMapping("/")
     public ResponseEntity<HotelReservationGetDto> create(@Valid @RequestBody HotelReservationCreateDto hotelReservation) throws HotelReservationNotFoundException, InvalidCheckInOutDateException, InvoiceNotFoundException, ReservationAlreadyExistsException {
         return new ResponseEntity<>(hotelReservationService.create(hotelReservation), HttpStatus.CREATED);
     }
 
+    /**
+     * Updates an existing hotel reservation.
+     *
+     * @param id               the ID of the hotel reservation
+     * @param hotelReservation the HotelReservationCreateDto object containing the updated reservation details
+     * @return the ResponseEntity containing the updated HotelReservationGetDto object
+     * @throws HotelReservationNotFoundException       if the hotel reservation is not found
+     * @throws CannotUpdateToDifferentInvoiceException if the reservation cannot be updated to a different invoice
+     * @throws InvalidCheckInOutDateException          if the check-in or check-out date is invalid
+     * @throws InvoiceNotFoundException                if the invoice is not found
+     * @throws PaymentCompletedException               if the payment for the reservation is already completed
+     */
     @PutMapping("/{id}")
     public ResponseEntity<HotelReservationGetDto> updateReservation(@PathVariable Long id, @Valid @RequestBody HotelReservationCreateDto hotelReservation) throws HotelReservationNotFoundException, CannotUpdateToDifferentInvoiceException, InvalidCheckInOutDateException, InvoiceNotFoundException, PaymentCompletedException {
         return ResponseEntity.ok(hotelReservationService.updateReservation(id, hotelReservation));
     }
 
+    /**
+     * Updates the duration of a hotel reservation.
+     *
+     * @param id               the ID of the hotel reservation
+     * @param hotelReservation the HotelReservationDurationDto object containing the updated duration details
+     * @return the ResponseEntity containing the updated HotelReservationGetDto object
+     * @throws HotelReservationNotFoundException if the hotel reservation is not found
+     * @throws InvalidCheckInOutDateException    if the check-in or check-out date is invalid
+     * @throws InvoiceNotFoundException          if the invoice is not found
+     * @throws PaymentCompletedException         if the payment for the reservation is already completed
+     */
     @PatchMapping("/{id}/duration")
     public ResponseEntity<HotelReservationGetDto> updateDuration(@PathVariable Long id, @Valid @RequestBody HotelReservationDurationDto hotelReservation) throws HotelReservationNotFoundException, InvalidCheckInOutDateException, InvoiceNotFoundException, PaymentCompletedException {
         return ResponseEntity.ok(hotelReservationService.updateDuration(id, hotelReservation));
     }
 
+    /**
+     * Adds a room to a hotel reservation.
+     *
+     * @param id   the ID of the hotel reservation
+     * @param room the ExternalRoomInfoDto object containing the room details
+     * @return the ResponseEntity containing the updated HotelReservationGetDto object
+     * @throws HotelReservationNotFoundException if the hotel reservation is not found
+     * @throws InvoiceNotFoundException          if the invoice is not found
+     * @throws PaymentCompletedException         if the payment for the reservation is already completed
+     */
     @PatchMapping("/{id}/rooms/add")
     public ResponseEntity<HotelReservationGetDto> addRoom(@PathVariable Long id, @Valid @RequestBody ExternalRoomInfoDto room) throws HotelReservationNotFoundException, InvoiceNotFoundException, PaymentCompletedException {
         return ResponseEntity.ok(hotelReservationService.addRoom(id, room));
     }
 
+    /**
+     * Removes a room from a hotel reservation.
+     *
+     * @param id     the ID of the hotel reservation
+     * @param roomId the ID of the room to be removed
+     * @return the ResponseEntity containing the updated HotelReservationGetDto object
+     * @throws HotelReservationNotFoundException if the hotel reservation is not found
+     * @throws RoomNotFoundException             if the room is not found
+     * @throws InvoiceNotFoundException          if the invoice is not found
+     * @throws PaymentCompletedException         if the payment for the reservation is already completed
+     */
     @PatchMapping("/{id}/rooms/{roomId}/remove")
     public ResponseEntity<HotelReservationGetDto> removeRoom(@PathVariable Long id, @PathVariable Long roomId) throws HotelReservationNotFoundException, RoomNotFoundException, InvoiceNotFoundException, PaymentCompletedException {
         return ResponseEntity.ok(hotelReservationService.removeRoom(id, roomId));
     }
 
+    /**
+     * Deletes a hotel reservation.
+     *
+     * @param id the ID of the hotel reservation
+     * @return the ResponseEntity with no content
+     * @throws HotelReservationNotFoundException if the hotel reservation is not found
+     * @throws PaymentCompletedException         if the payment for the reservation is already completed
+     */
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) throws HotelReservationNotFoundException, PaymentCompletedException {
         hotelReservationService.delete(id);

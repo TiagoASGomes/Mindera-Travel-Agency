@@ -12,8 +12,17 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * This class provides methods to convert FlightTicket objects to DTOs (Data Transfer Objects) and vice versa.
+ */
 @Component
 public class FlightTicketConverter {
+    /**
+     * Converts a collection of FlightTicket entities to a list of TicketGetDto objects.
+     *
+     * @param flightTickets the collection of FlightTicket entities to convert
+     * @return a list of TicketGetDto objects
+     */
     public List<TicketGetDto> fromEntityListToGetDtoList(Collection<FlightTicket> flightTickets) {
         if (flightTickets == null) return new ArrayList<>();
         return flightTickets.stream()
@@ -21,6 +30,12 @@ public class FlightTicketConverter {
                 .toList();
     }
 
+    /**
+     * Converts a FlightTicket entity to a TicketGetDto object.
+     *
+     * @param flightTicket the FlightTicket entity to convert
+     * @return a TicketGetDto object
+     */
     public TicketGetDto fromEntityToGetDto(FlightTicket flightTicket) {
         return new TicketGetDto(
                 flightTicket.getId(),
@@ -37,6 +52,13 @@ public class FlightTicketConverter {
         );
     }
 
+    /**
+     * Converts a TicketCreateDto object to a FlightTicket entity.
+     *
+     * @param flightTicket the TicketCreateDto object to convert
+     * @param invoice      the Invoice entity associated with the FlightTicket
+     * @return a FlightTicket entity
+     */
     public FlightTicket fromCreateDtoToEntity(TicketCreateDto flightTicket, Invoice invoice) {
         return FlightTicket.builder()
                 .fName(flightTicket.fName())
@@ -53,6 +75,12 @@ public class FlightTicketConverter {
                 .build();
     }
 
+    /**
+     * Converts a set of FlightTicket entities to a list of ExternalFlightCreateDto objects.
+     *
+     * @param flightTickets the set of FlightTicket entities to convert
+     * @return a list of ExternalFlightCreateDto objects
+     */
     public List<ExternalFlightCreateDto> fromEntityListToExternalDtoList(Set<FlightTicket> flightTickets) {
         if (flightTickets == null) return new ArrayList<>();
         return flightTickets.stream()

@@ -4,6 +4,9 @@ import lombok.*;
 
 import java.util.Date;
 
+/**
+ * Represents an error that can occur in the agency application.
+ */
 @Getter
 @Setter
 @Builder
