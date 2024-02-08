@@ -1,5 +1,8 @@
 package org.mindswap.academy.mindera_travel_agency.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import org.mindswap.academy.mindera_travel_agency.dto.external.hotel.ExternalRoomInfoDto;
 import org.mindswap.academy.mindera_travel_agency.dto.hotel.HotelReservationCreateDto;
@@ -36,6 +39,8 @@ public class HotelReservationController {
      * @param page the pageable object for pagination
      * @return the ResponseEntity containing the page of HotelReservationGetDto objects
      */
+    @Operation(summary = "Get all hotel reservations")
+    @ApiResponse(responseCode = "200", description = "Return all hotel reservations")
     @GetMapping("/")
     public ResponseEntity<Page<HotelReservationGetDto>> getAll(Pageable page) {
         return ResponseEntity.ok(hotelReservationService.getAll(page));
@@ -48,6 +53,11 @@ public class HotelReservationController {
      * @return the ResponseEntity containing the HotelReservationGetDto object
      * @throws HotelReservationNotFoundException if the hotel reservation is not found
      */
+    @Operation(summary = "Get a hotel reservation by its ID")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Return the hotel reservation"),
+            @ApiResponse(responseCode = "404", description = "Hotel reservation not found")
+    })
     @GetMapping("/{id}")
     public ResponseEntity<HotelReservationGetDto> getById(@PathVariable Long id) throws HotelReservationNotFoundException {
         return ResponseEntity.ok(hotelReservationService.getById(id));
@@ -63,6 +73,12 @@ public class HotelReservationController {
      * @throws InvoiceNotFoundException          if the invoice is not found
      * @throws ReservationAlreadyExistsException if a reservation already exists for the given details
      */
+    @Operation(summary = "Create a new hotel reservation")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Hotel reservation created"),
+            @ApiResponse(responseCode = "404", description = "Hotel reservation not found, or invoice not found"),
+            @ApiResponse(responseCode = "400", description = "Reservation already exists for the given invoice, invalid check-in or check-out date")
+    })
     @PostMapping("/")
     public ResponseEntity<HotelReservationGetDto> create(@Valid @RequestBody HotelReservationCreateDto hotelReservation) throws HotelReservationNotFoundException, InvalidCheckInOutDateException, InvoiceNotFoundException, ReservationAlreadyExistsException {
         return new ResponseEntity<>(hotelReservationService.create(hotelReservation), HttpStatus.CREATED);
@@ -80,6 +96,13 @@ public class HotelReservationController {
      * @throws InvoiceNotFoundException                if the invoice is not found
      * @throws PaymentCompletedException               if the payment for the reservation is already completed
      */
+    @Operation(summary = "Update an existing hotel reservation")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Hotel reservation updated"),
+            @ApiResponse(responseCode = "404", description = "Hotel reservation not found, or invoice not found"),
+            @ApiResponse(responseCode = "400", description = "Cannot update to a different invoice, or invalid check-in or check-out date, or payment completed"),
+    })
+
     @PutMapping("/{id}")
     public ResponseEntity<HotelReservationGetDto> updateReservation(@PathVariable Long id, @Valid @RequestBody HotelReservationCreateDto hotelReservation) throws HotelReservationNotFoundException, CannotUpdateToDifferentInvoiceException, InvalidCheckInOutDateException, InvoiceNotFoundException, PaymentCompletedException {
         return ResponseEntity.ok(hotelReservationService.updateReservation(id, hotelReservation));
@@ -96,6 +119,12 @@ public class HotelReservationController {
      * @throws InvoiceNotFoundException          if the invoice is not found
      * @throws PaymentCompletedException         if the payment for the reservation is already completed
      */
+    @Operation(summary = "Update the duration of a hotel reservation")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Hotel reservation duration updated"),
+            @ApiResponse(responseCode = "404", description = "Hotel reservation not found, or invoice not found"),
+            @ApiResponse(responseCode = "400", description = "Invalid check-in or check-out date, or payment completed"),
+    })
     @PatchMapping("/{id}/duration")
     public ResponseEntity<HotelReservationGetDto> updateDuration(@PathVariable Long id, @Valid @RequestBody HotelReservationDurationDto hotelReservation) throws HotelReservationNotFoundException, InvalidCheckInOutDateException, InvoiceNotFoundException, PaymentCompletedException {
         return ResponseEntity.ok(hotelReservationService.updateDuration(id, hotelReservation));
@@ -111,6 +140,12 @@ public class HotelReservationController {
      * @throws InvoiceNotFoundException          if the invoice is not found
      * @throws PaymentCompletedException         if the payment for the reservation is already completed
      */
+    @Operation(summary = "Add a room to a hotel reservation")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Room added to the hotel reservation"),
+            @ApiResponse(responseCode = "404", description = "Hotel reservation not found, or invoice not found"),
+            @ApiResponse(responseCode = "400", description = "Payment completed"),
+    })
     @PatchMapping("/{id}/rooms/add")
     public ResponseEntity<HotelReservationGetDto> addRoom(@PathVariable Long id, @Valid @RequestBody ExternalRoomInfoDto room) throws HotelReservationNotFoundException, InvoiceNotFoundException, PaymentCompletedException {
         return ResponseEntity.ok(hotelReservationService.addRoom(id, room));
@@ -127,6 +162,12 @@ public class HotelReservationController {
      * @throws InvoiceNotFoundException          if the invoice is not found
      * @throws PaymentCompletedException         if the payment for the reservation is already completed
      */
+    @Operation(summary = "Remove a room from a hotel reservation")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Room removed from the hotel reservation"),
+            @ApiResponse(responseCode = "404", description = "Hotel reservation not found, or room not found, or invoice not found"),
+            @ApiResponse(responseCode = "400", description = "Payment completed"),
+    })
     @PatchMapping("/{id}/rooms/{roomId}/remove")
     public ResponseEntity<HotelReservationGetDto> removeRoom(@PathVariable Long id, @PathVariable Long roomId) throws HotelReservationNotFoundException, RoomNotFoundException, InvoiceNotFoundException, PaymentCompletedException {
         return ResponseEntity.ok(hotelReservationService.removeRoom(id, roomId));
@@ -140,6 +181,12 @@ public class HotelReservationController {
      * @throws HotelReservationNotFoundException if the hotel reservation is not found
      * @throws PaymentCompletedException         if the payment for the reservation is already completed
      */
+    @Operation(summary = "Delete a hotel reservation")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Hotel reservation deleted"),
+            @ApiResponse(responseCode = "404", description = "Hotel reservation not found"),
+            @ApiResponse(responseCode = "400", description = "Payment completed"),
+    })
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) throws HotelReservationNotFoundException, PaymentCompletedException {
         hotelReservationService.delete(id);

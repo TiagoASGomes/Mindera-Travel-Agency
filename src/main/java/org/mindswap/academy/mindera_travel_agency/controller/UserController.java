@@ -2,6 +2,9 @@ package org.mindswap.academy.mindera_travel_agency.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.mashape.unirest.http.exceptions.UnirestException;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import org.mindswap.academy.mindera_travel_agency.dto.external.flight.ExternalFlightInfoDto;
 import org.mindswap.academy.mindera_travel_agency.dto.external.hotel.ExternalHotelInfoDto;
@@ -41,6 +44,8 @@ public class UserController {
      * @param page the page information
      * @return the list of users
      */
+    @Operation(summary = "Get all users")
+    @ApiResponse(responseCode = "200", description = "Return all users")
     @GetMapping("/")
     public ResponseEntity<Page<UserGetDto>> getAll(Pageable page) {
         return ResponseEntity.ok(userService.getAll(page));
@@ -52,6 +57,8 @@ public class UserController {
      * @param page the page information
      * @return the list of active users
      */
+    @Operation(summary = "Get all active users")
+    @ApiResponse(responseCode = "200", description = "Return all active users")
     @GetMapping("/active")
     public ResponseEntity<Page<UserGetDto>> getAllActive(Pageable page) {
         return ResponseEntity.ok(userService.getAllActive(page));
@@ -64,6 +71,11 @@ public class UserController {
      * @return the user information
      * @throws UserNotFoundException if the user is not found
      */
+    @Operation(summary = "Get user by ID")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Return user by ID"),
+            @ApiResponse(responseCode = "404", description = "User not found")
+    })
     @GetMapping("/{id}")
     public ResponseEntity<UserGetDto> getById(@PathVariable Long id) throws UserNotFoundException {
         return ResponseEntity.ok(userService.getById(id));
@@ -76,6 +88,11 @@ public class UserController {
      * @return the user information
      * @throws UserNotFoundException if the user is not found
      */
+    @Operation(summary = "Get user by email")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Return user by email"),
+            @ApiResponse(responseCode = "404", description = "User not found")
+    })
     @GetMapping("/email/{email}")
     public ResponseEntity<UserGetDto> getByEmail(@PathVariable String email) throws UserNotFoundException {
         return ResponseEntity.ok(userService.getByEmail(email));
@@ -88,6 +105,11 @@ public class UserController {
      * @return the list of invoices
      * @throws UserNotFoundException if the user is not found
      */
+    @Operation(summary = "Get all invoices by user ID")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Return all invoices by user ID"),
+            @ApiResponse(responseCode = "404", description = "User not found")
+    })
     @GetMapping("/{id}/invoices")
     public ResponseEntity<List<InvoiceGetDto>> getAllInvoices(@PathVariable Long id) throws UserNotFoundException {
         return ResponseEntity.ok(userService.getAllInvoices(id));
@@ -100,6 +122,11 @@ public class UserController {
      * @return the list of hotel reservations
      * @throws UserNotFoundException if the user is not found
      */
+    @Operation(summary = "Get all hotel reservations by user ID")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Return all hotel reservations by user ID"),
+            @ApiResponse(responseCode = "404", description = "User not found")
+    })
     @GetMapping("/{id}/reservations")
     public ResponseEntity<List<HotelReservationGetDto>> getAllReservations(@PathVariable Long id) throws UserNotFoundException {
         return ResponseEntity.ok(userService.getAllReservations(id));
@@ -112,6 +139,11 @@ public class UserController {
      * @return the list of flight tickets
      * @throws UserNotFoundException if the user is not found
      */
+    @Operation(summary = "Get all flight tickets by user ID")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Return all flight tickets by user ID"),
+            @ApiResponse(responseCode = "404", description = "User not found")
+    })
     @GetMapping("/{id}/tickets")
     public ResponseEntity<List<TicketGetDto>> getAllTickets(@PathVariable Long id) throws UserNotFoundException {
         return ResponseEntity.ok(userService.getAllTickets(id));
@@ -127,6 +159,11 @@ public class UserController {
      * @throws UnirestException        if an error occurs during the HTTP request
      * @throws JsonProcessingException if an error occurs while processing JSON
      */
+    @Operation(summary = "Get available hotels by location and arrival date")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Return available hotels by location and arrival date"),
+            @ApiResponse(responseCode = "400", description = "Error while processing JSON, or an error occurs during the HTTP request")
+    })
     @GetMapping("/hotels/{location}/{arrivalDate}")
     public ResponseEntity<List<ExternalHotelInfoDto>> getAvailableHotels(@PathVariable String location, @PathVariable(required = false) String arrivalDate, Pageable page) throws UnirestException, JsonProcessingException {
         return ResponseEntity.ok(userService.getAvailableHotels(location, arrivalDate, page));
@@ -143,6 +180,11 @@ public class UserController {
      * @throws UnirestException        if an error occurs during the HTTP request
      * @throws JsonProcessingException if an error occurs while processing JSON
      */
+    @Operation(summary = "Get available flights by source, destination, and arrival date")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Return available flights by source, destination, and arrival date"),
+            @ApiResponse(responseCode = "400", description = "Error while processing JSON, or an error occurs during the HTTP request")
+    })
     @GetMapping("/flights/{source}/{destination}")
     public ResponseEntity<List<ExternalFlightInfoDto>> getAvailableFlights(@PathVariable String source, @PathVariable String destination, @RequestParam(defaultValue = "") String date, @RequestParam(defaultValue = "9999") int price, Pageable page) throws UnirestException, JsonProcessingException {
         return ResponseEntity.ok(userService.getAvailableFlights(source, destination, date, page, price));
@@ -155,6 +197,11 @@ public class UserController {
      * @return the created user information
      * @throws DuplicateEmailException if the email is already associated with another user
      */
+    @Operation(summary = "Create a new user")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Return the created user information"),
+            @ApiResponse(responseCode = "400", description = "Email is already associated with another user")
+    })
     @PostMapping("/")
     public ResponseEntity<UserGetDto> create(@Valid @RequestBody UserCreateDto user) throws DuplicateEmailException {
         return new ResponseEntity<>(userService.add(user), HttpStatus.CREATED);
@@ -169,6 +216,12 @@ public class UserController {
      * @throws UserNotFoundException   if the user is not found
      * @throws DuplicateEmailException if the email is already associated with another user
      */
+    @Operation(summary = "Update an existing user")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Return the updated user information"),
+            @ApiResponse(responseCode = "404", description = "User not found"),
+            @ApiResponse(responseCode = "400", description = "Email is already associated with another user")
+    })
     @PatchMapping("/{id}")
     public ResponseEntity<UserGetDto> update(@PathVariable Long id, @Valid @RequestBody UserUpdateDto user) throws UserNotFoundException, DuplicateEmailException {
         return new ResponseEntity<>(userService.update(id, user), HttpStatus.OK);
@@ -183,6 +236,12 @@ public class UserController {
      * @throws UserNotFoundException         if the user is not found
      * @throws PasswordsDidNotMatchException if the new password and confirmation password do not match
      */
+    @Operation(summary = "Update the password of a user")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Return the updated user information"),
+            @ApiResponse(responseCode = "404", description = "User not found"),
+            @ApiResponse(responseCode = "400", description = "New password and confirmation password do not match")
+    })
     @PatchMapping("/{id}/password")
     public ResponseEntity<UserGetDto> updatePassword(@PathVariable Long id, @Valid @RequestBody UserUpdatePasswordDto user) throws UserNotFoundException, PasswordsDidNotMatchException {
         return new ResponseEntity<>(userService.updatePassword(id, user), HttpStatus.OK);
@@ -197,6 +256,12 @@ public class UserController {
      * @throws UserNotFoundException   if the user is not found
      * @throws DuplicateEmailException if the email is already associated with another user
      */
+    @Operation(summary = "Replace an existing user")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Return the replaced user information"),
+            @ApiResponse(responseCode = "404", description = "User not found"),
+            @ApiResponse(responseCode = "400", description = "Email is already associated with another user")
+    })
     @PutMapping("/{id}")
     public ResponseEntity<UserGetDto> put(@PathVariable Long id, @Valid @RequestBody UserCreateDto user) throws UserNotFoundException, DuplicateEmailException {
         return new ResponseEntity<>(userService.put(id, user), HttpStatus.OK);
@@ -209,6 +274,11 @@ public class UserController {
      * @return the response entity
      * @throws UserNotFoundException if the user is not found
      */
+    @Operation(summary = "Delete a user")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "User deleted"),
+            @ApiResponse(responseCode = "404", description = "User not found")
+    })
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) throws UserNotFoundException {
         userService.delete(id);
